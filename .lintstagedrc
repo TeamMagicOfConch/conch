@@ -1,0 +1,7 @@
+{
+  "*.{ts,tsx,js}": [
+    "prettier-eslint --write",
+    "eslint --ext .ts,.tsx --quiet --fix",
+    "git add"
+  ]
+}
