@@ -19,11 +19,15 @@ module.exports = {
     sourceType: 'module',
   },
   settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
     'import/extensions': ['.js', '.ts', '.tsx'],
     'import/resolver': {
       node: {
         extensions: ['.ts', '.tsx', '.js'],
       },
+      typescript: {},
     },
   },
   plugins: ['@typescript-eslint'],
