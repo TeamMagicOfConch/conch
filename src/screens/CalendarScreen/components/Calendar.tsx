@@ -1,10 +1,15 @@
 import React from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
-import { useCalendar } from './hooks'
+import { useCalendar } from '../hooks'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
-export default function Calendar({ year, month }: { year: number; month: number }) {
+interface Props {
+  calendarDate: { year: number; month: number }
+}
+
+export default function Calendar({ calendarDate }: Props) {
+  const { year, month } = calendarDate
   const { calendar } = useCalendar({ year, month })
   const { width } = useWindowDimensions()
 

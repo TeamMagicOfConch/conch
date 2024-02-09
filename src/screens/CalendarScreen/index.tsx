@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Calendar from './Calendar'
+import { Calendar, DateNavigation } from './components'
 
 export default function CalendarScreen() {
   const now = new Date()
@@ -9,11 +8,11 @@ export default function CalendarScreen() {
 
   return (
     <SafeAreaView>
-      <Text>Calendar Screen</Text>
-      <Calendar
-        year={calendarDate.year}
-        month={calendarDate.month}
+      <DateNavigation
+        calendarDate={calendarDate}
+        setCalendarDate={setCalendarDate}
       />
+      <Calendar calendarDate={calendarDate} />
     </SafeAreaView>
   )
 }
