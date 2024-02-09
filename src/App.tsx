@@ -1,23 +1,29 @@
 import React from 'react'
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { SafeAreaView, StyleSheet, useColorScheme } from 'react-native'
+import { CalendarScreen } from './screens'
+
+const Stack = createNativeStackNavigator()
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark'
+  // const isDarkMode = useColorScheme() === 'dark'
 
   const backgroundStyle = {
     // backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   }
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <View
-        style={{
-          backgroundColor: isDarkMode ? '#000' : '#fff',
-        }}
-      >
-        <Text>Hello World</Text>
-      </View>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Calendar"
+          component={CalendarScreen}
+          options={{ headerShown: false }}
+        />
+        {/* <Stack.Screen name="Details" /> */}
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
 
