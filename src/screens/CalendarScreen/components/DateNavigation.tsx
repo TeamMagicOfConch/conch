@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, Button, TouchableOpacity } from 'react-native'
-import { formatYearMonthDate } from '@/util'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { formatYearMonthDate } from '@utils/string'
+import { NavigationArrowLeft, NavigationArrowRight } from '@assets/icons'
 
 interface Props {
   calendarDate: { year: number; month: number }
@@ -35,8 +36,8 @@ export default function DateNavigation({ calendarDate, setCalendarDate }: Props)
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 10,
+        marginTop: 20,
+        marginBottom: 20,
       }}
     >
       <DateNatigateButton
@@ -57,12 +58,10 @@ function DateNatigateButton({ direction, onPress }: { direction: 'prev' | 'next'
     <TouchableOpacity
       onPress={onPress}
       style={{
-        padding: 10,
         borderRadius: 50,
-        backgroundColor: 'lightgray',
       }}
     >
-      <Text>{direction === 'prev' ? '이전 달' : '다음 달'}</Text>
+      {direction === 'prev' ? <NavigationArrowLeft /> : <NavigationArrowRight />}
     </TouchableOpacity>
   )
 }

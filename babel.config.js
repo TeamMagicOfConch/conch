@@ -13,6 +13,7 @@ module.exports = {
           '@modules': './src/modules',
           '@scenes': './src/scenes',
           '@utils': './src/utils',
+          '@assets': './src/assets',
         },
       },
     ],

@@ -109,6 +109,12 @@ module.exports = {
     '@typescript-eslint/no-shadow': ['warn'],
     'react/jsx-no-useless-fragment': ['error', { allowExpressions: true }],
     'import/no-relative-packages': 'off',
+    'import/no-unresolved': [
+      'error',
+      {
+        ignore: ['.svg'],
+      },
+    ],
   },
   ignorePatterns: ['packges/lodable-ts-transformer/*'],
 }
