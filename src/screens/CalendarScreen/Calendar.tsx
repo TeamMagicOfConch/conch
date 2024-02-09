@@ -1,11 +1,12 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import { useCalendar } from './hooks'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
 export default function Calendar({ year, month }: { year: number; month: number }) {
   const { calendar } = useCalendar({ year, month })
+  const { width } = useWindowDimensions()
 
   return (
     <View>
@@ -13,7 +14,7 @@ export default function Calendar({ year, month }: { year: number; month: number 
         {DAYS.map((day) => (
           <View
             key={day}
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+            style={[style.alignCenterCell, { width: width / 7 }]}
           >
             <Text>{day}</Text>
           </View>
@@ -25,12 +26,13 @@ export default function Calendar({ year, month }: { year: number; month: number 
           key={`${year}-${month}-${weekIndex}`}
           style={{ flexDirection: 'row' }}
         >
-          {week.map((day) => (
+          {week.map((day, dayIndex) => (
             <View
-              key={day.getDate()}
-              style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+              // eslint-disable-next-line
+              key={`${year}-${month}-${weekIndex}-${dayIndex}`}
+              style={[style.alignCenterCell, { width: width / 7 }]}
             >
-              <Text>{day.getDate()}</Text>
+              <Text>{day}</Text>
             </View>
           ))}
         </View>
@@ -38,3 +40,12 @@ export default function Calendar({ year, month }: { year: number; month: number 
     </View>
   )
 }
+
+const style = StyleSheet.create({
+  alignCenterCell: {
+    aspectRatio: 1,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})

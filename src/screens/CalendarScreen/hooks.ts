@@ -8,11 +8,11 @@ export function useCalendar({ year, month }: { year: number; month: number }) {
     const startDay = firstDay.getDay()
     const endDay = lastDay.getDay()
 
-    const calendarArray = Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1))
-    const paddingStart = Array.from({ length: startDay }, (_, i) => new Date(year, month, 0 - i)).reverse()
-    const paddingEnd = Array.from({ length: 6 - endDay }, (_, i) => new Date(year, month + 1, i + 1))
+    const calendarArray = Array.from({ length: daysInMonth }, (_, i) => String(new Date(year, month, i + 1).getDate()))
+    const paddingStart = Array.from({ length: startDay }, () => '')
+    const paddingEnd = Array.from({ length: 6 - endDay }, () => '')
 
-    return paddingStart.concat(calendarArray, paddingEnd).reduce<Date[][]>((acc, date) => {
+    return paddingStart.concat(calendarArray, paddingEnd).reduce<string[][]>((acc, date) => {
       if (acc.length === 0 || acc[acc.length - 1].length === 7) {
         acc.push([date])
       } else {
