@@ -8,6 +8,7 @@ interface Props {
   calendarDate: { year: number; month: number }
 }
 
+// TODO: call sora to get written reviews
 export default function Calendar({ calendarDate }: Props) {
   const { year, month } = calendarDate
   const { calendar } = useCalendar({ year, month })

@@ -21,7 +21,11 @@ function App(): React.JSX.Element {
           component={CalendarScreen}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen name="Details" /> */}
+        <Stack.Screen
+          name="Review"
+          component={CalendarScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   )

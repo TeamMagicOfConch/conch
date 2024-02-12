@@ -36,8 +36,8 @@ export default function DateNavigation({ calendarDate, setCalendarDate }: Props)
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: 60,
+        marginBottom: 40,
       }}
     >
       <DateNatigateButton
