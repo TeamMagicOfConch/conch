@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Calendar, DateNavigation } from './components'
+import { Calendar, DateNavigation, ReviewButton } from './components'
 
 export default function CalendarScreen() {
   const now = new Date()
@@ -13,6 +13,7 @@ export default function CalendarScreen() {
         setCalendarDate={setCalendarDate}
       />
       <Calendar calendarDate={calendarDate} />
+      <ReviewButton isTodayReviewWritten={false} />
     </SafeAreaView>
   )
 }
