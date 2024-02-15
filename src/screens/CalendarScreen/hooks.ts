@@ -1,4 +1,6 @@
-import { useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useLogin } from '@/hooks'
+import { getApiUrlWithPathAndParams } from '@utils/string'
 
 export function useCalendar({ year, month }: { year: number; month: number }) {
   const calendar = useMemo(() => {
@@ -23,4 +25,42 @@ export function useCalendar({ year, month }: { year: number; month: number }) {
   }, [year, month])
 
   return { calendar }
+}
+
+interface RawReview {
+  id: number
+  date: string
+  diary_text: string
+  response_type: 'thinking' | 'feeling'
+  response_text: string
+  user_id: number
+}
+
+interface ReviewForCalendar {
+  date: number
+  responseType: 'thinking' | 'feeling'
+}
+
+export function useReviewDataAtMonth({ year, month }: { year: number; month: number }) {
+  const [reviews, setReviews] = useState<ReviewForCalendar[]>([])
+  const { userId } = useLogin()
+
+  const yearAndMonth = `${year}-${String(month).padStart(2, '0')}`
+  const url = getApiUrlWithPathAndParams({ path: '/diary/calendar', params: { year_and_month: yearAndMonth, user_id: userId } })
+
+  useEffect(() => {
+    // TODO: make device cache to reduce api call
+    fetch(url)
+      .then((response) => response.json())
+      .then((rawReviews) => {
+        setReviews(
+          rawReviews?.map((review: RawReview) => ({
+            date: new Date(review.date).getDate(),
+            responseType: review.response_type,
+          })),
+        )
+      })
+  }, [url])
+
+  return { reviews }
 }
