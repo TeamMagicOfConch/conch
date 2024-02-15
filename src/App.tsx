@@ -2,7 +2,7 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { SafeAreaView, StyleSheet, useColorScheme } from 'react-native'
-import { CalendarScreen } from './screens'
+import { CalendarScreen, ViewReviewScreen, WriteReviewScreen } from './screens'
 
 const Stack = createNativeStackNavigator()
 
@@ -23,7 +23,12 @@ function App(): React.JSX.Element {
         />
         <Stack.Screen
           name="Review"
-          component={CalendarScreen}
+          component={ViewReviewScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="WriteReview"
+          component={WriteReviewScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

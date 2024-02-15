@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { Colors } from '@assets/colors'
 import { useCalendar } from '../hooks'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
@@ -22,7 +23,7 @@ export default function Calendar({ calendarDate }: Props) {
             key={day}
             style={[style.alignCenterCell, { width: width / 7 }]}
           >
-            <Text>{day}</Text>
+            <Text style={style.calendarHeaderText}>{day}</Text>
           </View>
         ))}
       </View>
@@ -38,7 +39,7 @@ export default function Calendar({ calendarDate }: Props) {
               key={`${year}-${month}-${weekIndex}-${dayIndex}`}
               style={[style.alignCenterCell, { width: width / 7 }]}
             >
-              <Text>{day}</Text>
+              <Text style={style.calendarBodyText}>{day}</Text>
             </View>
           ))}
         </View>
@@ -53,5 +54,11 @@ const style = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  calendarHeaderText: {
+    color: Colors.lightGrey,
+  },
+  calendarBodyText: {
+    color: Colors.writtenGrey,
   },
 })
