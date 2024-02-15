@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import { Colors } from '@assets/colors'
-import { useCalendar } from '../hooks'
+import { useCalendar, useReviewDataAtMonth } from '../hooks'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -9,10 +9,10 @@ interface Props {
   calendarDate: { year: number; month: number }
 }
 
-// TODO: call sora to get written reviews
 export default function Calendar({ calendarDate }: Props) {
   const { year, month } = calendarDate
   const { calendar } = useCalendar({ year, month })
+  const { reviews } = useReviewDataAtMonth({ year, month })
   const { width } = useWindowDimensions()
 
   return (
@@ -33,20 +33,42 @@ export default function Calendar({ calendarDate }: Props) {
           key={`${year}-${month}-${weekIndex}`}
           style={{ flexDirection: 'row' }}
         >
-          {week.map((day, dayIndex) => (
-            <View
-              // eslint-disable-next-line
-              key={`${year}-${month}-${weekIndex}-${dayIndex}`}
-              style={[style.alignCenterCell, { width: width / 7 }]}
-            >
-              <Text style={style.calendarBodyText}>{day}</Text>
-            </View>
-          ))}
+          {week.map((day, dayIndex) => {
+            const today = new Date()
+            const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === Number(day)
+            const isFReview = !!reviews.find((review) => review.date === Number(day) && review.responseType === 'feeling')
+            const isTReview = !!reviews.find((review) => review.date === Number(day) && review.responseType === 'thinking')
+
+            return (
+              <View
+                // eslint-disable-next-line
+                key={`${year}-${month}-${weekIndex}-${dayIndex}`}
+                style={[style.alignCenterCell, { width: width / 7 }]}
+              >
+                {isToday && <View style={style.todayReverseTriangle} />}
+                {isFReview && <View style={style.fReviewCircle} />}
+                {isTReview && <View style={style.tReviewCircle} />}
+                <Text style={style.calendarBodyText}>{day}</Text>
+              </View>
+            )
+          })}
         </View>
       ))}
     </View>
   )
 }
+
+const reviewCircleStyle = StyleSheet.create({
+  common: {
+    width: '100%',
+    aspectRatio: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    borderRadius: 100,
+    opacity: 0.1,
+  },
+})
 
 const style = StyleSheet.create({
   alignCenterCell: {
@@ -54,6 +76,33 @@ const style = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  todayReverseTriangle: {
+    width: 0,
+    height: 0,
+    position: 'absolute',
+    top: 7,
+    left: '50%',
+    transform: [{ translateX: -5 }],
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopWidth: 7,
+    borderRightWidth: 5,
+    borderBottomWidth: 7,
+    borderLeftWidth: 5,
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderTopColor: 'black',
+    borderLeftColor: 'transparent',
+  },
+  fReviewCircle: {
+    ...reviewCircleStyle.common,
+    backgroundColor: Colors.sora,
+  },
+  tReviewCircle: {
+    ...reviewCircleStyle.common,
+    backgroundColor: Colors.orange,
+    opacity: 0.1,
   },
   calendarHeaderText: {
     color: Colors.lightGrey,

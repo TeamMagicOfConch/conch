@@ -7,4 +7,5 @@ export const Colors = {
   bgGrey: '#eeeeee',
   lightGrey: '#888888',
   godong: '#AE704D',
+  orange: '#C63B00',
 }
