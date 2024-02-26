@@ -45,7 +45,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
   const [reviews, setReviews] = useState<ReviewForCalendar[]>([])
   const { userId } = useLogin()
 
-  const yearAndMonth = `${year}-${String(month).padStart(2, '0')}`
+  const yearAndMonth = `${year}-${month + 1}`
   const url = getApiUrlWithPathAndParams({ path: '/diary/calendar', params: { year_and_month: yearAndMonth, user_id: userId } })
 
   useEffect(() => {
@@ -53,12 +53,17 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
     fetch(url)
       .then((response) => response.json())
       .then((rawReviews) => {
-        setReviews(
-          rawReviews?.map((review: RawReview) => ({
-            date: new Date(review.date).getDate(),
-            responseType: review.response_type,
-          })),
-        )
+        if (rawReviews !== undefined && rawReviews?.detail !== 'Not found.') {
+          setReviews(
+            rawReviews.map((review: RawReview) => ({
+              date: new Date(review.date).getDate(),
+              responseType: review.response_type,
+            })),
+          )
+        }
+      })
+      .catch((error) => {
+        console.error('useReviewDataAtMonth', error)
       })
   }, [url])
 
