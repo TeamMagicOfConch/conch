@@ -50,6 +50,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
 
   useEffect(() => {
     // TODO: make device cache to reduce api call
+    setReviews([])
     fetch(url)
       .then((response) => response.json())
       .then((rawReviews) => {
