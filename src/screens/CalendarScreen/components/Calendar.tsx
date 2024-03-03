@@ -1,18 +1,17 @@
 import React from 'react'
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import { Colors } from '@assets/colors'
-import { useCalendar, useReviewDataAtMonth } from '../hooks'
+import { useCalendar } from '../hooks'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
 interface Props {
-  calendarDate: { year: number; month: number }
+  date: { year: number; month: number }
 }
 
-export default function Calendar({ calendarDate }: Props) {
-  const { year, month } = calendarDate
+export default function Calendar({ date }: Props) {
+  const { year, month } = date
   const { calendar } = useCalendar({ year, month })
-  const { reviews } = useReviewDataAtMonth({ year, month })
   const { width } = useWindowDimensions()
 
   return (
@@ -33,25 +32,18 @@ export default function Calendar({ calendarDate }: Props) {
           key={`${year}-${month}-${weekIndex}`}
           style={{ flexDirection: 'row' }}
         >
-          {week.map((day, dayIndex) => {
-            const today = new Date()
-            const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === Number(day)
-            const isFReview = !!reviews.find((review) => review.date === Number(day) && review.responseType === 'feeling')
-            const isTReview = !!reviews.find((review) => review.date === Number(day) && review.responseType === 'thinking')
-
-            return (
-              <View
-                // eslint-disable-next-line
-                key={`${year}-${month}-${weekIndex}-${dayIndex}`}
-                style={[style.alignCenterCell, { width: width / 7 }]}
-              >
-                {isToday && <View style={style.todayReverseTriangle} />}
-                {isFReview && <View style={style.fReviewCircle} />}
-                {isTReview && <View style={style.tReviewCircle} />}
-                <Text style={style.calendarBodyText}>{day}</Text>
-              </View>
-            )
-          })}
+          {week.map(({ date: cellDate, isToday, isFReview, isTReview }, dayIndex) => (
+            <View
+              // eslint-disable-next-line
+              key={`${year}-${month}-${weekIndex}-${dayIndex}`}
+              style={[style.alignCenterCell, { width: width / 7 }]}
+            >
+              {isToday && <View style={style.todayReverseTriangle} />}
+              {isFReview && <View style={style.fReviewCircle} />}
+              {isTReview && <View style={style.tReviewCircle} />}
+              <Text style={style.calendarBodyText}>{cellDate}</Text>
+            </View>
+          ))}
         </View>
       ))}
     </View>

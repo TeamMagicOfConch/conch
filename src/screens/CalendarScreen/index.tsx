@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { getToday } from '@/utils'
 import { Calendar, DateNavigation, ReviewButton } from './components'
+import { useTodayReviewWritten } from './hooks'
 
 export default function CalendarScreen() {
-  const now = new Date()
-  const [calendarDate, setCalendarDate] = useState({ year: now.getFullYear(), month: now.getMonth() })
+  const { year, month, date: todayDate } = getToday()
+  const [date, setDate] = useState({ year, month })
+  const isTodayReviewWritten = useTodayReviewWritten({ year, month, date: todayDate })
 
   return (
     <SafeAreaView>
       <DateNavigation
-        calendarDate={calendarDate}
-        setCalendarDate={setCalendarDate}
+        calendarDate={date}
+        setCalendarDate={setDate}
       />
-      <Calendar calendarDate={calendarDate} />
-      <ReviewButton isTodayReviewWritten={false} />
+      <Calendar date={date} />
+      <ReviewButton isTodayReviewWritten={isTodayReviewWritten} />
     </SafeAreaView>
   )
 }
