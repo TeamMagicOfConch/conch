@@ -1,15 +1,22 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { RouteProp } from '@react-navigation/native'
 
-type RootStackParamList = {
+/** yyyy-mm-dd */
+export type ReviewDateParam = `${string}-${string}-${string}`
+
+export type RootStackParamList = {
   Calendar: {
     yearAndMonth: string
   }
   Review: {
-    date: string
+    date: ReviewDateParam
   }
   WriteReview: {
-    date: string
+    date: ReviewDateParam
   }
 }
 
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>
+export type RootStackRouteProp = RouteProp<RootStackParamList, keyof RootStackParamList>
+export type ReviewStackRouteProp = RouteProp<RootStackParamList, 'Review'>
+export type WriteReviewStackRouteProp = RouteProp<RootStackParamList, 'WriteReview'>

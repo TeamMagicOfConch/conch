@@ -1,6 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native'
 import { Colors } from '@assets/colors'
+import { useNavigation } from '@react-navigation/native'
+import type { ReviewDateParam, RootStackNavigationProp } from '@/types/navigation'
 import { useCalendar } from '../hooks'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
@@ -13,6 +15,7 @@ export default function Calendar({ date }: Props) {
   const { year, month } = date
   const { calendar } = useCalendar({ year, month })
   const { width } = useWindowDimensions()
+  const { navigate } = useNavigation<RootStackNavigationProp>()
 
   return (
     <View>
@@ -32,18 +35,24 @@ export default function Calendar({ date }: Props) {
           key={`${year}-${month}-${weekIndex}`}
           style={{ flexDirection: 'row' }}
         >
-          {week.map(({ date: cellDate, isToday, isFReview, isTReview }, dayIndex) => (
-            <View
-              // eslint-disable-next-line
-              key={`${year}-${month}-${weekIndex}-${dayIndex}`}
-              style={[style.alignCenterCell, { width: width / 7 }]}
-            >
-              {isToday && <View style={style.todayReverseTriangle} />}
-              {isFReview && <View style={style.fReviewCircle} />}
-              {isTReview && <View style={style.tReviewCircle} />}
-              <Text style={style.calendarBodyText}>{cellDate}</Text>
-            </View>
-          ))}
+          {week.map(({ date: cellDate, isToday, isFReview, isTReview }, dayIndex) => {
+            const isMovable = !!cellDate && (isFReview || isTReview)
+            const reviewDate: ReviewDateParam = `${year}-${month}-${cellDate}`
+
+            return (
+              <TouchableOpacity
+                // eslint-disable-next-line
+                key={`${year}-${month}-${weekIndex}-${dayIndex}`}
+                style={[style.alignCenterCell, { width: width / 7 }]}
+                onPress={() => isMovable && navigate('Review', { date: reviewDate })}
+              >
+                {isToday && <View style={style.todayReverseTriangle} />}
+                {isFReview && <View style={style.fReviewCircle} />}
+                {isTReview && <View style={style.tReviewCircle} />}
+                <Text style={style.calendarBodyText}>{cellDate}</Text>
+              </TouchableOpacity>
+            )
+          })}
         </View>
       ))}
     </View>
