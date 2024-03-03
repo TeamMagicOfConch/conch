@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useLogin } from '@/hooks'
 import { getApiUrlWithPathAndParams, getToday } from '@/utils'
-import type { RawReview, ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
+import type { RawReview } from '@/types/review'
+import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
 
 type CalendarCell = {
   date: string
@@ -58,7 +59,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
     ],
     '2024-3': [
       { date: 1, responseType: 'thinking' },
-      { date: 3, responseType: 'feeling' },
+      { date: 2, responseType: 'feeling' },
       // ... more reviews
     ],
   })
