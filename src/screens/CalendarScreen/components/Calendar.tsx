@@ -61,7 +61,7 @@ export default function Calendar({ date }: Props) {
 
 const reviewCircleStyle = StyleSheet.create({
   common: {
-    width: '100%',
+    width: '96.66%',
     aspectRatio: 1,
     position: 'absolute',
     top: 0,
@@ -107,8 +107,10 @@ const style = StyleSheet.create({
   },
   calendarHeaderText: {
     color: Colors.lightGrey,
+    fontSize: 10,
   },
   calendarBodyText: {
     color: Colors.writtenGrey,
+    fontSize: 14,
   },
 })

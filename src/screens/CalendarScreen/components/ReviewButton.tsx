@@ -5,7 +5,7 @@ import { Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { Colors } from '@assets/colors'
 import { getToday } from '@/utils'
 
-const BUTTON_NOT_WRITTEN_TEXT = '오늘 있었던 일 소라에게 들려주기'
+const BUTTON_NOT_WRITTEN_TEXT = '오늘 있던 일 소라에게 들려주기'
 const BUTTON_WRITTEN_TEXT = '오늘 소라가 해준 말 다시 보기'
 
 export default function ReviewButton({ isTodayReviewWritten }: { isTodayReviewWritten: boolean }) {
@@ -27,13 +27,20 @@ export default function ReviewButton({ isTodayReviewWritten }: { isTodayReviewWr
 
 const style = StyleSheet.create({
   button: {
-    width: '70%',
-    height: '10%',
+    width: '66.66%',
+    height: '5.69%',
+
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
+    bottom: '23.3%',
+
     borderRadius: 50,
     backgroundColor: Colors.writtenGrey,
+
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   text: {
     fontWeight: 'bold',
