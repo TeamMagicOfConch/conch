@@ -1,12 +1,13 @@
 import React from 'react'
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useDateParams } from '@/hooks'
 import { NavigationArrowLeft } from '@assets/icons'
-import { ReviewDateParam } from '@/types/navigation'
 import { Colors } from '@/assets/colors'
 
-export default function ReviewScreensNavBar({ reviewDate }: { reviewDate: ReviewDateParam }) {
+export default function ReviewScreensNavBar() {
   const { canGoBack, goBack } = useNavigation()
+  const { date: reviewDate } = useDateParams()
   const [year, _month, date] = reviewDate.split('-').map(Number)
   const month = _month + 1
   const title = `${year}년 ${month}월 ${date}일`
@@ -27,15 +28,17 @@ export default function ReviewScreensNavBar({ reviewDate }: { reviewDate: Review
 const style = StyleSheet.create({
   nav: {
     width: '100%',
+    height: '9.48%',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 15,
-    marginBottom: 20,
   },
   goBack: {
     position: 'absolute',
     left: 20,
   },
-  title: { color: Colors.lightGrey },
+  title: {
+    color: Colors.lightGrey,
+    fontSize: 12,
+  },
 })

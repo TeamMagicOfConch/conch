@@ -1,22 +1,20 @@
 import React from 'react'
-import { useRoute } from '@react-navigation/native'
 import SafeAreaViewWithBg from '@components/SafeAreaViewWithBg'
-import { Text } from 'react-native'
-import { useLogin } from '@/hooks'
+import { Text, ScrollView } from 'react-native'
 import ReviewScreensNavBar from '@/components/ReviewScreensNavBar'
-import type { ReviewStackRouteProp } from '@/types/navigation'
+import { Colors } from '@/assets/colors'
+import { useReviewData } from './hooks'
 
 export default function ViewReviewScreen() {
-  const { userId } = useLogin()
-  const { params } = useRoute<ReviewStackRouteProp>()
-  const { date } = params
+  const { review } = useReviewData()
+  const { body, responseType, responseBody } = review || {}
 
   return (
     <SafeAreaViewWithBg>
-      <ReviewScreensNavBar reviewDate={date} />
-      <Text>
-        {userId}님의 {date} 회고
-      </Text>
+      <ReviewScreensNavBar />
+      <ScrollView style={{ width: '82%', alignSelf: 'center' }}>
+        <Text style={{ fontSize: 14, color: Colors.writtenGrey, lineHeight: 30 }}>{body}</Text>
+      </ScrollView>
     </SafeAreaViewWithBg>
   )
 }
