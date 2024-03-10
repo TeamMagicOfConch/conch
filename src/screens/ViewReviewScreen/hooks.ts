@@ -3,7 +3,7 @@ import { useLogin, useDateParams } from '@/hooks'
 import { getApiUrlWithPathAndParams } from '@/utils'
 import type { RawReview } from '@/types/review'
 
-interface ReviewData {
+export interface ReviewData {
   body: RawReview['diary_text']
   responseType: RawReview['response_type']
   responseBody: RawReview['response_text']
@@ -12,7 +12,7 @@ interface ReviewData {
 export function useReviewData() {
   const [review, setReview] = useState<ReviewData>({
     body: mockReviewBody,
-    responseType: 'thinking',
+    responseType: 'feeling',
     responseBody: mockResponseBody,
   })
   const { userId } = useLogin()
