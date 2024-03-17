@@ -1,13 +1,17 @@
 import React, { useRef, useMemo } from 'react'
-import { Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Colors } from '@/assets/colors'
+import { TConch, FConch } from '@assets/icons'
 import type { ReviewData } from './hooks'
 
 export default function SoraReponseMenu({ responseType, responseBody }: Pick<ReviewData, 'responseType' | 'responseBody'>) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const snapPoints = useMemo(() => ['17%', '93%'], [])
-  const backgroundColor = responseType === 'feeling' ? Colors.darkSora : Colors.darkGodong
+  const isFeeling = responseType === 'feeling'
+  const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
+  const conchName = isFeeling ? 'F소라' : 'T소라'
+  const ConchSvg = isFeeling ? FConch : TConch
 
   return (
     <BottomSheet
@@ -17,8 +21,16 @@ export default function SoraReponseMenu({ responseType, responseBody }: Pick<Rev
       handleStyle={{ backgroundColor, ...style.handle }}
       handleIndicatorStyle={{ backgroundColor: Colors.white }}
     >
+      <View style={{ backgroundColor, ...style.header }}>
+        {/** TODO: letter-shape background */}
+        <ConchSvg
+          width={40}
+          height={40}
+        />
+        <Text style={{ ...style.text, ...style.headerText }}>{conchName}의 답장</Text>
+      </View>
       <BottomSheetScrollView style={{ backgroundColor, ...style.bottomSheet }}>
-        <Text style={style.body}>{responseBody}</Text>
+        <Text style={{ ...style.text, ...style.body }}>{responseBody}</Text>
       </BottomSheetScrollView>
     </BottomSheet>
   )
@@ -33,9 +45,20 @@ const style = StyleSheet.create({
     flex: 1,
     padding: 45,
   },
-  body: {
-    fontSize: 14,
+  header: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
     color: Colors.white,
     lineHeight: 30,
+  },
+  headerText: {
+    fontSize: 12,
+  },
+  body: {
+    fontSize: 14,
   },
 })

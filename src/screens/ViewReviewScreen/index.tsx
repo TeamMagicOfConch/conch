@@ -30,6 +30,7 @@ export default function ViewReviewScreen() {
 const style = StyleSheet.create({
   scrollView: {
     width: '82%',
+    marginBottom: 160,
     alignSelf: 'center',
   },
   body: {

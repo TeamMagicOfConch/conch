@@ -34,8 +34,8 @@ export function useReviewData() {
           })
         }
       })
-      .catch((error) => {
-        console.error('useReviewData', error)
+      .catch(() => {
+        // do nothing
       })
   }, [url, userId, date])
 
