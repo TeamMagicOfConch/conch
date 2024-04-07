@@ -60,7 +60,7 @@ function DateNatigateButton({ direction, onPress }: { direction: 'prev' | 'next'
         borderRadius: 50,
       }}
     >
-      {direction === 'prev' ? <NavigationArrowLeft /> : <NavigationArrowRight />}
+      {direction === 'prev' ? <NavigationArrowLeft color={Colors.lightGrey} /> : <NavigationArrowRight color={Colors.lightGrey} />}
     </TouchableOpacity>
   )
 }

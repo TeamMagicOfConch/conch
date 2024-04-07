@@ -2,7 +2,7 @@ import React, { useRef, useMemo } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Colors } from '@/assets/colors'
-import { TConch, FConch } from '@assets/icons'
+import { TSora, FSora } from '@assets/icons'
 import type { ReviewData } from './hooks'
 
 export default function SoraReponseMenu({ responseType, responseBody }: Pick<ReviewData, 'responseType' | 'responseBody'>) {
@@ -11,7 +11,7 @@ export default function SoraReponseMenu({ responseType, responseBody }: Pick<Rev
   const isFeeling = responseType === 'feeling'
   const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
   const conchName = isFeeling ? 'F소라' : 'T소라'
-  const ConchSvg = isFeeling ? FConch : TConch
+  const ConchSvg = isFeeling ? FSora : TSora
 
   return (
     <BottomSheet

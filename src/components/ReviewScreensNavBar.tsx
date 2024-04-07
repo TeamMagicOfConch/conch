@@ -18,7 +18,7 @@ export default function ReviewScreensNavBar() {
         style={style.goBack}
         onPress={() => canGoBack() && goBack()}
       >
-        <NavigationArrowLeft />
+        <NavigationArrowLeft color={Colors.lightGrey} />
       </TouchableOpacity>
       <Text style={style.title}>{title}</Text>
     </View>
