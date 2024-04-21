@@ -9,7 +9,7 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
 
   pan.addListener((value) => {
     if (isReviewWritten) {
-      Vibration.vibrate(10)
+      if (Math.abs(value.x) % 10 === 0) Vibration.vibrate(10)
       setX(value.x)
     }
   })
