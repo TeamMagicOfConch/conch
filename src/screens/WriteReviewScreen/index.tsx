@@ -28,7 +28,7 @@ export default function WriteReviewScreen() {
           lineHeight: 30,
         }}
       />
-      <ReviewSubmitFooter />
+      <ReviewSubmitFooter review={review} />
     </SafeAreaViewWithBg>
   )
 }

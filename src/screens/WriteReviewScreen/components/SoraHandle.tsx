@@ -1,20 +1,28 @@
-import React, { useState, useRef } from 'react'
+import React, { useRef } from 'react'
 import { Animated, View, PanResponder, Vibration } from 'react-native'
 import { BgSora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 
-export default function SoraHandle() {
+export default function SoraHandle({ review, x, setX }: { review: string; x: number; setX: (x: number) => void }) {
   const pan = useRef(new Animated.ValueXY()).current
-  const [x, setX] = useState(0)
+  const isReviewWritten = review?.length > 0
+
   pan.addListener((value) => {
-    setX(value.x)
+    if (isReviewWritten) {
+      Vibration.vibrate(10)
+      setX(value.x)
+    }
   })
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([null, { dx: pan.x }], { useNativeDriver: false }),
-      onPanResponderRelease: () => {
+      onPanResponderRelease: (_, state) => {
+        const submitReview = isReviewWritten && Math.abs(state.dx) > 150
+        const fActivated = state.dx > 150
+        const tActivated = state.dx < -150
+
         Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false, speed: 6, bounciness: 0 }).start()
       },
     }),
