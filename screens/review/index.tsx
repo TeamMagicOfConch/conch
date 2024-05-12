@@ -1,0 +1,38 @@
+import React from 'react'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { Text, ScrollView, StyleSheet } from 'react-native'
+import ReviewScreensNavBar from '@/components/ReviewScreensNavBar'
+import { Colors } from '@/assets/colors'
+import SoraReponseMenu from './SoraReponseMenu'
+import { useReviewData } from './hooks'
+
+export default function ViewReviewScreen() {
+  const { review } = useReviewData()
+  const { body, responseType, responseBody } = review || {}
+
+  return (
+    <GestureHandlerRootView>
+      <ReviewScreensNavBar />
+      <ScrollView style={style.scrollView}>
+        <Text style={style.body}>{body}</Text>
+      </ScrollView>
+      <SoraReponseMenu
+        responseType={responseType}
+        responseBody={responseBody}
+      />
+    </GestureHandlerRootView>
+  )
+}
+
+const style = StyleSheet.create({
+  scrollView: {
+    width: '82%',
+    marginBottom: 160,
+    alignSelf: 'center',
+  },
+  body: {
+    fontSize: 14,
+    color: Colors.writtenGrey,
+    lineHeight: 30,
+  },
+})
