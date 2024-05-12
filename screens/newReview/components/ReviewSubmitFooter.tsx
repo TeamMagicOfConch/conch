@@ -7,20 +7,34 @@ import SoraHandle from './SoraHandle'
 
 export default function ReviewSubmitFooter({ review }: { review: string }) {
   const [handlePosition, setHandlePosition] = useState(0)
-  const leftOpacity = Math.max((-1 * handlePosition) / 150, 0)
-  const rightOpacity = Math.max((1 * handlePosition) / 150, 0)
+  const leftOpacity = Math.max((-1 * handlePosition) / 300, 0)
+  const rightOpacity = Math.max((1 * handlePosition) / 300, 0)
 
   return (
     <View style={style.root}>
       <View style={style.endPoint}>
-        <View style={{ ...style.text, backgroundColor: `rgba(55, 79, 255, ${leftOpacity})` }}>
-          <Text>T소라</Text>
+        <BlurView
+          intensity={10}
+          style={{ ...style.blurView, right: 0 }}
+        />
+        <View
+          style={{
+            ...style.circle,
+            left: -3,
+            backgroundColor: `rgba(55, 79, 255, ${leftOpacity})`,
+          }}
+        />
+        <View style={{ ...style.text }}>
+          <Text style={{ color: Colors.sora }}>T소라</Text>
         </View>
         <NavigationArrowLeft
           color={Colors.sora}
-          style={{ marginRight: -10 }}
+          style={{ marginRight: -10, zIndex: 100 }}
         />
-        <NavigationArrowLeft color={Colors.sora} />
+        <NavigationArrowLeft
+          color={Colors.sora}
+          style={{ zIndex: 100 }}
+        />
       </View>
       <SoraHandle
         review={review}
@@ -28,14 +42,28 @@ export default function ReviewSubmitFooter({ review }: { review: string }) {
         setX={setHandlePosition}
       />
       <View style={style.endPoint}>
-        <NavigationArrowRight color={Colors.godong} />
+        <BlurView
+          intensity={10}
+          style={{ ...style.blurView, left: 0 }}
+        />
         <NavigationArrowRight
           color={Colors.godong}
-          style={{ marginLeft: -10 }}
+          style={{ zIndex: 100 }}
         />
-        <View style={{ ...style.text, backgroundColor: `rgba(174, 112, 77, ${rightOpacity})` }}>
-          <Text>F소라</Text>
+        <NavigationArrowRight
+          color={Colors.godong}
+          style={{ marginLeft: -10, zIndex: 100 }}
+        />
+        <View style={{ ...style.text }}>
+          <Text style={{ color: Colors.godong }}>F소라</Text>
         </View>
+        <View
+          style={{
+            ...style.circle,
+            right: -3,
+            backgroundColor: `rgba(174, 112, 77, ${rightOpacity})`,
+          }}
+        />
       </View>
     </View>
   )
@@ -58,10 +86,24 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
+    zIndex: 100,
     padding: 5,
     aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  blurView: {
+    width: '200%',
+    height: '200%',
+    position: 'absolute',
+    top: '-50%',
+    zIndex: 10,
+  },
+  circle: {
+    width: 50,
+    aspectRatio: 1,
     borderRadius: 100,
+    position: 'absolute',
+    zIndex: 5,
   },
 })

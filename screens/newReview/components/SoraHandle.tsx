@@ -36,6 +36,7 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
           flexDirection: x > 0 ? 'row-reverse' : 'row',
           gap: 0,
           alignItems: 'center',
+          zIndex: 100,
         }}
         {...panResponder.panHandlers}
       >
@@ -43,7 +44,7 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
         <View style={{ width: Math.abs(x), height: 3, backgroundColor: Colors.lightGrey }} />
       </Animated.View>
       <View
-        style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none' }}
+        style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', zIndex: 100 }}
         pointerEvents="none"
       >
         <BgSora
