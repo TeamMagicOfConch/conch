@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { TextInput } from 'react-native'
+import { useState } from 'react'
+import { View } from 'react-native'
+import { Keyboard, TextInput, TouchableWithoutFeedback } from 'react-native'
 import ReviewScreensNavBar from '@/components/ReviewScreensNavBar'
 import { Colors } from '@/assets/colors'
 import { ReviewSubmitFooter } from './components'
@@ -10,9 +11,11 @@ export default function WriteReviewScreen() {
   const [review, setReview] = useState('')
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: Colors.bgGrey }}>
       <ReviewScreensNavBar />
       <TextInput
+        blurOnSubmit
+        onSubmitEditing={Keyboard.dismiss}
         multiline
         placeholder={PLACEHOLDER}
         placeholderTextColor={Colors.lightGrey}
@@ -28,6 +31,6 @@ export default function WriteReviewScreen() {
         }}
       />
       <ReviewSubmitFooter review={review} />
-    </>
+    </View>
   )
 }
