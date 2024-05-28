@@ -5,7 +5,7 @@ import { useDateParams } from '@/components/hooks'
 import { NavigationArrowLeft } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 
-export default function ReviewScreensNavBar() {
+export default function ReviewDateNavBar() {
   const router = useRouter()
   const { date: reviewDate } = useDateParams()
   const [year, _month, date] = reviewDate.split('-').map(Number)

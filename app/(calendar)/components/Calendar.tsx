@@ -16,7 +16,7 @@ export default function Calendar({ date }: Props) {
   const router = useRouter()
 
   return (
-    <View>
+    <>
       <View style={{ flexDirection: 'row' }}>
         {DAYS.map((day) => (
           <View
@@ -53,7 +53,7 @@ export default function Calendar({ date }: Props) {
           })}
         </View>
       ))}
-    </View>
+    </>
   )
 }
 

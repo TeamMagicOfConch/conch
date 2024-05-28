@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Animated, View, PanResponder, Vibration } from 'react-native'
 import { BgSora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 
 export default function SoraHandle({ review, x, setX }: { review: string; x: number; setX: (x: number) => void }) {
   const pan = useRef(new Animated.ValueXY()).current
@@ -9,7 +10,7 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
 
   pan.addListener((value) => {
     if (isReviewWritten) {
-      if (Math.abs(value.x) % 10 === 0) Vibration.vibrate(10)
+      if (Math.abs(x) % 10 === 0) impactAsync(ImpactFeedbackStyle.Soft)
       setX(value.x)
     }
   })

@@ -1,6 +1,6 @@
 import { Colors } from '@/assets/colors'
 import { Stack } from 'expo-router/stack'
-import { SafeAreaView } from 'react-native'
+import { SafeAreaView, View } from 'react-native'
 
 export default function Layout() {
   return (

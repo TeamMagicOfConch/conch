@@ -11,8 +11,7 @@ export default function WriteReviewScreen() {
   const [review, setReview] = useState('')
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.bgGrey }}>
-      <ReviewScreensNavBar />
+    <>
       <TextInput
         blurOnSubmit
         onSubmitEditing={Keyboard.dismiss}
@@ -31,6 +30,6 @@ export default function WriteReviewScreen() {
         }}
       />
       <ReviewSubmitFooter review={review} />
-    </View>
+    </>
   )
 }
