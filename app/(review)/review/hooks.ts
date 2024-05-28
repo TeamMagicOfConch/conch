@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useLogin, useDateParams } from '@/components/hooks'
+import { useLocalSearchParams } from 'expo-router'
+import { useLogin } from '@/components/hooks'
 import { getApiUrlWithPathAndParams } from '@/utils'
 import type { RawReview } from '@/types/review'
 
@@ -16,9 +17,9 @@ export function useReviewData() {
     responseBody: mockResponseBody,
   })
   const { userId } = useLogin()
-  const { date } = useDateParams()
+  const { date } = useLocalSearchParams()
 
-  const url = getApiUrlWithPathAndParams({ path: '/diary', params: { date, user_id: userId } })
+  const url = getApiUrlWithPathAndParams({ path: '/diary', params: { date: String(date), user_id: userId } })
 
   useEffect(() => {
     // fetch review data with url and store it to review

@@ -1,14 +1,13 @@
 import React from 'react'
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native'
-import { useRouter } from 'expo-router'
-import { useDateParams } from '@/components/hooks'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { NavigationArrowLeft } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 
 export default function ReviewDateNavBar() {
   const router = useRouter()
-  const { date: reviewDate } = useDateParams()
-  const [year, _month, date] = reviewDate.split('-').map(Number)
+  const { date: reviewDate } = useLocalSearchParams()
+  const [year, _month, date] = String(reviewDate).split('-').map(Number)
   const month = _month + 1
   const title = `${year}년 ${month}월 ${date}일`
 

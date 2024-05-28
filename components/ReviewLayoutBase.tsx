@@ -1,9 +1,9 @@
 import { SafeAreaView, View } from 'react-native'
 import { Slot } from 'expo-router'
-import { Colors } from '@/assets/colors'
 import { ReviewDateNavbar, ViewWithDefaultBackgroundColor } from '@/components'
+import { Colors } from '@/assets/colors'
 
-export default function ReviewLayout() {
+export default function ReviewLayoutBase() {
   return (
     <ViewWithDefaultBackgroundColor>
       <ReviewDateNavbar />

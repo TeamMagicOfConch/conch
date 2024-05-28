@@ -1,5 +1,6 @@
 import React, { useRef, useMemo } from 'react'
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native'
+import { Easing } from 'react-native-reanimated'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Colors } from '@/assets/colors'
 import { TSora, FSora } from '@/assets/icons'
@@ -7,7 +8,7 @@ import type { ReviewData } from './hooks'
 
 export default function SoraReponseMenu({ responseType, responseBody }: Pick<ReviewData, 'responseType' | 'responseBody'>) {
   const bottomSheetRef = useRef<BottomSheet>(null)
-  const snapPoints = useMemo(() => ['12%', '93%'], [])
+  const snapPoints = useMemo(() => ['12%', '100%'], [])
   const isFeeling = responseType === 'feeling'
   const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
   const conchName = isFeeling ? 'F소라' : 'T소라'
@@ -44,6 +45,7 @@ const style = StyleSheet.create({
   bottomSheet: {
     flex: 1,
     padding: '13%',
+    paddingTop: '5%',
   },
   header: {
     flexDirection: 'row',
