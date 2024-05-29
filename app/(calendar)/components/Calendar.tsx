@@ -21,7 +21,7 @@ export default function Calendar({ date }: Props) {
         {DAYS.map((day) => (
           <View
             key={day}
-            style={[style.alignCenterCell, { width: width / 7 }]}
+            style={{ ...style.alignCenterCell, width: width / 7 }}
           >
             <Text style={style.calendarHeaderText}>{day}</Text>
           </View>
