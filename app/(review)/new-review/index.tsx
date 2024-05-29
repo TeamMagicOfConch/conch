@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import { View } from 'react-native'
-import { Keyboard, TextInput, TouchableWithoutFeedback } from 'react-native'
-import ReviewScreensNavBar from '@/components/ReviewScreensNavBar'
+import { TouchableOpacity, Keyboard, TextInput, StyleSheet } from 'react-native'
 import { Colors } from '@/assets/colors'
 import { ReviewSubmitFooter } from './components'
 
@@ -12,24 +10,32 @@ export default function WriteReviewScreen() {
 
   return (
     <>
-      <TextInput
-        blurOnSubmit
-        onSubmitEditing={Keyboard.dismiss}
-        multiline
-        placeholder={PLACEHOLDER}
-        placeholderTextColor={Colors.lightGrey}
-        value={review}
-        onChangeText={setReview}
-        style={{
-          textAlignVertical: 'top',
-          paddingLeft: 20,
-          paddingRight: 20,
-          paddingBottom: 100,
-          fontSize: 14,
-          lineHeight: 30,
-        }}
-      />
+      <TouchableOpacity
+        activeOpacity={1}
+        style={{ flex: 1 }}
+        onPress={Keyboard.dismiss}
+      >
+        <TextInput
+          multiline
+          placeholder={PLACEHOLDER}
+          placeholderTextColor={Colors.lightGrey}
+          value={review}
+          onChangeText={setReview}
+          style={style.textInput}
+        />
+      </TouchableOpacity>
       <ReviewSubmitFooter review={review} />
     </>
   )
 }
+
+const style = StyleSheet.create({
+  textInput: {
+    textAlignVertical: 'top',
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 100,
+    fontSize: 14,
+    lineHeight: 30,
+  },
+})
