@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { View } from 'react-native'
-import { ViewWithDefaultBackgroundColor } from '@/components'
 import { getToday } from '@/utils'
 import { Colors } from '@/assets/colors'
 import { Calendar, DateNavigation, ReviewButton } from './components'
@@ -12,13 +11,13 @@ export default function CalendarScreen() {
   const isTodayReviewWritten = useTodayReviewWritten({ year, month, date: todayDate })
 
   return (
-    <ViewWithDefaultBackgroundColor>
+    <>
       <DateNavigation
         calendarDate={date}
         setCalendarDate={setDate}
       />
       <Calendar date={date} />
       <ReviewButton isTodayReviewWritten={isTodayReviewWritten} />
-    </ViewWithDefaultBackgroundColor>
+    </>
   )
 }

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { Animated, View, PanResponder, type PanResponderInstance } from 'react-native'
+import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance } from 'react-native'
 import { BgSora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
@@ -27,7 +27,6 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
               if (isReviewWritten) {
                 const now = Date.now()
                 if (now - lastHapticTime.current > 100) {
-                  // 100ms 마다 햅틱 피드백을 줍니다.
                   impactAsync(ImpactFeedbackStyle.Light)
                   lastHapticTime.current = now
                 }
@@ -52,17 +51,15 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
         style={{
           transform: [{ translateX: x / 2 }],
           flexDirection: x > 0 ? 'row-reverse' : 'row',
-          gap: 0,
-          alignItems: 'center',
-          zIndex: 100,
+          ...style.animated,
         }}
         {...panResponder?.panHandlers}
       >
-        <View style={{ width: 20, aspectRatio: 1, borderRadius: 100, borderWidth: 3, borderColor: Colors.lightGrey }} />
-        <View style={{ width: Math.abs(x), height: 3, backgroundColor: Colors.lightGrey }} />
+        <View style={style.handle} />
+        <View style={{ width: Math.abs(x), ...style.handleBar }} />
       </Animated.View>
       <View
-        style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', zIndex: 100 }}
+        style={style.soraView}
         pointerEvents="none"
       >
         <BgSora
@@ -73,3 +70,29 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
     </>
   )
 }
+
+const style = StyleSheet.create({
+  animated: {
+    gap: 0,
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  handle: {
+    width: 20,
+    aspectRatio: 1,
+    borderRadius: 100,
+    borderWidth: 3,
+    borderColor: Colors.lightGrey,
+  },
+  handleBar: {
+    height: 3,
+    backgroundColor: Colors.lightGrey,
+  },
+  soraView: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    pointerEvents: 'none',
+    zIndex: 100,
+  },
+})
