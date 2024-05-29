@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { View } from 'react-native'
 import { getToday } from '@/utils'
-import { Colors } from '@/assets/colors'
 import { Calendar, DateNavigation, ReviewButton } from './components'
 import { useTodayReviewWritten } from './hooks'
 
