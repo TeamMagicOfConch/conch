@@ -43,8 +43,8 @@ export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) =
           }),
           onPanResponderRelease: (_, state) => {
             const submitReview = isReviewWritten && Math.abs(state.dx) > 150
-            const tActivated = state.dx > 150
-            const fActivated = state.dx < -150
+            const fActivated = state.dx > 150
+            const tActivated = state.dx < -150
             if (tActivated || fActivated) {
               setReview((prev) => ({ ...prev, responseType: tActivated ? 'thinking' : 'feeling' }))
             }

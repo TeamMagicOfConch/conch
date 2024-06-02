@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react'
+import { useRef, useMemo, useEffect } from 'react'
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Colors } from '@/assets/colors'
@@ -12,6 +12,12 @@ export default function SoraReponseMenu({ responseType, responseBody }: Pick<Rev
   const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
   const conchName = isFeeling ? 'F소라' : 'T소라'
   const ConchSvg = isFeeling ? FSora : TSora
+
+  useEffect(() => {
+    if (responseBody.length > 0) {
+      bottomSheetRef.current?.expand()
+    }
+  }, [responseBody, bottomSheetRef])
 
   return (
     <BottomSheet

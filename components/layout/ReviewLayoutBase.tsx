@@ -1,9 +1,9 @@
 import { SafeAreaView, View } from 'react-native'
 import { Slot } from 'expo-router'
-import { SafeAreaViewWithDefaultBackgroundColor, ViewWithDefaultBackgroundColor } from './view'
-import { ReviewScreensNavbar } from './navbar'
 import { Colors } from '@/assets/colors'
 import { useReviewContext } from '@/app/(review)/new-review/context'
+import { SafeAreaViewWithDefaultBackgroundColor, ViewWithDefaultBackgroundColor } from './view'
+import { ReviewScreensNavbar } from './navbar'
 
 export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = Colors.bgGrey }) {
   const newReviewContext = useReviewContext()
@@ -11,9 +11,9 @@ export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = C
   const backgroundColor = newReviewContext
     ? responseType
       ? responseType === 'thinking'
-        ? Colors.darkGodong
-        : Colors.darkSora
-      : Colors.bgGrey
+        ? Colors.darkSora
+        : Colors.darkGodong
+      : _backgroundColor
     : _backgroundColor
 
   return (
