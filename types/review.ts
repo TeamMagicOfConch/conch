@@ -6,3 +6,9 @@ export interface RawReview {
   response_text: string
   user_id: number
 }
+
+export interface Review {
+  body: RawReview['diary_text']
+  responseType: RawReview['response_type'] | null
+  responseBody: RawReview['response_text']
+}

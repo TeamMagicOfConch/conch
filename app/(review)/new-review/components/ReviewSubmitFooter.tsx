@@ -5,7 +5,7 @@ import { NavigationArrowLeft, NavigationArrowRight } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import SoraHandle from './SoraHandle'
 
-export default function ReviewSubmitFooter({ review }: { review: string }) {
+export default function ReviewSubmitFooter() {
   const [handlePosition, setHandlePosition] = useState(0)
   const leftOpacity = Math.max((-1 * handlePosition) / 300, 0)
   const rightOpacity = Math.max((1 * handlePosition) / 300, 0)
@@ -37,7 +37,6 @@ export default function ReviewSubmitFooter({ review }: { review: string }) {
         />
       </View>
       <SoraHandle
-        review={review}
         x={handlePosition}
         setX={setHandlePosition}
       />

@@ -1,14 +1,22 @@
 import { useRef, useState, useEffect } from 'react'
 import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance } from 'react-native'
+import { useRouter, useLocalSearchParams } from 'expo-router'
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { BgSora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
-import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
+import { useReviewContext } from '../context'
 
-export default function SoraHandle({ review, x, setX }: { review: string; x: number; setX: (x: number) => void }) {
+export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) => void }) {
+  const router = useRouter()
+  const { date: reviewDate } = useLocalSearchParams()
   const [panResponder, setPanResponder] = useState<PanResponderInstance>()
   const lastHapticTime = useRef(Date.now())
   const pan = useRef(new Animated.ValueXY()).current
-  const isReviewWritten = review?.length > 0
+  const reviewContext = useReviewContext()
+
+  if (!reviewContext) return null
+  const { review, setReview } = reviewContext
+  const isReviewWritten = review.body.length > 0
 
   pan.addListener((value) => {
     if (isReviewWritten) {
@@ -35,8 +43,11 @@ export default function SoraHandle({ review, x, setX }: { review: string; x: num
           }),
           onPanResponderRelease: (_, state) => {
             const submitReview = isReviewWritten && Math.abs(state.dx) > 150
-            const fActivated = state.dx > 150
-            const tActivated = state.dx < -150
+            const tActivated = state.dx > 150
+            const fActivated = state.dx < -150
+            if (tActivated || fActivated) {
+              setReview((prev) => ({ ...prev, responseType: tActivated ? 'thinking' : 'feeling' }))
+            }
 
             Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false, speed: 6, bounciness: 0 }).start()
           },

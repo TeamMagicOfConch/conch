@@ -2,16 +2,10 @@ import { useState, useEffect } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { useLogin } from '@/components/hooks'
 import { getApiUrlWithPathAndParams } from '@/utils'
-import type { RawReview } from '@/types/review'
-
-export interface ReviewData {
-  body: RawReview['diary_text']
-  responseType: RawReview['response_type']
-  responseBody: RawReview['response_text']
-}
+import type { RawReview, Review } from '@/types/review'
 
 export function useReviewData() {
-  const [review, setReview] = useState<ReviewData>({
+  const [review, setReview] = useState<Review>({
     body: mockReviewBody,
     responseType: 'feeling',
     responseBody: mockResponseBody,

@@ -1,12 +1,11 @@
 import React, { useRef, useMemo } from 'react'
 import { SafeAreaView, View, Text, StyleSheet } from 'react-native'
-import { Easing } from 'react-native-reanimated'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { Colors } from '@/assets/colors'
 import { TSora, FSora } from '@/assets/icons'
-import type { ReviewData } from './hooks'
+import type { Review } from '@/types/review'
 
-export default function SoraReponseMenu({ responseType, responseBody }: Pick<ReviewData, 'responseType' | 'responseBody'>) {
+export default function SoraReponseMenu({ responseType, responseBody }: Pick<Review, 'responseType' | 'responseBody'>) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const snapPoints = useMemo(() => ['12%', '100%'], [])
   const isFeeling = responseType === 'feeling'
