@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Pressable, StyleSheet } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { NavigationArrowLeft } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
@@ -21,8 +21,8 @@ export default function ReviewDateNavBar() {
 function GoBack() {
   const router = useRouter()
   return (
-    <TouchableOpacity onPress={() => router.back()}>
+    <Pressable onPress={() => router.back()}>
       <NavigationArrowLeft color={Colors.lightGrey} />
-    </TouchableOpacity>
+    </Pressable>
   )
 }

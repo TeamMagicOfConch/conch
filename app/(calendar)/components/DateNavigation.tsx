@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { formatYearMonthDate } from '@/utils/string'
 import { Colors } from '@/assets/colors'
 import { NavigationArrowLeft, NavigationArrowRight } from '@/assets/icons'
@@ -53,14 +53,14 @@ export default function DateNavigation({ calendarDate, setCalendarDate }: Props)
 
 function DateNatigateButton({ direction, onPress }: { direction: 'prev' | 'next'; onPress: () => void }) {
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       style={{
         borderRadius: 50,
       }}
     >
       {direction === 'prev' ? <NavigationArrowLeft color={Colors.lightGrey} /> : <NavigationArrowRight color={Colors.lightGrey} />}
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 

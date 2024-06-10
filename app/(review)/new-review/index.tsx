@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { TouchableOpacity, Keyboard, TextInput, StyleSheet } from 'react-native'
+import { Pressable, Keyboard, TextInput, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Colors } from '@/assets/colors'
 import { ReviewSubmitFooter } from './components'
@@ -25,8 +24,7 @@ export default function WriteReviewScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.bgGrey }}>
-      <TouchableOpacity
-        activeOpacity={1}
+      <Pressable
         style={{ flex: 1 }}
         onPress={Keyboard.dismiss}
       >
@@ -38,7 +36,7 @@ export default function WriteReviewScreen() {
           onChangeText={setReviewBody}
           style={style.textInput}
         />
-      </TouchableOpacity>
+      </Pressable>
       {reviewSubmitted ? (
         <SoraReponseMenu
           responseType={review.responseType}

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router'
-import { Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native'
+import { Text, StyleSheet, Pressable } from 'react-native'
 import { Colors } from '@/assets/colors'
 import { getToday } from '@/utils'
 

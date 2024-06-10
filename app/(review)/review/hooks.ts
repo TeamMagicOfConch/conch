@@ -18,20 +18,20 @@ export function useReviewData() {
   useEffect(() => {
     // fetch review data with url and store it to review
     if (!userId || !date) return
-    fetch(url)
-      .then((response) => response.json())
-      .then((rawReview) => {
-        if (rawReview !== undefined && rawReview?.detail !== 'Not found.') {
-          setReview({
-            body: rawReview.diary_text,
-            responseType: rawReview.response_type,
-            responseBody: rawReview.response_text,
-          })
-        }
-      })
-      .catch(() => {
-        // do nothing
-      })
+    // fetch(url)
+    //   .then((response) => response.json())
+    //   .then((rawReview) => {
+    //     if (rawReview !== undefined && rawReview?.detail !== 'Not found.') {
+    //       setReview({
+    //         body: rawReview.diary_text,
+    //         responseType: rawReview.response_type,
+    //         responseBody: rawReview.response_text,
+    //       })
+    //     }
+    //   })
+    //   .catch(() => {
+    //     // do nothing
+    //   })
   }, [url, userId, date])
 
   return { review }

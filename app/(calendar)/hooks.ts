@@ -71,22 +71,22 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
   useEffect(() => {
     if (reviews[yearAndMonth]) return
     if (!userId) return
-    fetch(url)
-      .then((response) => response.json())
-      .then((rawReviews) => {
-        if (rawReviews !== undefined && rawReviews?.detail !== 'Not found.') {
-          setReviews((prev) => ({
-            ...prev,
-            [yearAndMonth]: rawReviews.map((review: RawReview) => ({
-              date: new Date(review.date).getDate(),
-              responseType: review.response_type,
-            })),
-          }))
-        }
-      })
-      .catch((error) => {
-        console.error('useReviewDataAtMonth', error)
-      })
+    // fetch(url)
+    //   .then((response) => response.json())
+    //   .then((rawReviews) => {
+    //     if (rawReviews !== undefined && rawReviews?.detail !== 'Not found.') {
+    //       setReviews((prev) => ({
+    //         ...prev,
+    //         [yearAndMonth]: rawReviews.map((review: RawReview) => ({
+    //           date: new Date(review.date).getDate(),
+    //           responseType: review.response_type,
+    //         })),
+    //       }))
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error('useReviewDataAtMonth', error)
+    //   })
   }, [userId, reviews, url, yearAndMonth])
 
   return { reviews: reviews[yearAndMonth] || [] }
