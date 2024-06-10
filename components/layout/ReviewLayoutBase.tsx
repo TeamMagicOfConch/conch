@@ -1,4 +1,4 @@
-import { SafeAreaView, View } from 'react-native'
+import { Platform, StatusBar } from 'react-native'
 import { Slot } from 'expo-router'
 import { Colors } from '@/assets/colors'
 import { useReviewContext } from '@/app/(review)/new-review/context'
@@ -18,8 +18,11 @@ export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = C
 
   return (
     <>
-      <SafeAreaViewWithDefaultBackgroundColor style={{ flex: 0 }} />
-      <SafeAreaViewWithDefaultBackgroundColor style={{ flex: 1, backgroundColor }}>
+      <SafeAreaViewWithDefaultBackgroundColor
+        hidePadding
+        style={{ flex: 0 }}
+      />
+      <SafeAreaViewWithDefaultBackgroundColor style={{ flex: 1, backgroundColor, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
         <ViewWithDefaultBackgroundColor>
           <ReviewScreensNavbar />
           <Slot />
