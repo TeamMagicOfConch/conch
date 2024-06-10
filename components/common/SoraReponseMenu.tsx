@@ -1,13 +1,14 @@
 import { useRef, useMemo, useEffect } from 'react'
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { View, Text, StyleSheet } from 'react-native'
+import BottomSheet, { BottomSheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet'
 import { Colors } from '@/assets/colors'
 import { TSora, FSora } from '@/assets/icons'
 import type { Review } from '@/types/review'
 
 export default function SoraReponseMenu({ responseType, responseBody }: Pick<Review, 'responseType' | 'responseBody'>) {
   const bottomSheetRef = useRef<BottomSheet>(null)
-  const snapPoints = useMemo(() => ['12%', '100%'], [])
+  const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
+  const snapPoints = useMemo(() => ['10%', '100%'], [])
   const isFeeling = responseType === 'feeling'
   const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
   const conchName = isFeeling ? 'F소라' : 'T소라'
@@ -16,6 +17,7 @@ export default function SoraReponseMenu({ responseType, responseBody }: Pick<Rev
   useEffect(() => {
     if (responseBody.length > 0) {
       bottomSheetRef.current?.expand()
+      if (scrollViewRef.current) scrollViewRef.current.scrollToEnd({ animated: true })
     }
   }, [responseBody, bottomSheetRef])
 
@@ -35,7 +37,10 @@ export default function SoraReponseMenu({ responseType, responseBody }: Pick<Rev
         />
         <Text style={{ ...style.text, ...style.headerText }}>{conchName}의 답장</Text>
       </View>
-      <BottomSheetScrollView style={{ backgroundColor, ...style.bottomSheet }}>
+      <BottomSheetScrollView
+        ref={scrollViewRef}
+        style={{ backgroundColor, ...style.bottomSheet }}
+      >
         <Text style={{ ...style.text, ...style.body }}>{responseBody}</Text>
       </BottomSheetScrollView>
     </BottomSheet>
