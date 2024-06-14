@@ -10,7 +10,7 @@ const PLACEHOLDER = '어떤 일이 있었나요? 무슨 느낌이나 생각이 �
 
 export default function WriteReviewScreen() {
   const reviewContext = useReviewContext()
-  const { response = '' } = useOpenAIStream(reviewContext?.review) || {}
+  const { response = '', loading, error } = useOpenAIStream(reviewContext?.review) || {}
   if (!reviewContext) return null
   const { review, setReview } = reviewContext
   const reviewSubmitted = !!review.responseType
@@ -29,6 +29,7 @@ export default function WriteReviewScreen() {
         onPress={Keyboard.dismiss}
       >
         <TextInput
+          editable={!reviewSubmitted}
           multiline
           placeholder={PLACEHOLDER}
           placeholderTextColor={Colors.lightGrey}
@@ -41,6 +42,8 @@ export default function WriteReviewScreen() {
         <SoraReponseMenu
           responseType={review.responseType}
           responseBody={response}
+          loading={loading}
+          error={error}
         />
       ) : (
         <ReviewSubmitFooter />

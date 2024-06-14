@@ -5,7 +5,12 @@ import { Colors } from '@/assets/colors'
 import { TSora, FSora } from '@/assets/icons'
 import type { Review } from '@/types/review'
 
-export default function SoraReponseMenu({ responseType, responseBody }: Pick<Review, 'responseType' | 'responseBody'>) {
+type Props = Pick<Review, 'responseType' | 'responseBody'> & {
+  loading?: boolean
+  error?: string | null
+}
+
+export default function SoraReponseMenu({ responseType, responseBody, loading = false, error }: Props) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
   const snapPoints = useMemo(() => ['10%', '100%'], [])
@@ -35,7 +40,7 @@ export default function SoraReponseMenu({ responseType, responseBody }: Pick<Rev
           width={40}
           height={40}
         />
-        <Text style={{ ...style.text, ...style.headerText }}>{conchName}의 답장</Text>
+        <Text style={{ ...style.text, ...style.headerText }}>{loading ? `${conchName}가 답변 작성중 ✍️` : `${conchName}의 답장`}</Text>
       </View>
       <BottomSheetScrollView
         ref={scrollViewRef}
