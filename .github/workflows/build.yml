@@ -39,6 +39,7 @@ jobs:
 
       - name: 🏗 Setup Java
         uses: actions/setup-java@v4
+        if: ${{ github.event.inputs.platform == 'android' }}
         with:
           distribution: 'temurin'
           java-version: '21'
