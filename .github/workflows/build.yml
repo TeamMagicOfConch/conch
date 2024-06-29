@@ -66,7 +66,8 @@ jobs:
             --non-interactive \
             --output=./app-build \
             --platform=${{ github.event.inputs.platform }} \
-            --profile=${{ github.event.inputs.profile }}
+            --profile=${{ github.event.inputs.profile }} \
+            --preview
 
       - name: 📱 Upload binary
         uses: actions/upload-artifact@v2
