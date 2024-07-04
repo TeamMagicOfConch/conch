@@ -34,13 +34,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Get Commit message
-        run: |
-          echo "COMMIT_MESSAGE<<EOF" >> $GITHUB_ENV
-          git log -1 --pretty=format:%s >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
-          command: eas update --branch ${{ github.head_ref }} --message "Preview build for ${{ github.head_ref }} ${{ env.COMMIT_MESSAGE }}"
+          command: eas update --branch ${{ github.head_ref }} --message "Preview build for ${{ github.head_ref }}"
           qr-target: expo-go
