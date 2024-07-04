@@ -49,6 +49,9 @@
         "projectId": "a5d2561e-b491-4f9a-afc8-052690d979a8"
       }
     },
-    "owner": "conch_rn"
+    "owner": "conch_rn",
+    "updates": {
+      "url": "https://u.expo.dev/a5d2561e-b491-4f9a-afc8-052690d979a8"
+    }
   }
 }
