@@ -33,3 +33,4 @@ jobs:
           # `github.event.pull_request.head.ref` is only available on `pull_request` triggers.
           # Use your own, or keep the automatically infered branch name from `--auto`, when using different triggers.
           command: eas update --branch stage --message "Preview this PR"
+          qr-target: expo-go
