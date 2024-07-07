@@ -8,7 +8,7 @@ export default function ReviewDateNavBar() {
   const { date: reviewDate } = useLocalSearchParams()
   const [year, _month, date] = String(reviewDate).split('-').map(Number)
   const month = _month + 1
-  const title = `🌴${year}년 ${month}월 ${date}일`
+  const title = `${year}년 ${month}월 ${date}일`
 
   return (
     <NavBarBase
