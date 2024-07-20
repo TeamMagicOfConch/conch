@@ -29,15 +29,18 @@
         "image": "latest"
       },
       "ios": {
-        "image": "latest",
-        "appleId": "jake_king@kakao.com",
-        "appleTeamId": "35PR6BSJMP",
-        "ascAppId": "6473936311"
+        "image": "latest"
       },
       "channel": "production"
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "jake_king@kakao.com",
+        "appleTeamId": "35PR6BSJMP",
+        "ascAppId": "6473936311"
+      }
+    }
   }
 }
