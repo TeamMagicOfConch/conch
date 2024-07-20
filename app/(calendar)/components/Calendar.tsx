@@ -34,7 +34,7 @@ export default function Calendar({ date }: Props) {
           style={{ flexDirection: 'row' }}
         >
           {week.map(({ date: cellDate, isToday, isFReview, isTReview }, dayIndex) => {
-            const isMovable = !!cellDate && (isFReview || isTReview)
+            const isMovable = !!cellDate && (isFReview || isTReview || isToday)
             const reviewDate = `${year}-${month}-${cellDate}`
 
             return (
@@ -42,7 +42,7 @@ export default function Calendar({ date }: Props) {
                 // eslint-disable-next-line
                 key={`${year}-${month}-${weekIndex}-${dayIndex}`}
                 style={[style.alignCenterCell, { width: width / 7 }]}
-                onPress={() => isMovable && router.push({ pathname: '/review', params: { date: reviewDate } })}
+                onPress={() => isMovable && router.push({ pathname: isToday ? '/new-review' : '/review', params: { date: reviewDate } })}
               >
                 {isToday && <View style={style.todayReverseTriangle} />}
                 {isFReview && <View style={style.fReviewCircle} />}
