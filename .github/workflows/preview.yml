@@ -1,7 +1,6 @@
 name: EAS Preview
 on:
-  pull_request:
-    types: [opened, synchronize]
+  # pull_request: types: [opened, synchronize]
 jobs:
   preview:
     runs-on: ubuntu-latest
