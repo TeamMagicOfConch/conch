@@ -29,7 +29,10 @@
         "image": "latest"
       },
       "ios": {
-        "image": "latest"
+        "image": "latest",
+        "appleId": "jake_king@kakao.com",
+        "appleTeamId": "35PR6BSJMP",
+        "ascAppId": "6473936311"
       },
       "channel": "production"
     }
