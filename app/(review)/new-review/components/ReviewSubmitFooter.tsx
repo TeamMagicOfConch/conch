@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { NavigationArrowLeft, NavigationArrowRight } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
-import SoraHandle from './SoraHandle'
+import SoraHandle, { HANDLE_ACTIVE_PERCENT } from './SoraHandle'
 
 export default function ReviewSubmitFooter() {
   const [handlePosition, setHandlePosition] = useState(0)
-  const leftOpacity = Math.max((-1 * handlePosition) / 300, 0)
-  const rightOpacity = Math.max((1 * handlePosition) / 300, 0)
+  const { width } = Dimensions.get('window')
+  // -50 ~ 50
+  const handlePositionPercent = (handlePosition / width) * 100
+  const leftOpacity = Math.max(0, Math.min(0.5, -handlePositionPercent / HANDLE_ACTIVE_PERCENT))
+  const rightOpacity = Math.max(0, Math.min(0.5, handlePositionPercent / HANDLE_ACTIVE_PERCENT))
 
   return (
     <View style={style.root}>
@@ -20,19 +23,19 @@ export default function ReviewSubmitFooter() {
         <View
           style={{
             left: -3,
-            backgroundColor: `rgba(55, 79, 255, ${leftOpacity})`,
+            backgroundColor: `rgba(56, 96, 255, ${leftOpacity})`,
             ...style.circle,
           }}
         />
         <View style={{ ...style.text, ...style.zIndexFront }}>
-          <Text style={{ color: Colors.sora }}>T소라</Text>
+          <Text style={{ color: Colors.tSoraBold }}>T소라</Text>
         </View>
         <NavigationArrowLeft
-          color={Colors.sora}
+          color={Colors.tSoraBold}
           style={{ marginRight: -10, ...style.zIndexFront }}
         />
         <NavigationArrowLeft
-          color={Colors.sora}
+          color={Colors.tSoraBold}
           style={style.zIndexFront}
         />
       </View>
@@ -46,21 +49,21 @@ export default function ReviewSubmitFooter() {
           style={{ left: 0, ...style.blurView }}
         />
         <NavigationArrowRight
-          color={Colors.godong}
+          color={Colors.fSoraBold}
           style={style.zIndexFront}
         />
         <NavigationArrowRight
-          color={Colors.godong}
+          color={Colors.fSoraBold}
           style={{ marginLeft: -10, ...style.zIndexFront }}
         />
         <View style={{ ...style.text, ...style.zIndexFront }}>
-          <Text style={{ color: Colors.godong }}>F소라</Text>
+          <Text style={{ color: Colors.fSoraBold }}>F소라</Text>
         </View>
         <View
           style={{
             ...style.circle,
             right: -3,
-            backgroundColor: `rgba(174, 112, 77, ${rightOpacity})`,
+            backgroundColor: `rgba(255, 65, 119, ${rightOpacity})`,
           }}
         />
       </View>
