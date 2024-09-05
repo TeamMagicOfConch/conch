@@ -3,7 +3,7 @@ import { SafeAreaView, Text, ScrollView, StyleSheet } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Colors } from '@/assets/colors'
-import { SoraResponseMenu } from '@/components'
+import { ReviewScreensNavbar, SoraResponseMenu } from '@/components'
 import { useReviewData } from './hooks'
 
 export default function ViewReviewScreen() {
@@ -14,6 +14,7 @@ export default function ViewReviewScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.bgGrey }}>
+      <ReviewScreensNavbar />
       <ScrollView style={style.scrollView}>
         <Text style={style.body}>{body}</Text>
       </ScrollView>

@@ -8,7 +8,7 @@ export default function ReviewLayout() {
   const { review } = useReviewData()
   const { body, responseType, responseBody } = review || {}
   const isFeeling = responseType === 'feeling'
-  const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
+  const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
 
   return <ReviewLayoutBase backgroundColor={backgroundColor} />
 }

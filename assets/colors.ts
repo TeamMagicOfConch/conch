@@ -13,6 +13,8 @@ export const Colors = {
   orange: '#C63B00',
   fSora: '#FFA4BE',
   fSoraBold: '#FF4177',
+  fSoraBg: '#FFECF1',
   tSora: '#A7BEFF',
   tSoraBold: '#3860FF',
+  tSoraBg: '#DCDEF0',
 }
