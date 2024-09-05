@@ -17,27 +17,29 @@ export default function ReviewSubmitFooter() {
     <View style={style.root}>
       <View style={style.endPoint}>
         <BlurView
-          intensity={10}
+          intensity={20}
           style={{ right: 0, ...style.blurView }}
         />
         <View
           style={{
-            left: -3,
+            left: 6,
             backgroundColor: `rgba(56, 96, 255, ${leftOpacity})`,
             ...style.circle,
           }}
         />
         <View style={{ ...style.text, ...style.zIndexFront }}>
-          <Text style={{ color: Colors.tSoraBold }}>T소라</Text>
+          <Text style={{ fontWeight: 'bold', color: Colors.tSoraBold }}>T소라</Text>
         </View>
-        <NavigationArrowLeft
-          color={Colors.tSoraBold}
-          style={{ marginRight: -10, ...style.zIndexFront }}
-        />
-        <NavigationArrowLeft
-          color={Colors.tSoraBold}
-          style={style.zIndexFront}
-        />
+        <View style={{ ...style.arrows, left: '300%' }}>
+          <NavigationArrowLeft
+            color={Colors.tSora}
+            style={{ marginRight: -10, ...style.zIndexFront }}
+          />
+          <NavigationArrowLeft
+            color={Colors.tSoraBold}
+            style={style.zIndexFront}
+          />
+        </View>
       </View>
       <SoraHandle
         x={handlePosition}
@@ -45,24 +47,26 @@ export default function ReviewSubmitFooter() {
       />
       <View style={style.endPoint}>
         <BlurView
-          intensity={10}
+          intensity={20}
           style={{ left: 0, ...style.blurView }}
         />
-        <NavigationArrowRight
-          color={Colors.fSoraBold}
-          style={style.zIndexFront}
-        />
-        <NavigationArrowRight
-          color={Colors.fSoraBold}
-          style={{ marginLeft: -10, ...style.zIndexFront }}
-        />
+        <View style={{ ...style.arrows, right: '315%' }}>
+          <NavigationArrowRight
+            color={Colors.fSoraBold}
+            style={{ ...style.zIndexFront }}
+          />
+          <NavigationArrowRight
+            color={Colors.fSora}
+            style={{ marginLeft: -10, ...style.zIndexFront }}
+          />
+        </View>
         <View style={{ ...style.text, ...style.zIndexFront }}>
-          <Text style={{ color: Colors.fSoraBold }}>F소라</Text>
+          <Text style={{ fontWeight: 'bold', color: Colors.fSoraBold }}>F소라</Text>
         </View>
         <View
           style={{
             ...style.circle,
-            right: -3,
+            right: 6,
             backgroundColor: `rgba(255, 65, 119, ${rightOpacity})`,
           }}
         />
@@ -94,9 +98,13 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  arrows: {
+    flexDirection: 'row',
+    position: 'absolute',
+  },
   circle: {
     zIndex: 5,
-    width: 50,
+    width: 30,
     aspectRatio: 1,
     borderRadius: 100,
     position: 'absolute',
