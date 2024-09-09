@@ -32,6 +32,7 @@ export default function WriteReviewScreen() {
         onPress={Keyboard.dismiss}
       >
         <TextInput
+          maxLength={1000}
           editable={!reviewSubmitted}
           multiline
           placeholder={PLACEHOLDER}
