@@ -52,12 +52,12 @@ export function useCalendar({ year, month }: { year: number; month: number }): {
 export function useReviewDataAtMonth({ year, month }: { year: number; month: number }): { reviews: ReviewForCalendar[] } {
   const [reviews, setReviews] = useState<MonthlyReviews>({
     // mock
-    '2024-1': [
+    '2024-8': [
       { date: 1, responseType: 'thinking' },
       { date: 2, responseType: 'feeling' },
       // ... more reviews
     ],
-    '2024-3': [
+    '2024-9': [
       { date: 1, responseType: 'thinking' },
       { date: 2, responseType: 'feeling' },
       // ... more reviews
