@@ -1,5 +1,2 @@
-export { default as TSora } from './t-sora.svg'
-export { default as FSora } from './f-sora.svg'
-export { default as TSoraBg } from './t-sora-bg.svg'
-export { default as FSoraBg } from './f-sora-bg.svg'
-export { default as BgSora } from './bg-sora.svg'
+export { default as Sora } from './sora.svg'
+export { default as SoraBg } from './sora-bg.svg'

@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance, Dimensions } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import { BgSora } from '@/assets/icons'
+import { Sora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { useReviewContext } from '../context'
 
@@ -78,7 +78,8 @@ export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) =
         style={style.soraView}
         pointerEvents="none"
       >
-        <BgSora
+        <Sora
+          color="white"
           width={40}
           height={40}
         />

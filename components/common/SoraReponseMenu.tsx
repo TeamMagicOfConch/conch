@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import BottomSheet, { useBottomSheet, BottomSheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet'
 
 import { Colors } from '@/assets/colors'
-import { TSora, FSora } from '@/assets/icons'
+import { Sora } from '@/assets/icons'
 import type { Review } from '@/types/review'
 
 import { useSound } from '../hooks'
@@ -22,7 +22,6 @@ export default function SoraReponseMenu({ responseType, responseBody, loading = 
   const isFeeling = responseType === 'feeling'
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
   const conchName = isFeeling ? 'F소라' : 'T소라'
-  const ConchSvg = isFeeling ? FSora : TSora
 
   useEffect(() => {
     if (responseBody.length > 0) {
@@ -52,7 +51,8 @@ export default function SoraReponseMenu({ responseType, responseBody, loading = 
     >
       <View style={{ backgroundColor, ...style.header }}>
         {/** TODO: letter-shape background */}
-        <ConchSvg
+        <Sora
+          color={isFeeling ? Colors.fSora : Colors.tSora}
           width={40}
           height={40}
         />

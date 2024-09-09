@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, useWindowDimensions, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
+import { SoraBg } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { useCalendar } from '../hooks'
 
@@ -44,9 +45,12 @@ export default function Calendar({ date }: Props) {
                 style={[style.alignCenterCell, { width: width / 7 }]}
                 onPress={() => isMovable && router.push({ pathname: isToday ? '/new-review' : '/review', params: { date: reviewDate } })}
               >
-                {isToday && <View style={style.todayReverseTriangle} />}
-                {isFReview && <View style={style.fReviewCircle} />}
-                {isTReview && <View style={style.tReviewCircle} />}
+                {(isFReview || isTReview) && (
+                  <SoraBg
+                    color={isFReview ? Colors.fSora : Colors.tSora}
+                    style={style.soraBg}
+                  />
+                )}
                 <Text style={style.calendarBodyText}>{cellDate}</Text>
               </Pressable>
             )
@@ -56,18 +60,6 @@ export default function Calendar({ date }: Props) {
     </>
   )
 }
-
-const reviewCircleStyle = StyleSheet.create({
-  common: {
-    width: '96.66%',
-    aspectRatio: 1,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    borderRadius: 100,
-    opacity: 0.1,
-  },
-})
 
 const style = StyleSheet.create({
   alignCenterCell: {
@@ -82,6 +74,7 @@ const style = StyleSheet.create({
     position: 'absolute',
     top: 7,
     left: '50%',
+    zIndex: 10,
     transform: [{ translateX: -5 }],
     backgroundColor: 'transparent',
     borderStyle: 'solid',
@@ -94,14 +87,10 @@ const style = StyleSheet.create({
     borderTopColor: 'black',
     borderLeftColor: 'transparent',
   },
-  fReviewCircle: {
-    ...reviewCircleStyle.common,
-    backgroundColor: Colors.sora,
-  },
-  tReviewCircle: {
-    ...reviewCircleStyle.common,
-    backgroundColor: Colors.orange,
-    opacity: 0.1,
+  soraBg: {
+    position: 'absolute',
+    top: '8%',
+    zIndex: 0,
   },
   calendarHeaderText: {
     color: Colors.lightGrey,

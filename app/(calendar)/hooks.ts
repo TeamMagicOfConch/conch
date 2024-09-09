@@ -60,6 +60,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
     '2024-9': [
       { date: 1, responseType: 'thinking' },
       { date: 2, responseType: 'feeling' },
+      { date: 9, responseType: 'feeling' },
       // ... more reviews
     ],
   })
