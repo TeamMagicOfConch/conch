@@ -30,7 +30,7 @@ export function useOpenAIStream(props?: Review) {
             Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`,
           },
           body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4o-mini',
             messages: [
               { role: 'system', content: responseType === 'thinking' ? THINKING_INSTRUCTION : FEELING_INSTRUCTION },
               { role: 'user', content: reviewBody },

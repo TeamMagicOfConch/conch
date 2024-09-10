@@ -22,11 +22,11 @@ const style = StyleSheet.create({
   },
   left: {
     position: 'absolute',
-    left: 20,
+    left: '7%',
   },
   right: {
     position: 'absolute',
-    right: 20,
+    right: '7%',
   },
   text: {
     color: Colors.lightGrey,

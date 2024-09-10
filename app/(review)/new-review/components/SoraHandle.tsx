@@ -1,10 +1,12 @@
 import { useRef, useState, useEffect } from 'react'
-import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance } from 'react-native'
+import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance, Dimensions } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import { BgSora } from '@/assets/icons'
+import { Sora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { useReviewContext } from '../context'
+
+export const HANDLE_ACTIVE_PERCENT = 70
 
 export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) => void }) {
   const router = useRouter()
@@ -42,10 +44,13 @@ export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) =
             },
           }),
           onPanResponderRelease: (_, state) => {
-            const submitReview = isReviewWritten && Math.abs(state.dx) > 150
-            const fActivated = state.dx > 120
-            const tActivated = state.dx < -120
-            if (tActivated || fActivated) {
+            // -100 ~ 100
+            const dxPercent = (state.dx / Dimensions.get('window').width) * 200
+            const fActivated = dxPercent > HANDLE_ACTIVE_PERCENT
+            const tActivated = dxPercent < -HANDLE_ACTIVE_PERCENT
+            const activated = (fActivated || tActivated) && isReviewWritten
+
+            if (activated) {
               setReview((prev) => ({ ...prev, responseType: tActivated ? 'thinking' : 'feeling' }))
             }
 
@@ -73,7 +78,8 @@ export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) =
         style={style.soraView}
         pointerEvents="none"
       >
-        <BgSora
+        <Sora
+          color="white"
           width={40}
           height={40}
         />
@@ -92,12 +98,12 @@ const style = StyleSheet.create({
     width: 20,
     aspectRatio: 1,
     borderRadius: 100,
-    borderWidth: 3,
-    borderColor: Colors.lightGrey,
+    borderWidth: 2,
+    borderColor: Colors.black,
   },
   handleBar: {
-    height: 3,
-    backgroundColor: Colors.lightGrey,
+    height: 2,
+    backgroundColor: Colors.black,
   },
   soraView: {
     position: 'absolute',

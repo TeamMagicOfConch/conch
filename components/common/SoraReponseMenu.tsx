@@ -1,10 +1,10 @@
 import { useRef, useMemo, useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
-import BottomSheet, { BottomSheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet'
+import BottomSheet, { useBottomSheet, BottomSheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet'
 
 import { Colors } from '@/assets/colors'
-import { TSora, FSora } from '@/assets/icons'
+import { Sora } from '@/assets/icons'
 import type { Review } from '@/types/review'
 
 import { useSound } from '../hooks'
@@ -17,12 +17,11 @@ type Props = Pick<Review, 'responseType' | 'responseBody'> & {
 export default function SoraReponseMenu({ responseType, responseBody, loading = false, error }: Props) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
-  const snapPoints = useMemo(() => ['10%', '100%'], [])
+  const snapPoints = useMemo(() => ['10%', '98%'], [])
   const { playSound } = useSound()
   const isFeeling = responseType === 'feeling'
-  const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
+  const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
   const conchName = isFeeling ? 'F소라' : 'T소라'
-  const ConchSvg = isFeeling ? FSora : TSora
 
   useEffect(() => {
     if (responseBody.length > 0) {
@@ -46,12 +45,14 @@ export default function SoraReponseMenu({ responseType, responseBody, loading = 
       ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
-      handleStyle={{ backgroundColor, ...style.handle }}
-      handleIndicatorStyle={{ backgroundColor: Colors.white }}
+      handleStyle={{ backgroundColor }}
+      handleIndicatorStyle={{ display: 'none' }}
+      style={style.bottomSheet}
     >
       <View style={{ backgroundColor, ...style.header }}>
         {/** TODO: letter-shape background */}
-        <ConchSvg
+        <Sora
+          color={isFeeling ? Colors.fSora : Colors.tSora}
           width={40}
           height={40}
         />
@@ -59,7 +60,7 @@ export default function SoraReponseMenu({ responseType, responseBody, loading = 
       </View>
       <BottomSheetScrollView
         ref={scrollViewRef}
-        style={{ backgroundColor, ...style.bottomSheet }}
+        style={{ backgroundColor, ...style.scrollView }}
       >
         <Text style={{ ...style.text, ...style.body }}>{responseBody}</Text>
       </BottomSheetScrollView>
@@ -68,11 +69,13 @@ export default function SoraReponseMenu({ responseType, responseBody, loading = 
 }
 
 const style = StyleSheet.create({
-  handle: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
   bottomSheet: {
+    borderRadius: 40,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.black,
+  },
+  scrollView: {
     flex: 1,
     padding: '13%',
     paddingTop: '5%',
@@ -85,11 +88,12 @@ const style = StyleSheet.create({
     paddingBottom: 10,
   },
   text: {
-    color: Colors.white,
+    color: Colors.black,
     lineHeight: 30,
   },
   headerText: {
     fontSize: 12,
+    fontWeight: 'bold',
   },
   body: {
     fontSize: 14,

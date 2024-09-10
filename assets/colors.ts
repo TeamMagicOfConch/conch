@@ -2,6 +2,7 @@ export const Colors = {
   sora: '#374fff',
   darkSora: '#172944',
   white: '#ffffff',
+  black: '#000000',
   yellow: '#A7FF36',
   grey: '#c8c8c8',
   writtenGrey: '#363636',
@@ -10,4 +11,10 @@ export const Colors = {
   godong: '#AE704D',
   darkGodong: '#46362E',
   orange: '#C63B00',
+  fSora: '#FFA4BE',
+  fSoraBold: '#FF4177',
+  fSoraBg: '#FFECF1',
+  tSora: '#A7BEFF',
+  tSoraBold: '#3860FF',
+  tSoraBg: '#DCDEF0',
 }
