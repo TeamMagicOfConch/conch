@@ -36,6 +36,7 @@ export default function Calendar({ date }: Props) {
         >
           {week.map(({ date: cellDate, isToday, isFReview, isTReview }, dayIndex) => {
             const isMovable = !!cellDate && (isFReview || isTReview || isToday)
+            const isReviewWritten = isFReview || isTReview
             const reviewDate = `${year}-${month}-${cellDate}`
 
             return (
@@ -45,13 +46,13 @@ export default function Calendar({ date }: Props) {
                 style={[style.alignCenterCell, { width: width / 7 }]}
                 onPress={() => isMovable && router.push({ pathname: isToday ? '/new-review' : '/review', params: { date: reviewDate } })}
               >
-                {(isFReview || isTReview) && (
+                {isReviewWritten && (
                   <SoraBg
                     color={isFReview ? Colors.fSora : Colors.tSora}
                     style={style.soraBg}
                   />
                 )}
-                <Text style={style.calendarBodyText}>{cellDate}</Text>
+                <Text style={{ ...style.calendarBodyText, ...(isReviewWritten && { fontWeight: 'bold' }) }}>{cellDate}</Text>
               </Pressable>
             )
           })}
@@ -67,25 +68,6 @@ const style = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  todayReverseTriangle: {
-    width: 0,
-    height: 0,
-    position: 'absolute',
-    top: 7,
-    left: '50%',
-    zIndex: 10,
-    transform: [{ translateX: -5 }],
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderTopWidth: 7,
-    borderRightWidth: 5,
-    borderBottomWidth: 7,
-    borderLeftWidth: 5,
-    borderRightColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderTopColor: 'black',
-    borderLeftColor: 'transparent',
   },
   soraBg: {
     position: 'absolute',
