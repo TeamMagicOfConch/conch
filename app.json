@@ -16,6 +16,7 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": 2,
       "supportsTablet": true,
       "usesAppleSignIn": false,
       "bundleIdentifier": "com.magicconch.MagicConch"
