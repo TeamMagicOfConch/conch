@@ -16,7 +16,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "2",
+      "buildNumber": "3",
       "supportsTablet": true,
       "usesAppleSignIn": false,
       "bundleIdentifier": "com.magicconch.MagicConch"
@@ -53,8 +53,6 @@
     "updates": {
       "url": "https://u.expo.dev/a5d2561e-b491-4f9a-afc8-052690d979a8"
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    }
+    "runtimeVersion": "1.0.0"
   }
 }
