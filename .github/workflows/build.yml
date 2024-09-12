@@ -1,4 +1,5 @@
 name: Build App
+
 on:
   workflow_dispatch:
     inputs:
@@ -81,5 +82,5 @@ jobs:
           path: app-build
 
       - name: 🚢 Submit
-      if: ${{ github.event.inputs.should_submit }}
-      run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path app-build
+        if: ${{ github.event.inputs.should_submit }}
+        run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path app-build
