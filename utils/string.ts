@@ -6,8 +6,7 @@ export function formatYearMonthDate(date: { year: number; month: number }) {
 }
 
 export function getApiUrlWithPathAndParams({ path, params }: { path: string; params: Record<string, string> }) {
-  // const urlWithParams = new URL(`${process.env.EXPO_PUBLIC_API_URL}${path}`)
-  const urlWithParams = new URL(`https://naver.com${path}`)
+  const urlWithParams = new URL(`${process.env.EXPO_PUBLIC_API_URL}${path}`)
 
   Object.entries(params).forEach(([key, value]) => {
     urlWithParams.searchParams.append(key, value)
