@@ -6,7 +6,7 @@ export function useSound() {
 
   async function playSound() {
     console.log('Loading Sound')
-    const { sound } = await Audio.Sound.createAsync(require('@/assets/Hello.mp3'))
+    const { sound } = await Audio.Sound.createAsync(require('@/assets/write-sound.mp3'))
     setSound(sound)
 
     console.log('Playing Sound')
