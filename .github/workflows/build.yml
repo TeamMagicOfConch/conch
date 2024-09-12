@@ -75,12 +75,6 @@ jobs:
             --platform=${{ github.event.inputs.platform }} \
             --profile=${{ github.event.inputs.profile }} \
 
-      - name: 📱 Upload binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-${{ github.event.inputs.platform }}
-          path: app-build
-
       - name: 🚢 Submit
         if: ${{ github.event.inputs.should_submit }}
         run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path app-build
