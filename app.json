@@ -16,6 +16,7 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "5",
       "supportsTablet": true,
       "usesAppleSignIn": false,
       "bundleIdentifier": "com.magicconch.MagicConch"
@@ -29,7 +30,8 @@
       "package": "com.magicconch.MagicConch",
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "versionCode": "2"
     },
     "web": {
       "bundler": "metro",
