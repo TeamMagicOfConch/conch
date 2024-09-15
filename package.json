@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "eas-build-pre-install": "./decodeSecret"
+    "eas-build-pre-install": "chmod +x ./decodeSecret.sh && ./decodeSecret"
   },
   "jest": {
     "preset": "jest-expo"
