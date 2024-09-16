@@ -71,8 +71,6 @@ jobs:
         env:
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_OPENAI_API_KEY: ${{ secrets.EXPO_PUBLIC_OPENAI_API_KEY }}
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
-          GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
         run: |
           eas build --local \
             --non-interactive \
@@ -81,8 +79,5 @@ jobs:
             --profile=${{ github.event.inputs.profile }} \
 
       - name: 🚢 Submit
-        env:
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
-          GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
         if: ${{ github.event.inputs.should_submit }}
         run: eas submit -p ${{ github.event.inputs.platform }} --profile ${{ github.event.inputs.profile }} --path app-build
