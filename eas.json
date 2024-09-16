@@ -28,8 +28,7 @@
     "production": {
       "autoIncrement": true,
       "android": {
-        "image": "latest",
-        "releaseStatus": "draft"
+        "image": "latest"
       },
       "ios": {
         "image": "latest"
@@ -43,6 +42,9 @@
         "appleId": "jake_king@kakao.com",
         "appleTeamId": "35PR6BSJMP",
         "ascAppId": "6473936311"
+      },
+      "android": {
+        "releaseStatus": "draft"
       }
     }
   }
