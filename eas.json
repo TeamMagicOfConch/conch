@@ -1,6 +1,7 @@
 {
   "cli": {
     "version": ">= 10.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -27,7 +28,8 @@
     "production": {
       "autoIncrement": true,
       "android": {
-        "image": "latest"
+        "image": "latest",
+        "releaseStatus": "draft"
       },
       "ios": {
         "image": "latest"
