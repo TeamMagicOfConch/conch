@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 10.0.0"
+    "version": ">= 10.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -25,6 +26,7 @@
       }
     },
     "production": {
+      "autoIncrement": true,
       "android": {
         "image": "latest"
       },
@@ -40,6 +42,10 @@
         "appleId": "jake_king@kakao.com",
         "appleTeamId": "35PR6BSJMP",
         "ascAppId": "6473936311"
+      },
+      "android": {
+        "track": "alpha",
+        "releaseStatus": "draft"
       }
     }
   }
