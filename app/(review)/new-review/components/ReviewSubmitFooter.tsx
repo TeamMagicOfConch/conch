@@ -7,6 +7,7 @@ import SoraHandle, { HANDLE_ACTIVE_PERCENT } from './SoraHandle'
 
 export default function ReviewSubmitFooter() {
   const [handlePosition, setHandlePosition] = useState(0)
+  const [arrowsWidth, setArrowsWidth] = useState<number>(0)
   const { width } = Dimensions.get('window')
   // -50 ~ 50
   const handlePositionPercent = (handlePosition / width) * 100
@@ -30,36 +31,42 @@ export default function ReviewSubmitFooter() {
         <View style={{ ...style.text, ...style.zIndexFront }}>
           <Text style={{ fontWeight: 'bold', color: Colors.tSoraBold }}>T소라</Text>
         </View>
-        <View style={{ ...style.arrows, left: '300%' }}>
-          <NavigationArrowLeft
-            color={Colors.tSora}
-            style={{ marginRight: -10, ...style.zIndexFront }}
-          />
-          <NavigationArrowLeft
-            color={Colors.tSoraBold}
-            style={style.zIndexFront}
-          />
-        </View>
+      </View>
+      <View
+        onLayout={(event) => {
+          const { width } = event.nativeEvent.layout
+          setArrowsWidth(width)
+        }}
+        style={{ ...style.arrows, left: '50%', transform: [{ translateX: -0.5 * arrowsWidth - 25 }] }}
+      >
+        <NavigationArrowLeft
+          color={Colors.tSora}
+          style={{ marginRight: -10, ...style.zIndexFront }}
+        />
+        <NavigationArrowLeft
+          color={Colors.tSoraBold}
+          style={style.zIndexFront}
+        />
       </View>
       <SoraHandle
         x={handlePosition}
         setX={setHandlePosition}
       />
+      <View style={{ ...style.arrows, right: '50%', transform: [{ translateX: 0.5 * arrowsWidth + 20 }] }}>
+        <NavigationArrowRight
+          color={Colors.fSoraBold}
+          style={{ ...style.zIndexFront }}
+        />
+        <NavigationArrowRight
+          color={Colors.fSora}
+          style={{ marginLeft: -10, ...style.zIndexFront }}
+        />
+      </View>
       <View style={style.endPoint}>
         <BlurView
           intensity={20}
           style={{ left: 0, ...style.blurView }}
         />
-        <View style={{ ...style.arrows, right: '315%' }}>
-          <NavigationArrowRight
-            color={Colors.fSoraBold}
-            style={{ ...style.zIndexFront }}
-          />
-          <NavigationArrowRight
-            color={Colors.fSora}
-            style={{ marginLeft: -10, ...style.zIndexFront }}
-          />
-        </View>
         <View style={{ ...style.text, ...style.zIndexFront }}>
           <Text style={{ fontWeight: 'bold', color: Colors.fSoraBold }}>F소라</Text>
         </View>
