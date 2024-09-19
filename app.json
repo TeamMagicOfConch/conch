@@ -30,6 +30,7 @@
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
       ],
+      "versionCode": 3
     },
     "web": {
       "bundler": "metro",
