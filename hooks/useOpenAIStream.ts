@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react'
 import { fetch } from 'react-native-fetch-api'
 import type { Review } from '@/types/review'
+import { getApiUrlWithPathAndParams } from '@/utils'
 
-const FEELING_INSTRUCTION =
-  '너는 지금부터 사람들의 일기에 응답을 해줘야 하는 따뜻한 상담사야. 사람들의 말에 공감을 해주고 응원과 격려를 해줘. 반말을 사용해도 괜찮아. 언어는 사용자 언어에 맞게 대답해줘.'
-const THINKING_INSTRUCTION =
-  '너는 지금부터 조언을 주는 상담사야. 사람들의 일기를 읽고 문제 상황이 있으면 그에 해당하는 조언을 해줘. 반말을 사용해도 괜찮아. 언어는 사용자 언어에 맞게 대답해줘.'
-const CHUNK_REGEX = /data:\s({.*})/g
+const CHUNK_REGEX = /data:(.*)/g
 
 export function useOpenAIStream(props?: Review) {
   if (!props) return null
@@ -21,24 +18,17 @@ export function useOpenAIStream(props?: Review) {
       setLoading(true)
       setResponse('')
       setError(null)
+      const url = getApiUrlWithPathAndParams({ path: '/test/api/request/review' })
 
       try {
-        const response: Response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response: Response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`,
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: responseType === 'thinking' ? THINKING_INSTRUCTION : FEELING_INSTRUCTION },
-              { role: 'user', content: reviewBody },
-            ],
-            temperature: 0.75,
-            frequency_penalty: 1.5,
-            presence_penalty: 1.5,
-            stream: true,
+            body: reviewBody,
+            type: 'FEELING',
           }),
           reactNative: {
             textStreaming: true,
@@ -49,18 +39,21 @@ export function useOpenAIStream(props?: Review) {
         const decoder = new TextDecoder('utf8')
 
         while (isMounted && reader) {
-          const { done, value } = await reader.read()
+          const data = await reader.read()
+          const { done, value } = data ?? {}
           if (done) break
           const chunk = decoder.decode(value, { stream: true })
           const matches = [...chunk.matchAll(CHUNK_REGEX)]
           matches?.forEach((match) => {
             if (match && match[1]) {
-              const data = JSON.parse(match[1])
-              setResponse((prev) => prev + (data?.choices?.[0]?.delta?.content || ''))
+              const data = match[1]
+              if (data === '{done}') return
+              setResponse((prev) => prev + (data || ''))
             }
           })
         }
       } catch (e) {
+        console.log(e)
         if (e instanceof Error) {
           setError(e.message)
           setResponse(`error occurred: ${e.message}`)
