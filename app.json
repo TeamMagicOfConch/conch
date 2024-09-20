@@ -18,7 +18,8 @@
     "ios": {
       "supportsTablet": true,
       "usesAppleSignIn": false,
-      "bundleIdentifier": "com.magicconch.MagicConch"
+      "bundleIdentifier": "com.magicconch.MagicConch",
+      "buildNumber": "9"
     },
     "android": {
       "adaptiveIcon": {
