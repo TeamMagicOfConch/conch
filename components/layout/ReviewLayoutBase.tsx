@@ -1,7 +1,7 @@
 import { Platform, StatusBar } from 'react-native'
 import { Slot } from 'expo-router'
 import { Colors } from '@/assets/colors'
-import { useReviewContext } from '@/app/(review)/new-review/context'
+import { useReviewContext } from '@/app/(app)/(review)/new-review/context'
 import { SafeAreaViewWithDefaultBackgroundColor, ViewWithDefaultBackgroundColor } from './view'
 
 export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = Colors.bgGrey }) {
