@@ -17,7 +17,7 @@ type Props = Pick<Review, 'responseType' | 'responseBody'> & {
 export default function SoraReponseMenu({ responseType, responseBody, loading = false, error }: Props) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
-  const snapPoints = useMemo(() => ['10%', '98%'], [])
+  const snapPoints = useMemo(() => ['10%', '100%'], [])
   const { playSound } = useSound()
   const isFeeling = responseType === 'feeling'
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
