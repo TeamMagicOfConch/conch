@@ -26,7 +26,6 @@ export default function WriteReviewScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.bgGrey }}>
-      <ReviewScreensNavbar />
       <Pressable
         style={{ flex: 1 }}
         onPress={Keyboard.dismiss}

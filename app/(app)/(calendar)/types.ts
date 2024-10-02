@@ -4,7 +4,7 @@ export type MonthlyReviewKey = `${number}-${number}`
 
 export interface ReviewForCalendar {
   date: number
-  responseType: RawReview['response_type']
+  responseType: RawReview['feedbackType']
 }
 
 export type MonthlyReviews = Record<MonthlyReviewKey, ReviewForCalendar[]>

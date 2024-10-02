@@ -1,8 +1,9 @@
 import { Platform, StatusBar } from 'react-native'
 import { Slot } from 'expo-router'
 import { Colors } from '@/assets/colors'
-import { useReviewContext } from '@/app/(review)/new-review/context'
+import { useReviewContext } from '@/app/(app)/(review)/new-review/context'
 import { SafeAreaViewWithDefaultBackgroundColor, ViewWithDefaultBackgroundColor } from './view'
+import { ReviewScreensNavbar } from './navbar'
 
 export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = Colors.bgGrey }) {
   const newReviewContext = useReviewContext()
@@ -23,6 +24,7 @@ export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = C
       />
       <SafeAreaViewWithDefaultBackgroundColor style={{ flex: 1, backgroundColor, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
         <ViewWithDefaultBackgroundColor>
+          <ReviewScreensNavbar />
           <Slot />
         </ViewWithDefaultBackgroundColor>
       </SafeAreaViewWithDefaultBackgroundColor>

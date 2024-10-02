@@ -1,13 +1,11 @@
 import { useRef, useMemo, useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
-import BottomSheet, { useBottomSheet, BottomSheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet'
+import BottomSheet, { BottomSheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet'
 
 import { Colors } from '@/assets/colors'
 import { Sora } from '@/assets/icons'
 import type { Review } from '@/types/review'
-
-import { useSound } from '../hooks'
 
 type Props = Pick<Review, 'responseType' | 'responseBody'> & {
   loading?: boolean
@@ -17,8 +15,7 @@ type Props = Pick<Review, 'responseType' | 'responseBody'> & {
 export default function SoraReponseMenu({ responseType, responseBody, loading = false, error }: Props) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
-  const snapPoints = useMemo(() => ['10%', '98%'], [])
-  const { playSound } = useSound()
+  const snapPoints = useMemo(() => ['10%', '100%'], [])
   const isFeeling = responseType === 'feeling'
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
   const conchName = isFeeling ? 'F소라' : 'T소라'
@@ -29,16 +26,6 @@ export default function SoraReponseMenu({ responseType, responseBody, loading = 
       if (scrollViewRef.current) scrollViewRef.current.scrollToEnd({ animated: true })
     }
   }, [responseBody, bottomSheetRef])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (loading) {
-        playSound()
-      }
-    }, 2000)
-
-    return () => clearInterval(interval)
-  }, [loading])
 
   return (
     <BottomSheet

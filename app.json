@@ -16,10 +16,10 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "7",
       "supportsTablet": true,
       "usesAppleSignIn": false,
-      "bundleIdentifier": "com.magicconch.MagicConch"
+      "bundleIdentifier": "com.magicconch.MagicConch",
+      "buildNumber": "10"
     },
     "android": {
       "adaptiveIcon": {
@@ -31,7 +31,7 @@
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "bundler": "metro",
