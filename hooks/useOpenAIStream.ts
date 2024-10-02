@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { fetch } from 'react-native-fetch-api'
+import { useSound } from './useSound'
 import type { Review } from '@/types/review'
 import { getApiUrlWithPathAndParams } from '@/utils'
 
@@ -11,11 +12,13 @@ export function useOpenAIStream(props?: Review) {
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { playSound, setToggleFadeOut } = useSound()
 
   useEffect(() => {
     let isMounted = true
     const streamData = async () => {
       setLoading(true)
+      playSound()
       setResponse('')
       setError(null)
       const url = getApiUrlWithPathAndParams({ path: '/test/api/request/review' })
@@ -59,6 +62,7 @@ export function useOpenAIStream(props?: Review) {
           setResponse(`error occurred: ${e.message}`)
         }
       } finally {
+        setToggleFadeOut(true)
         if (isMounted) setLoading(false)
       }
     }
