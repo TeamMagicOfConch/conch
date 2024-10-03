@@ -9,6 +9,8 @@ import { Slot } from 'expo-router'
 polyfill()
 SplashScreen.preventAutoHideAsync()
 
+const REDIRECT_REGISTER_CODE = 'USR-003'
+
 export default function Layout() {
   const [isAppReady, setIsAppReady] = useState(false)
 
@@ -16,10 +18,7 @@ export default function Layout() {
     async function prepare() {
       try {
         const osId = await DeviceInfo.getUniqueId()
-        // await new Promise((resolve) => setTimeout(resolve, 5000))
-        const path = '/user/login'
-
-        const authResponse = await fetch(`${process.env.EXPO_PUBLIC_TEMP_API_URL}${path}`, {
+        const option = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -28,10 +27,16 @@ export default function Layout() {
             osId,
             osType: Platform.OS.toUpperCase(),
           }),
-        })
-        const {
-          data: { accessToken, refreshToken },
-        } = await authResponse.json()
+        }
+
+        const loginResponse = await fetch(`${process.env.EXPO_PUBLIC_TEMP_API_URL}/user/login`, option)
+        const { code, data: loginData } = await loginResponse.json()
+
+        const registerResponse = code === REDIRECT_REGISTER_CODE ? await fetch(`${process.env.EXPO_PUBLIC_TEMP_API_URL}/user/register`, option) : null
+        const { data: registerData } = (await registerResponse?.json()) || {}
+        const data = registerData || loginData
+
+        const { accessToken, refreshToken } = data
 
         await Promise.all([
           ...(accessToken && [AsyncStorage.setItem(consts.asyncStorageKey.accessToken, accessToken)]),
@@ -39,16 +44,10 @@ export default function Layout() {
           AsyncStorage.setItem(consts.asyncStorageKey.registered, 'true'),
         ])
 
-        const asyncStorageItems = await Promise.all([
-          AsyncStorage.getItem(consts.asyncStorageKey.accessToken),
-          AsyncStorage.getItem(consts.asyncStorageKey.refreshToken),
-          AsyncStorage.getItem(consts.asyncStorageKey.registered),
-        ])
-        console.log(asyncStorageItems)
+        setIsAppReady(true)
       } catch (e) {
         console.warn(e)
-      } finally {
-        setIsAppReady(true)
+        alert('로그인 에러 발생')
       }
     }
 
