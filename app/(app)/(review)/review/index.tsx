@@ -1,6 +1,5 @@
 import React from 'react'
-import { SafeAreaView, Text, ScrollView, StyleSheet } from 'react-native'
-import { useLocalSearchParams } from 'expo-router'
+import { Text, ScrollView, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Colors } from '@/assets/colors'
 import { SoraResponseMenu } from '@/components'
