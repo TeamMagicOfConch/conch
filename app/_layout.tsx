@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Platform, View } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import DeviceInfo from 'react-native-device-info'
 import * as SplashScreen from 'expo-splash-screen'
-import { polyfill, consts } from '@/utils'
+import { polyfill, setTokens } from '@/utils'
 import { Slot } from 'expo-router'
 
 polyfill()
@@ -18,6 +17,7 @@ export default function Layout() {
     async function prepare() {
       try {
         const osId = await DeviceInfo.getUniqueId()
+        console.log(osId)
         const option = {
           method: 'POST',
           headers: {
@@ -38,11 +38,7 @@ export default function Layout() {
 
         const { accessToken, refreshToken } = data
 
-        await Promise.all([
-          ...(accessToken && [AsyncStorage.setItem(consts.asyncStorageKey.accessToken, accessToken)]),
-          ...(refreshToken && [AsyncStorage.setItem(consts.asyncStorageKey.refreshToken, refreshToken)]),
-          AsyncStorage.setItem(consts.asyncStorageKey.registered, 'true'),
-        ])
+        await setTokens({ accessToken, refreshToken })
 
         setIsAppReady(true)
       } catch (e) {

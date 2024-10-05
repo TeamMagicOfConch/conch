@@ -1,8 +1,9 @@
 export const consts = {
   asyncStorageKey: {
-    registered: 'magicOfConchRegistered',
     osId: 'magicOfConchOsId',
     accessToken: 'magicOfConchAccessToken',
     refreshToken: 'magicOfConchRefreshToken',
+    tokenExpiresAt: 'magicOfConchTokenExpire',
   },
+  tokenDuration: 1000 * 60 * 5, // 5분
 }
