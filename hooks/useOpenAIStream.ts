@@ -3,6 +3,8 @@ import { fetch } from 'react-native-fetch-api'
 import { useSound } from './useSound'
 import type { Review } from '@/types/review'
 import { getApiUrlWithPathAndParams } from '@/utils'
+import EventSource from 'react-native-sse'
+import RNEventSource from 'react-native-event-source'
 
 const CHUNK_REGEX = /data:(.*)/g
 
@@ -16,61 +18,43 @@ export function useOpenAIStream(props?: Review) {
 
   useEffect(() => {
     let isMounted = true
-    const streamData = async () => {
-      setLoading(true)
-      playSound()
-      setResponse('')
-      setError(null)
-      const url = getApiUrlWithPathAndParams({ path: '/test/api/request/review' })
+    setLoading(true)
+    playSound()
+    setResponse('')
+    setError(null)
+    const url = getApiUrlWithPathAndParams({ path: '/test/api/request/review' })
 
-      try {
-        const response: Response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            body: reviewBody,
-            type: 'FEELING',
-          }),
-          reactNative: {
-            textStreaming: true,
-          },
-        })
+    const eventSource = new RNEventSource(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        body: reviewBody,
+        type: 'FEELING',
+      }),
+      method: 'POST',
+    })
 
-        const reader = response.body?.getReader()
-        const decoder = new TextDecoder('utf8')
+    eventSource.addEventListener('open', (e) => console.log('open connection'))
+    eventSource.addEventListener('message', (event) => {
+      console.log(event)
+      setResponse((prev) => prev + event.data)
+    })
 
-        while (isMounted && reader) {
-          const data = await reader.read()
-          const { done, value } = data ?? {}
-          if (done) break
-          const chunk = decoder.decode(value, { stream: true })
-          const matches = [...chunk.matchAll(CHUNK_REGEX)]
-          matches?.forEach((match) => {
-            if (match && match[1]) {
-              const data = match[1]
-              if (data === '{done}') return
-              setResponse((prev) => prev + (data || ''))
-            }
-          })
-        }
-      } catch (e) {
-        console.log(e)
-        if (e instanceof Error) {
-          setError(e.message)
-          setResponse(`error occurred: ${e.message}`)
-        }
-      } finally {
-        setToggleFadeOut(true)
-        if (isMounted) setLoading(false)
+    eventSource.addEventListener('error', (event) => {
+      if (event instanceof Error) {
+        setError(event?.message)
       }
-    }
+      setLoading(false)
+      eventSource.close()
+    })
 
-    if (!!responseType) streamData()
+    eventSource.addEventListener('open', () => {
+      setLoading(false)
+    })
 
     return () => {
-      isMounted = false
+      eventSource.close()
     }
   }, [responseType])
 
