@@ -18,7 +18,6 @@ export default function Layout() {
   useEffect(() => {
     async function prepare() {
       try {
-        alert('test alert for update test')
         const osId = await DeviceInfo.getUniqueId()
         console.log(osId)
         const body = {
