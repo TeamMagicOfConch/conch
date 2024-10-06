@@ -4,6 +4,7 @@ import DeviceInfo from 'react-native-device-info'
 import * as SplashScreen from 'expo-splash-screen'
 import { polyfill, setTokens } from '@/utils'
 import { Slot } from 'expo-router'
+import axios from 'axios'
 
 polyfill()
 SplashScreen.preventAutoHideAsync()
@@ -19,22 +20,16 @@ export default function Layout() {
       try {
         const osId = await DeviceInfo.getUniqueId()
         console.log(osId)
-        const option = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            osId,
-            osType: Platform.OS.toUpperCase(),
-          }),
+        const body = {
+          osId,
+          osType: Platform.OS.toUpperCase(),
         }
 
-        const loginResponse = await fetch(`${process.env.EXPO_PUBLIC_TEMP_API_URL}/user/login`, option)
-        const { code, data: loginData } = await loginResponse.json()
+        const loginResponse = await axios.post(`${process.env.EXPO_PUBLIC_TEMP_API_URL}/user/login`, body)
+        const { code, data: loginData } = loginResponse.data
 
-        const registerResponse = code === REDIRECT_REGISTER_CODE ? await fetch(`${process.env.EXPO_PUBLIC_TEMP_API_URL}/user/register`, option) : null
-        const { data: registerData } = (await registerResponse?.json()) || {}
+        const registerResponse = code === REDIRECT_REGISTER_CODE ? await axios.post(`${process.env.EXPO_PUBLIC_TEMP_API_URL}/user/register`, body) : null
+        const { data: registerData } = registerResponse?.data || {}
         const data = registerData || loginData
 
         const { accessToken, refreshToken } = data
