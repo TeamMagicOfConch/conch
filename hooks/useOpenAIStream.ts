@@ -4,7 +4,7 @@ import { useSound } from './useSound'
 import type { Review } from '@/types/review'
 import { getApiUrlWithPathAndParams } from '@/utils'
 
-const CHUNK_REGEX = /data:(.*)/g
+const CHUNK_REGEX = /{(.*)}/g
 
 export function useOpenAIStream(props?: Review) {
   if (!props) return null
@@ -31,7 +31,7 @@ export function useOpenAIStream(props?: Review) {
           },
           body: JSON.stringify({
             body: reviewBody,
-            type: 'FEELING',
+            type: responseType,
           }),
           reactNative: {
             textStreaming: true,
@@ -45,18 +45,17 @@ export function useOpenAIStream(props?: Review) {
           const data = await reader.read()
           const { done, value } = data ?? {}
           if (done) break
-          const chunk = decoder.decode(value, { stream: true })
+          const chunk = decoder.decode(value)
           const matches = [...chunk.matchAll(CHUNK_REGEX)]
           matches?.forEach((match) => {
-            if (match && match[1]) {
-              const data = match[1]
-              if (data === '{done}') return
-              setResponse((prev) => prev + (data || ''))
+            if (match && match[0]) {
+              const { value } = JSON.parse(match[0])
+              setResponse((prev) => prev + (value || ''))
             }
           })
         }
       } catch (e) {
-        console.log(e)
+        console.error(e)
         if (e instanceof Error) {
           setError(e.message)
           setResponse(`error occurred: ${e.message}`)

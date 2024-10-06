@@ -5,6 +5,7 @@ import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { Sora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { useReviewContext } from '../context'
+import { consts } from '@/utils'
 
 export const HANDLE_ACTIVE_PERCENT = 70
 
@@ -51,7 +52,7 @@ export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) =
             const activated = (fActivated || tActivated) && isReviewWritten
 
             if (activated) {
-              setReview((prev) => ({ ...prev, responseType: tActivated ? 'thinking' : 'feeling' }))
+              setReview((prev) => ({ ...prev, responseType: tActivated ? consts.reviewType.thinking : consts.reviewType.feeling }))
             }
 
             Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false, speed: 6, bounciness: 0 }).start()
