@@ -4,13 +4,15 @@ import { Colors } from '@/assets/colors'
 import { useReviewContext } from '@/app/(app)/(review)/new-review/context'
 import { SafeAreaViewWithDefaultBackgroundColor, ViewWithDefaultBackgroundColor } from './view'
 import { ReviewScreensNavbar } from './navbar'
+import { consts } from '@/utils'
 
 export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = Colors.bgGrey }) {
   const newReviewContext = useReviewContext()
   const { responseType } = newReviewContext?.review || {}
+  const { reviewType } = consts
   const backgroundColor = newReviewContext
     ? responseType
-      ? responseType === 'thinking'
+      ? responseType === reviewType.thinking
         ? Colors.tSoraBg
         : Colors.fSoraBg
       : _backgroundColor

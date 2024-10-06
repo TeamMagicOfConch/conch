@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useLogin } from '@/components/hooks'
-import { getApiUrlWithPathAndParams, getToday } from '@/utils'
+import { consts, getApiUrlWithPathAndParams, getToday } from '@/utils'
 import type { RawReview } from '@/types/review'
 import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
 
@@ -13,8 +13,9 @@ type CalendarCell = {
 
 export function useCalendar({ year, month }: { year: number; month: number }): { calendar: CalendarCell[][] } {
   const { reviews } = useReviewDataAtMonth({ year, month })
-  const fReviewDates = reviews.filter((review) => review.responseType === 'feeling').map((review) => review.date)
-  const tReviewDates = reviews.filter((review) => review.responseType === 'thinking').map((review) => review.date)
+  const { reviewType } = consts
+  const fReviewDates = reviews.filter((review) => review.responseType === reviewType.feeling).map((review) => review.date)
+  const tReviewDates = reviews.filter((review) => review.responseType === reviewType.thinking).map((review) => review.date)
 
   const calendar = useMemo(() => {
     const firstDay = new Date(year, month, 1)
@@ -53,14 +54,14 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
   const [reviews, setReviews] = useState<MonthlyReviews>({
     // mock
     '2024-8': [
-      { date: 1, responseType: 'thinking' },
-      { date: 2, responseType: 'feeling' },
+      { date: 1, responseType: 'THINKING' },
+      { date: 2, responseType: 'FEELING' },
       // ... more reviews
     ],
     '2024-9': [
-      { date: 1, responseType: 'thinking' },
-      { date: 2, responseType: 'feeling' },
-      { date: 9, responseType: 'feeling' },
+      { date: 1, responseType: 'THINKING' },
+      { date: 2, responseType: 'FEELING' },
+      { date: 9, responseType: 'FEELING' },
       // ... more reviews
     ],
   })
