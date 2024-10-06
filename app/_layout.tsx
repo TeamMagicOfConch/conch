@@ -12,6 +12,7 @@ const REDIRECT_REGISTER_CODE = 'USR-003'
 
 export default function Layout() {
   const [isAppReady, setIsAppReady] = useState(false)
+  const [error, setError] = useState<any>(null)
 
   useEffect(() => {
     async function prepare() {
@@ -43,7 +44,9 @@ export default function Layout() {
         setIsAppReady(true)
       } catch (e) {
         console.warn(e)
-        alert('로그인 에러 발생')
+        setError(e)
+        alert(e)
+        setIsAppReady(true)
       }
     }
 
