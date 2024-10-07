@@ -1,15 +1,21 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance, Dimensions } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import { Sora } from '@/assets/icons'
+import { Sora, SoraGrey } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { useReviewContext } from '../context'
 import { consts } from '@/utils'
 
 export const HANDLE_ACTIVE_PERCENT = 70
 
-export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) => void }) {
+interface Props {
+  x: number
+  setX: (x: number) => void
+  isReviewWritten: boolean
+}
+
+export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
   const router = useRouter()
   const { date: reviewDate } = useLocalSearchParams()
   const [panResponder, setPanResponder] = useState<PanResponderInstance>()
@@ -18,8 +24,8 @@ export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) =
   const reviewContext = useReviewContext()
 
   if (!reviewContext) return null
-  const { review, setReview } = reviewContext
-  const isReviewWritten = review.body.length > 0
+  const { setReview } = reviewContext
+  const SoraComponent = isReviewWritten ? Sora : SoraGrey
 
   pan.addListener((value) => {
     if (isReviewWritten) {
@@ -80,9 +86,9 @@ export default function SoraHandle({ x, setX }: { x: number; setX: (x: number) =
         pointerEvents="none"
       >
         <Sora
-          color="white"
-          width={40}
-          height={40}
+          color={Colors.white}
+          width={50}
+          height={50}
         />
       </View>
     </>
@@ -107,9 +113,12 @@ const style = StyleSheet.create({
     backgroundColor: Colors.black,
   },
   soraView: {
+    width: 50,
+    height: 50,
     position: 'absolute',
     top: '50%',
     left: '50%',
+    transform: [{ translateX: -7 }, { translateY: -5 }],
     pointerEvents: 'none',
     zIndex: 100,
   },
