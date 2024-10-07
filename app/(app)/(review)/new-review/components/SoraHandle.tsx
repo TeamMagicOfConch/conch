@@ -87,8 +87,8 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
       >
         <Sora
           color={Colors.white}
-          width={40}
-          height={40}
+          width={50}
+          height={50}
         />
       </View>
     </>
@@ -113,9 +113,12 @@ const style = StyleSheet.create({
     backgroundColor: Colors.black,
   },
   soraView: {
+    width: 50,
+    height: 50,
     position: 'absolute',
     top: '50%',
     left: '50%',
+    transform: [{ translateX: -7 }, { translateY: -5 }],
     pointerEvents: 'none',
     zIndex: 100,
   },

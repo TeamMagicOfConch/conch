@@ -80,7 +80,7 @@ const style = StyleSheet.create({
     lineHeight: 30,
   },
   headerText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: 'bold',
   },
   body: {

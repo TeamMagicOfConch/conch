@@ -32,8 +32,8 @@ export default function ReviewSubmitFooter() {
             ...style.circle,
           }}
         />
-        <View style={{ ...style.text, ...style.zIndexFront }}>
-          <Text style={{ fontWeight: 'bold', color: Colors.tSoraBold }}>T소라</Text>
+        <View style={{ ...style.textView, ...style.zIndexFront }}>
+          <Text style={{ ...style.text, color: Colors.tSoraBold }}>T소라</Text>
         </View>
       </View>
       <View
@@ -41,7 +41,7 @@ export default function ReviewSubmitFooter() {
           const { width } = event.nativeEvent.layout
           setArrowsWidth(width)
         }}
-        style={{ ...style.arrows, left: '50%', transform: [{ translateX: -0.5 * arrowsWidth - 25 }] }}
+        style={{ ...style.arrows, left: '50%', transform: [{ translateX: -0.5 * arrowsWidth - 40 }] }}
       >
         <NavigationArrowLeft
           color={Colors.tSora}
@@ -57,7 +57,7 @@ export default function ReviewSubmitFooter() {
         x={handlePosition}
         setX={setHandlePosition}
       />
-      <View style={{ ...style.arrows, right: '50%', transform: [{ translateX: 0.5 * arrowsWidth + 20 }] }}>
+      <View style={{ ...style.arrows, right: '50%', transform: [{ translateX: 0.5 * arrowsWidth + 30 }] }}>
         <NavigationArrowRight
           color={Colors.fSoraBold}
           style={{ ...style.zIndexFront }}
@@ -72,8 +72,8 @@ export default function ReviewSubmitFooter() {
           intensity={20}
           style={{ left: 0, ...style.blurView }}
         />
-        <View style={{ ...style.text, ...style.zIndexFront }}>
-          <Text style={{ fontWeight: 'bold', color: Colors.fSoraBold }}>F소라</Text>
+        <View style={{ ...style.textView, ...style.zIndexFront }}>
+          <Text style={{ ...style.text, color: Colors.fSoraBold }}>F소라</Text>
         </View>
         <View
           style={{
@@ -91,7 +91,7 @@ export default function ReviewSubmitFooter() {
 const style = StyleSheet.create({
   root: {
     width: '100%',
-    height: 100,
+    height: '15%',
     padding: 20,
     position: 'absolute',
     bottom: 0,
@@ -104,11 +104,15 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  text: {
+  textView: {
     padding: 5,
     aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   arrows: {
     flexDirection: 'row',
