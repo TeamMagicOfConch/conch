@@ -4,18 +4,22 @@ import { BlurView } from 'expo-blur'
 import { NavigationArrowLeft, NavigationArrowRight } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import SoraHandle, { HANDLE_ACTIVE_PERCENT } from './SoraHandle'
+import { useReviewContext } from '../context'
 
 export default function ReviewSubmitFooter() {
   const [handlePosition, setHandlePosition] = useState(0)
-  const [arrowsWidth, setArrowsWidth] = useState<number>(0)
+  const [arrowsWidth, setArrowsWidth] = useState(0)
+  const { review } = useReviewContext() || {}
+
   const { width } = Dimensions.get('window')
+  const isReviewWritten = review ? review.body.length > 0 : false
   // -50 ~ 50
   const handlePositionPercent = (handlePosition / width) * 100
   const leftOpacity = Math.max(0, Math.min(0.5, -handlePositionPercent / HANDLE_ACTIVE_PERCENT))
   const rightOpacity = Math.max(0, Math.min(0.5, handlePositionPercent / HANDLE_ACTIVE_PERCENT))
 
   return (
-    <View style={style.root}>
+    <View style={{ ...style.root, ...(!isReviewWritten && { opacity: 0.25 }) }}>
       <View style={style.endPoint}>
         <BlurView
           intensity={20}
@@ -49,6 +53,7 @@ export default function ReviewSubmitFooter() {
         />
       </View>
       <SoraHandle
+        isReviewWritten={isReviewWritten}
         x={handlePosition}
         setX={setHandlePosition}
       />
