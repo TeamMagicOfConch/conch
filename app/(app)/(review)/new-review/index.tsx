@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ScrollView, TextInput, StyleSheet, Keyboard, Animated, useWindowDimensions } from 'react-native'
+import { ScrollView, TextInput, StyleSheet, Keyboard, Pressable, useWindowDimensions } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Colors } from '@/assets/colors'
 import { ReviewSubmitFooter } from './components'

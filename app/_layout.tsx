@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Platform, Pressable, Keyboard } from 'react-native'
+import { Platform, View, Pressable, Keyboard } from 'react-native'
 import DeviceInfo from 'react-native-device-info'
 import * as SplashScreen from 'expo-splash-screen'
 import { polyfill, setTokens } from '@/utils'
@@ -55,12 +55,11 @@ export default function Layout() {
   if (!isAppReady) return null
 
   return (
-    <Pressable
+    <View
       style={{ flex: 1 }}
       onLayout={onLayoutRootView}
-      onPress={Keyboard.dismiss}
     >
       <Slot />
-    </Pressable>
+    </View>
   )
 }
