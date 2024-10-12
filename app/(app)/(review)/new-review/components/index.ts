@@ -1,1 +1,1 @@
-export { default as ReviewSubmitFooter } from './ReviewSubmitFooter'
+export { default as Footer } from './Footer'

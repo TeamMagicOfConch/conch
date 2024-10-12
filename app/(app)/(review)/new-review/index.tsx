@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
-import { ScrollView, TextInput, StyleSheet, Keyboard, Pressable, useWindowDimensions } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { Colors } from '@/assets/colors'
-import { ReviewSubmitFooter } from './components'
-import { useReviewContext } from './context'
+import { ScrollView, TextInput, StyleSheet, Keyboard, useWindowDimensions } from 'react-native'
 import SoraReponseMenu from '@/components/common/SoraReponseMenu'
+import { Colors } from '@/assets/colors'
 import { useOpenAIStream } from '@/hooks'
+import { useReviewContext } from './context'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 const PLACEHOLDER =
   '오늘은 어떤 일이 있었나요?\n무슨 느낌이나 생각이 들었나요?\n(1000자 이내)\n\n*하루에 한 번, 손잡이를 원하는 방향으로 잡아당겨 소라의 답변을 들을 수 있어요.'
@@ -20,12 +19,10 @@ export default function WriteReviewScreen() {
   const reviewSubmitted = !!review.responseType
 
   useEffect(() => {
-    // 키보드가 나타날 때
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
       setKeyboardHeight(e.endCoordinates.height)
     })
 
-    // 키보드가 사라질 때
     const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
       setKeyboardHeight(0)
     })
@@ -43,7 +40,7 @@ export default function WriteReviewScreen() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.bgGrey, paddingBottom: 100 }}>
+    <GestureHandlerRootView style={{ flex: 1, height: '85%', backgroundColor: Colors.bgGrey }}>
       <ScrollView contentContainerStyle={style.root}>
         <TextInput
           maxLength={1000}
@@ -56,15 +53,13 @@ export default function WriteReviewScreen() {
           style={[style.textInput, { maxHeight: height * 0.85 - keyboardHeight - 50 }]}
         />
       </ScrollView>
-      {reviewSubmitted ? (
+      {reviewSubmitted && (
         <SoraReponseMenu
           responseType={review.responseType}
           responseBody={response}
           loading={loading}
           error={error}
         />
-      ) : (
-        <ReviewSubmitFooter />
       )}
     </GestureHandlerRootView>
   )

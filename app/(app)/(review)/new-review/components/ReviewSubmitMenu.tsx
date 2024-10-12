@@ -5,11 +5,13 @@ import { NavigationArrowLeft, NavigationArrowRight } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import SoraHandle, { HANDLE_ACTIVE_PERCENT } from './SoraHandle'
 import { useReviewContext } from '../context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-export default function ReviewSubmitFooter() {
+export default function ReviewSubmitMenu() {
   const [handlePosition, setHandlePosition] = useState(0)
   const [arrowsWidth, setArrowsWidth] = useState(0)
   const { review } = useReviewContext() || {}
+  const { bottom } = useSafeAreaInsets()
 
   const { width } = Dimensions.get('window')
   const isReviewWritten = review ? review.body.length > 0 : false
@@ -19,7 +21,7 @@ export default function ReviewSubmitFooter() {
   const rightOpacity = Math.max(0, Math.min(0.5, handlePositionPercent / HANDLE_ACTIVE_PERCENT))
 
   return (
-    <View style={{ ...style.root, ...(!isReviewWritten && { opacity: 0.25 }) }}>
+    <View style={{ ...style.root, ...(!isReviewWritten && { opacity: 0.25 }), bottom }}>
       <View style={style.endPoint}>
         <BlurView
           intensity={20}
@@ -91,10 +93,8 @@ export default function ReviewSubmitFooter() {
 const style = StyleSheet.create({
   root: {
     width: '100%',
-    height: '15%',
     padding: 20,
     position: 'absolute',
-    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -127,8 +127,8 @@ const style = StyleSheet.create({
   },
   blurView: {
     zIndex: 10,
-    width: '200%',
-    height: '200%',
+    width: '300%',
+    height: '300%',
     position: 'absolute',
     top: '-50%',
   },
