@@ -40,7 +40,7 @@ export default function WriteReviewScreen() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, height: '85%', backgroundColor: Colors.bgGrey }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.bgGrey }}>
       <ScrollView contentContainerStyle={style.root}>
         <TextInput
           maxLength={1000}
@@ -67,8 +67,7 @@ export default function WriteReviewScreen() {
 
 const style = StyleSheet.create({
   root: {
-    width: '100%',
-    height: '85%',
+    flex: 1,
   },
   textInput: {
     width: '100%',
