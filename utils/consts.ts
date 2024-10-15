@@ -2,7 +2,7 @@ import { Review } from '@/types/review'
 
 interface Consts {
   reviewType: {
-    [key: string]: Review['responseType']
+    [key: string]: Review['feedbackType']
   }
   asyncStorageKey: {
     [key: string]: string
@@ -20,7 +20,6 @@ export const consts: Consts = {
     osId: 'magicOfConchOsId',
     accessToken: 'magicOfConchAccessToken',
     refreshToken: 'magicOfConchRefreshToken',
-    tokenExpiresAt: 'magicOfConchTokenExpire',
   },
   tokenDuration: 1000 * 60 * 5, // 5분
 }
