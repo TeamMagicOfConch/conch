@@ -31,7 +31,7 @@ export async function onResponse(response: AxiosResponse): Promise<AxiosResponse
       return await authPost('/user/register', {
         osId: await DeviceInfo.getUniqueId(),
         osType: Platform.OS.toUpperCase(),
-        username: 'example',
+        username: new Date().toISOString(),
         initialReviewCount: 5,
       })
     case REFRESH_TOKEN_EXPIRED_CODE:
