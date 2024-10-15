@@ -8,11 +8,11 @@ import { consts } from '@/utils'
 
 export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = Colors.bgGrey }) {
   const newReviewContext = useReviewContext()
-  const { responseType } = newReviewContext?.review || {}
+  const { feedbackType } = newReviewContext?.review || {}
   const { reviewType } = consts
   const backgroundColor = newReviewContext
-    ? responseType
-      ? responseType === reviewType.thinking
+    ? feedbackType
+      ? feedbackType === reviewType.thinking
         ? Colors.tSoraBg
         : Colors.fSoraBg
       : _backgroundColor

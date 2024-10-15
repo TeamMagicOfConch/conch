@@ -9,7 +9,7 @@ interface ReviewContextType {
 const ReviewContext = createContext<ReviewContextType | undefined>(undefined)
 
 export function ReviewContextProvider({ children }: { children: ReactNode }) {
-  const [review, setReview] = useState<Review>({ body: '', responseType: null, responseBody: '' })
+  const [review, setReview] = useState<Review>({ body: '', feedbackType: null, responseBody: '' })
 
   return <ReviewContext.Provider value={{ review, setReview }}>{children}</ReviewContext.Provider>
 }

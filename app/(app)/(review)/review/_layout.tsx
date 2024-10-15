@@ -5,8 +5,8 @@ import { consts } from '@/utils'
 
 export default function ReviewLayout() {
   const { review } = useReviewData()
-  const { body, responseType, responseBody } = review || {}
-  const isFeeling = responseType === consts.reviewType.feeling
+  const { body, feedbackType, responseBody } = review || {}
+  const isFeeling = feedbackType === consts.reviewType.feeling
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
 
   return <ReviewLayoutBase backgroundColor={backgroundColor} />

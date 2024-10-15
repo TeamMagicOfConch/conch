@@ -7,7 +7,7 @@ import { Colors } from '@/assets/colors'
 export default function NewReviewFooter() {
   const { bottom: paddingBottom } = useSafeAreaInsets()
   const { review } = useReviewContext() || {}
-  if (!!review?.responseType) return null
+  if (!!review?.feedbackType) return null
 
   return (
     <GestureHandlerRootView style={{ flex: 15, backgroundColor: Colors.bgGrey, paddingBottom }}>

@@ -7,8 +7,8 @@ import { useReviewData } from './hooks'
 
 export default function ViewReviewScreen() {
   const { review } = useReviewData()
-  const { body, responseType, responseBody } = review || {}
-  const isFeeling = responseType === 'feeling'
+  const { body, feedbackType: responseType, responseBody } = review || {}
+  const isFeeling = responseType === 'FEELING'
   const backgroundColor = isFeeling ? Colors.darkGodong : Colors.darkSora
 
   return (
@@ -17,7 +17,7 @@ export default function ViewReviewScreen() {
         <Text style={style.body}>{body}</Text>
       </ScrollView>
       <SoraResponseMenu
-        responseType={responseType}
+        feedbackType={responseType}
         responseBody={responseBody}
       />
     </GestureHandlerRootView>

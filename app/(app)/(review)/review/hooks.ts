@@ -7,7 +7,7 @@ import type { RawReview, Review } from '@/types/review'
 export function useReviewData() {
   const [review, setReview] = useState<Review>({
     body: mockReviewBody,
-    responseType: 'feeling',
+    feedbackType: 'FEELING',
     responseBody: mockResponseBody,
   })
   const { userId } = useLogin()

@@ -16,7 +16,7 @@ export default function WriteReviewScreen() {
   const { response = '', loading, error } = useOpenAIStream(reviewContext?.review) || {}
   if (!reviewContext) return null
   const { review, setReview } = reviewContext
-  const reviewSubmitted = !!review.responseType
+  const reviewSubmitted = !!review.feedbackType
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
@@ -55,7 +55,7 @@ export default function WriteReviewScreen() {
       </ScrollView>
       {reviewSubmitted && (
         <SoraReponseMenu
-          responseType={review.responseType}
+          feedbackType={review.feedbackType}
           responseBody={response}
           loading={loading}
           error={error}

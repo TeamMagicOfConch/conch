@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance, Dimensions } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import { Sora, SoraGrey } from '@/assets/icons'
+import { Sora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { useReviewContext } from '../context'
 import { consts } from '@/utils'
@@ -25,7 +25,6 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
 
   if (!reviewContext) return null
   const { setReview } = reviewContext
-  const SoraComponent = isReviewWritten ? Sora : SoraGrey
 
   pan.addListener((value) => {
     if (isReviewWritten) {
@@ -58,7 +57,7 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
             const activated = (fActivated || tActivated) && isReviewWritten
 
             if (activated) {
-              setReview((prev) => ({ ...prev, responseType: tActivated ? consts.reviewType.thinking : consts.reviewType.feeling }))
+              setReview((prev) => ({ ...prev, feedbackType: tActivated ? consts.reviewType.thinking : consts.reviewType.feeling }))
             }
 
             Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false, speed: 6, bounciness: 0 }).start()
