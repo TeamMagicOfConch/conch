@@ -3,9 +3,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useReviewContext } from '../context'
 import ReviewSubmitMenu from './ReviewSubmitMenu'
 import { Colors } from '@/assets/colors'
-import { Keyboard, Pressable } from 'react-native'
 
-export default function Footer() {
+export default function NewReviewFooter() {
   const { bottom: paddingBottom } = useSafeAreaInsets()
   const { review } = useReviewContext() || {}
   if (!!review?.responseType) return null

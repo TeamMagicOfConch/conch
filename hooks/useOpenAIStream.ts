@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import { fetch } from 'react-native-fetch-api'
 import { useSound } from './useSound'
 import type { Review } from '@/types/review'
-import { getApiUrlWithPathAndParams } from '@/utils'
+import { consts, getApiUrlWithPathAndParams } from '@/utils'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const CHUNK_REGEX = /{(.*)}/g
 
 export function useOpenAIStream(props?: Review) {
   if (!props) return null
-  const { body: reviewBody, responseType } = props
+  const { body: reviewBody, feedbackType: responseType } = props
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -21,17 +22,20 @@ export function useOpenAIStream(props?: Review) {
       playSound()
       setResponse('')
       setError(null)
-      const url = getApiUrlWithPathAndParams({ path: '/test/api/request/review' })
+      const url = getApiUrlWithPathAndParams({ path: '/auth/user/api/review/submit' })
+      const accessToken = await AsyncStorage.getItem(consts.asyncStorageKey.accessToken)
 
       try {
         const response: Response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
             body: reviewBody,
             type: responseType,
+            reviewDate: new Date().toISOString().split('T')[0],
           }),
           reactNative: {
             textStreaming: true,

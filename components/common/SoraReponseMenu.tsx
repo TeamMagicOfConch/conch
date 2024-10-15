@@ -8,16 +8,16 @@ import { Sora } from '@/assets/icons'
 import type { Review } from '@/types/review'
 import { consts } from '@/utils'
 
-type Props = Pick<Review, 'responseType' | 'responseBody'> & {
+type Props = Pick<Review, 'feedbackType' | 'responseBody'> & {
   loading?: boolean
   error?: string | null
 }
 
-export default function SoraReponseMenu({ responseType, responseBody, loading = false, error }: Props) {
+export default function SoraReponseMenu({ feedbackType, responseBody, loading = false, error }: Props) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
   const snapPoints = useMemo(() => ['10%', '100%'], [])
-  const isFeeling = responseType === consts.reviewType.feeling
+  const isFeeling = feedbackType === consts.reviewType.feeling
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
   const conchName = isFeeling ? 'F소라' : 'T소라'
 

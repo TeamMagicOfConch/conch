@@ -1,7 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useLogin } from '@/components/hooks'
-import { consts, getApiUrlWithPathAndParams, getToday } from '@/utils'
-import type { RawReview } from '@/types/review'
+import { consts, getToday, reviewGet } from '@/utils'
 import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
 
 type CalendarCell = {
@@ -14,8 +12,8 @@ type CalendarCell = {
 export function useCalendar({ year, month }: { year: number; month: number }): { calendar: CalendarCell[][] } {
   const { reviews } = useReviewDataAtMonth({ year, month })
   const { reviewType } = consts
-  const fReviewDates = reviews.filter((review) => review.responseType === reviewType.feeling).map((review) => review.date)
-  const tReviewDates = reviews.filter((review) => review.responseType === reviewType.thinking).map((review) => review.date)
+  const fReviewDates = reviews.filter((review) => review.feedbackType === reviewType.feeling).map((review) => review.day)
+  const tReviewDates = reviews.filter((review) => review.feedbackType === reviewType.thinking).map((review) => review.day)
 
   const calendar = useMemo(() => {
     const firstDay = new Date(year, month, 1)
@@ -51,50 +49,27 @@ export function useCalendar({ year, month }: { year: number; month: number }): {
 }
 
 export function useReviewDataAtMonth({ year, month }: { year: number; month: number }): { reviews: ReviewForCalendar[] } {
-  const [reviews, setReviews] = useState<MonthlyReviews>({
-    // mock
-    '2024-8': [
-      { date: 1, responseType: 'THINKING' },
-      { date: 2, responseType: 'FEELING' },
-      // ... more reviews
-    ],
-    '2024-9': [
-      { date: 1, responseType: 'THINKING' },
-      { date: 2, responseType: 'FEELING' },
-      { date: 9, responseType: 'FEELING' },
-      // ... more reviews
-    ],
-  })
-  const { userId } = useLogin()
+  const [reviews, setReviews] = useState<MonthlyReviews>({})
 
   const yearAndMonth: MonthlyReviewKey = `${year}-${month + 1}`
-  const url = getApiUrlWithPathAndParams({ path: '/diary/calendar', params: { year_and_month: yearAndMonth, user_id: userId } })
 
   useEffect(() => {
-    if (reviews[yearAndMonth]) return
-    if (!userId) return
-    // fetch(url)
-    //   .then((response) => response.json())
-    //   .then((rawReviews) => {
-    //     if (rawReviews !== undefined && rawReviews?.detail !== 'Not found.') {
-    //       setReviews((prev) => ({
-    //         ...prev,
-    //         [yearAndMonth]: rawReviews.map((review: RawReview) => ({
-    //           date: new Date(review.date).getDate(),
-    //           responseType: review.response_type,
-    //         })),
-    //       }))
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error('useReviewDataAtMonth', error)
-    //   })
-  }, [userId, reviews, url, yearAndMonth])
+    async function fetchAndSetReviewData() {
+      const {
+        data: { data: reviews },
+      } = await reviewGet(`/inquiry/month?year=${year}&month=${month + 1}`)
+      setReviews((prev) => ({
+        ...prev,
+        [yearAndMonth]: reviews,
+      }))
+    }
+    fetchAndSetReviewData()
+  }, [yearAndMonth])
 
   return { reviews: reviews[yearAndMonth] || [] }
 }
 
 export function useTodayReviewWritten({ year, month, date }: { year: number; month: number; date: number }): boolean {
   const { reviews } = useReviewDataAtMonth({ year, month })
-  return reviews?.some((review) => review.date === date) || false
+  return reviews?.some((review) => review.day === date) || false
 }
