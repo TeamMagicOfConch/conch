@@ -29,8 +29,8 @@ export async function onResponse(response: AxiosResponse<AuthResponse>): Promise
     case UNREGISTERED_CODE:
       console.log('register')
       return await authPost('/user/register', {
-        // osId: await DeviceInfo.getUniqueId(),
-        osId: 'qwer',
+        osId: await DeviceInfo.getUniqueId(),
+        // osId: 'qwer',
         osType: Platform.OS.toUpperCase(),
         username: new Date().toISOString(),
         initialReviewCount: 5,
@@ -92,7 +92,7 @@ const DEFAULT_TOKENS: AuthToken = {
 export async function login(): Promise<AuthToken> {
   try {
     const osId = await DeviceInfo.getUniqueId()
-    const { data: axiosData } = await authPost('/user/login', { osId: 'qwer' })
+    const { data: axiosData } = await authPost('/user/login', { osId })
     return axiosData.data
   } catch (e) {
     console.error('re-login failed', e)
