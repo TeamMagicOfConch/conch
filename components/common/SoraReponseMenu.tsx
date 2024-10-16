@@ -24,7 +24,7 @@ export default function SoraReponseMenu({ feedbackType, feedback: responseBody, 
   const conchName = isFeeling ? 'F소라' : 'T소라'
 
   useEffect(() => {
-    if (pathname !== 'review' && responseBody?.length > 0) {
+    if (pathname !== '/review' && responseBody?.length > 0) {
       bottomSheetRef.current?.expand()
       if (scrollViewRef.current) scrollViewRef.current.scrollToEnd({ animated: true })
     }

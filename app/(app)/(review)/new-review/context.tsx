@@ -1,5 +1,5 @@
 import { useState, useContext, createContext, type Dispatch, type SetStateAction, type ReactNode } from 'react'
-import type { Review } from '@/types/review'
+import type { Review } from '@/utils/api/review/types'
 
 interface ReviewContextType {
   review: Review
