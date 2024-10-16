@@ -5,7 +5,7 @@ import { consts } from '@/utils'
 
 export default function ReviewLayout() {
   const { review } = useReviewData()
-  const { body, feedbackType, responseBody } = review || {}
+  const { feedbackType } = review || {}
   const isFeeling = feedbackType === consts.reviewType.feeling
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
 

@@ -1,38 +1,34 @@
 import { useState, useEffect } from 'react'
 import { useLocalSearchParams } from 'expo-router'
-import { useLogin } from '@/components/hooks'
-import { getApiUrlWithPathAndParams } from '@/utils'
-import type { RawReview, Review } from '@/types/review'
+import { reviewGet } from '@/utils'
+import type { FeedbackType, RawReview, Review } from '@/utils/api/review/types'
 
 export function useReviewData() {
-  const [review, setReview] = useState<Review>({
-    body: mockReviewBody,
-    feedbackType: 'FEELING',
-    responseBody: mockResponseBody,
-  })
-  const { userId } = useLogin()
-  const { date } = useLocalSearchParams()
-
-  const url = getApiUrlWithPathAndParams({ path: '/diary', params: { date: String(date), user_id: userId } })
+  const [review, setReview] = useState<Review>({ body: '', feedback: '' })
+  const { date, feedbackType } = useLocalSearchParams()
 
   useEffect(() => {
     // fetch review data with url and store it to review
-    if (!userId || !date) return
-    // fetch(url)
-    //   .then((response) => response.json())
-    //   .then((rawReview) => {
-    //     if (rawReview !== undefined && rawReview?.detail !== 'Not found.') {
-    //       setReview({
-    //         body: rawReview.diary_text,
-    //         responseType: rawReview.response_type,
-    //         responseBody: rawReview.response_text,
-    //       })
-    //     }
-    //   })
-    //   .catch(() => {
-    //     // do nothing
-    //   })
-  }, [url, userId, date])
+    if (!date || !feedbackType) return
+    const [year, month, day] = date
+      .toString()
+      .split('-')
+      .map((str) => parseInt(str, 10))
+    async function fetchAndSetReviewData() {
+      const {
+        data: { data: reviewsData },
+      } = await reviewGet('/day', { year, month: month + 1, day })
+
+      const { body, feedback } = reviewsData as RawReview
+
+      setReview({
+        body,
+        feedback,
+        feedbackType: feedbackType as FeedbackType,
+      })
+    }
+    fetchAndSetReviewData()
+  }, [date, feedbackType])
 
   return { review }
 }

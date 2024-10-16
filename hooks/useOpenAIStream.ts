@@ -9,7 +9,7 @@ const CHUNK_REGEX = /{(.*)}/g
 
 export function useOpenAIStream(props?: Review) {
   if (!props) return null
-  const { body: reviewBody, feedbackType: responseType } = props
+  const { body: reviewBody, feedbackType } = props
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,7 +34,7 @@ export function useOpenAIStream(props?: Review) {
           },
           body: JSON.stringify({
             body: reviewBody,
-            type: responseType,
+            type: feedbackType,
             reviewDate: new Date().toISOString().split('T')[0],
           }),
           reactNative: {
@@ -76,12 +76,12 @@ export function useOpenAIStream(props?: Review) {
       }
     }
 
-    if (!!responseType) streamData()
+    if (!!feedbackType) streamData()
 
     return () => {
       isMounted = false
     }
-  }, [responseType])
+  }, [feedbackType])
 
   return { response, loading, error }
 }

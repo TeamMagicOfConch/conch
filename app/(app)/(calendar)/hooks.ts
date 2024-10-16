@@ -66,7 +66,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
 
       const {
         data: { data: reviewsData },
-      } = await reviewGet(`/inquiry/month?year=${year}&month=${month + 1}`)
+      } = await reviewGet('/month', { year, month: month + 1 })
 
       setReviews((prev) => ({
         ...prev,

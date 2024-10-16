@@ -5,6 +5,7 @@ import { Colors } from '@/assets/colors'
 import { useOpenAIStream } from '@/hooks'
 import { useReviewContext } from './context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { Review } from '@/utils/api/review/types'
 
 const PLACEHOLDER =
   '오늘은 어떤 일이 있었나요?\n무슨 느낌이나 생각이 들었나요?\n(1000자 이내)\n\n*하루에 한 번, 손잡이를 원하는 방향으로 잡아당겨 소라의 답변을 들을 수 있어요.'
@@ -33,7 +34,7 @@ export default function WriteReviewScreen() {
     }
   }, [])
   function setReviewBody(reviewBody: string) {
-    setReview((prev) => ({
+    setReview((prev: Review) => ({
       ...prev,
       body: reviewBody,
     }))
@@ -56,7 +57,7 @@ export default function WriteReviewScreen() {
       {reviewSubmitted && (
         <SoraReponseMenu
           feedbackType={review.feedbackType}
-          responseBody={response}
+          feedback={response}
           loading={loading}
           error={error}
         />

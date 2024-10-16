@@ -1,8 +1,8 @@
-import { Review } from '@/types/review'
+import { FeedbackType } from '@/utils/api/review/types'
 
 interface Consts {
   reviewType: {
-    [key: string]: Review['feedbackType']
+    [key: string]: FeedbackType
   }
   asyncStorageKey: {
     [key: string]: string
