@@ -61,7 +61,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
       const isThisMonth = month === thisMonth
       const isFuture = month > thisMonth
 
-      if (isThisMonth && !!reviews[yearAndMonth]) return
+      if (!isThisMonth && !!reviews[yearAndMonth]) return
       if (isFuture) return
 
       const {
