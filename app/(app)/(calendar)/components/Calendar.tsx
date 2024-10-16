@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router'
 import { SoraBg } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
 import { useCalendar } from '../hooks'
+import { FeedbackType } from '@/utils/api/review/types'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -37,6 +38,7 @@ export default function Calendar({ date }: Props) {
           {week.map(({ date: cellDate, isToday, isFReview, isTReview }, dayIndex) => {
             const isMovable = !!cellDate && (isFReview || isTReview || isToday)
             const isReviewWritten = isFReview || isTReview
+            const feedbackType: FeedbackType | null = isFReview ? 'FEELING' : isTReview ? 'THINKING' : null
             const reviewDate = `${year}-${month}-${cellDate}`
 
             return (
@@ -44,7 +46,10 @@ export default function Calendar({ date }: Props) {
                 // eslint-disable-next-line
                 key={`${year}-${month}-${weekIndex}-${dayIndex}`}
                 style={[style.alignCenterCell, { width: width / 7 }]}
-                onPress={() => isMovable && router.push({ pathname: isToday ? '/new-review' : '/review', params: { date: reviewDate } })}
+                onPress={() =>
+                  isMovable &&
+                  router.push({ pathname: isToday ? '/new-review' : '/review', params: { date: reviewDate, ...(feedbackType && { feedbackType }) } })
+                }
               >
                 {isReviewWritten && (
                   <SoraBg

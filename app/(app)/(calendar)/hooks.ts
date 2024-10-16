@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useIsFocused } from '@react-navigation/native'
 import { consts, getToday, reviewGet } from '@/utils'
 import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
 
@@ -50,21 +51,30 @@ export function useCalendar({ year, month }: { year: number; month: number }): {
 
 export function useReviewDataAtMonth({ year, month }: { year: number; month: number }): { reviews: ReviewForCalendar[] } {
   const [reviews, setReviews] = useState<MonthlyReviews>({})
+  const isFocused = useIsFocused()
 
   const yearAndMonth: MonthlyReviewKey = `${year}-${month + 1}`
 
   useEffect(() => {
     async function fetchAndSetReviewData() {
+      const thisMonth = new Date().getMonth()
+      const isThisMonth = month === thisMonth
+      const isFuture = month > thisMonth
+
+      if (!isThisMonth && !!reviews[yearAndMonth]) return
+      if (isFuture) return
+
       const {
-        data: { data: reviews },
-      } = await reviewGet(`/inquiry/month?year=${year}&month=${month + 1}`)
+        data: { data: reviewsData },
+      } = await reviewGet('/month', { year, month: month + 1 })
+
       setReviews((prev) => ({
         ...prev,
-        [yearAndMonth]: reviews,
+        [yearAndMonth]: reviewsData,
       }))
     }
-    fetchAndSetReviewData()
-  }, [yearAndMonth])
+    if (isFocused) fetchAndSetReviewData()
+  }, [yearAndMonth, isFocused])
 
   return { reviews: reviews[yearAndMonth] || [] }
 }

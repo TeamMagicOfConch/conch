@@ -5,28 +5,30 @@ import BottomSheet, { BottomSheetScrollView, type BottomSheetScrollViewMethods }
 
 import { Colors } from '@/assets/colors'
 import { Sora } from '@/assets/icons'
-import type { Review } from '@/types/review'
+import type { Review } from '@/utils/api/review/types'
 import { consts } from '@/utils'
+import { useRouteInfo } from 'expo-router/build/hooks'
 
-type Props = Pick<Review, 'feedbackType' | 'responseBody'> & {
+type Props = Pick<Review, 'feedbackType' | 'feedback'> & {
   loading?: boolean
   error?: string | null
 }
 
-export default function SoraReponseMenu({ feedbackType, responseBody, loading = false, error }: Props) {
+export default function SoraReponseMenu({ feedbackType, feedback: responseBody, loading = false, error }: Props) {
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
   const snapPoints = useMemo(() => ['10%', '100%'], [])
+  const { pathname } = useRouteInfo()
   const isFeeling = feedbackType === consts.reviewType.feeling
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
   const conchName = isFeeling ? 'F소라' : 'T소라'
 
   useEffect(() => {
-    if (responseBody.length > 0) {
+    if (pathname !== '/review' && responseBody?.length > 0) {
       bottomSheetRef.current?.expand()
       if (scrollViewRef.current) scrollViewRef.current.scrollToEnd({ animated: true })
     }
-  }, [responseBody, bottomSheetRef])
+  }, [pathname, responseBody, bottomSheetRef])
 
   return (
     <BottomSheet

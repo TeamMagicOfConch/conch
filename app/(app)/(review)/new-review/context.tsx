@@ -1,5 +1,5 @@
 import { useState, useContext, createContext, type Dispatch, type SetStateAction, type ReactNode } from 'react'
-import type { Review } from '@/types/review'
+import type { Review } from '@/utils/api/review/types'
 
 interface ReviewContextType {
   review: Review
@@ -9,7 +9,7 @@ interface ReviewContextType {
 const ReviewContext = createContext<ReviewContextType | undefined>(undefined)
 
 export function ReviewContextProvider({ children }: { children: ReactNode }) {
-  const [review, setReview] = useState<Review>({ body: '', feedbackType: null, responseBody: '' })
+  const [review, setReview] = useState<Review>({ body: '', feedback: '' })
 
   return <ReviewContext.Provider value={{ review, setReview }}>{children}</ReviewContext.Provider>
 }

@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { fetch } from 'react-native-fetch-api'
 import { useSound } from './useSound'
 import type { Review } from '@/types/review'
-import { consts, getApiUrlWithPathAndParams } from '@/utils'
+import { consts, getApiUrlWithPathAndParams, refreshToken } from '@/utils'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const CHUNK_REGEX = /{(.*)}/g
 
 export function useOpenAIStream(props?: Review) {
   if (!props) return null
-  const { body: reviewBody, feedbackType: responseType } = props
+  const { body: reviewBody, feedbackType } = props
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -26,7 +26,7 @@ export function useOpenAIStream(props?: Review) {
       const accessToken = await AsyncStorage.getItem(consts.asyncStorageKey.accessToken)
 
       try {
-        const response: Response = await fetch(url, {
+        const option = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -34,13 +34,19 @@ export function useOpenAIStream(props?: Review) {
           },
           body: JSON.stringify({
             body: reviewBody,
-            type: responseType,
+            type: feedbackType,
             reviewDate: new Date().toISOString().split('T')[0],
           }),
           reactNative: {
             textStreaming: true,
           },
-        })
+        }
+        const responseFirstAttempt: Response = await fetch(url, option)
+
+        const response =
+          responseFirstAttempt.status === 401
+            ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await refreshToken()).accessToken}` } })
+            : responseFirstAttempt
 
         const reader = response.body?.getReader()
         const decoder = new TextDecoder('utf8')
@@ -70,12 +76,12 @@ export function useOpenAIStream(props?: Review) {
       }
     }
 
-    if (!!responseType) streamData()
+    if (!!feedbackType) streamData()
 
     return () => {
       isMounted = false
     }
-  }, [responseType])
+  }, [feedbackType])
 
   return { response, loading, error }
 }

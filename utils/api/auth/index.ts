@@ -3,8 +3,8 @@ import { Platform } from 'react-native'
 import DeviceInfo from 'react-native-device-info'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-import { consts } from '../consts'
-import { CommonResponse, AuthToken, AuthRequestBody } from './types'
+import { consts } from '@/utils/consts'
+import { AuthToken, AuthRequestBody, AuthResponse } from './types'
 
 const UNREGISTERED_CODE = 'USR-003'
 const REFRESH_TOKEN_EXPIRED_CODE = 'SEC-001'
@@ -13,23 +13,24 @@ export const authAxios = axios.create({ baseURL: process.env.EXPO_PUBLIC_TEMP_AP
 authAxios.interceptors.response.use(onResponse, onResponseError)
 authAxios.interceptors.request.use(onRequest, onRequestError)
 
-export async function authGet(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<CommonResponse<AuthToken>>> {
+export async function authGet(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<AuthResponse>> {
   return authAxios.get(url, config)
 }
-export async function authPost(url: string, body: AuthRequestBody, config?: any): Promise<AxiosResponse<CommonResponse<AuthToken>>> {
+export async function authPost(url: string, body: AuthRequestBody, config?: any): Promise<AxiosResponse<AuthResponse>> {
   return authAxios.post(url, body, config)
 }
 
-export async function onResponse(response: AxiosResponse): Promise<AxiosResponse> {
+export async function onResponse(response: AxiosResponse<AuthResponse>): Promise<AxiosResponse<AuthResponse>> {
   const { data, config: originalRequest } = response
-  console.log(data)
-  const { code } = data
+  const { code, data: authData } = data
 
   switch (code) {
     // this logic will be replaced after onboarding developed
     case UNREGISTERED_CODE:
+      console.log('register')
       return await authPost('/user/register', {
         osId: await DeviceInfo.getUniqueId(),
+        // osId: 'qwer',
         osType: Platform.OS.toUpperCase(),
         username: new Date().toISOString(),
         initialReviewCount: 5,
