@@ -1,10 +1,10 @@
-import { RawReview } from '@/types/review'
+import { FeedbackType } from '@/utils/api/review/types'
 
 export type MonthlyReviewKey = `${number}-${number}`
 
 export interface ReviewForCalendar {
   day: number
-  feedbackType: RawReview['feedbackType']
+  feedbackType: FeedbackType
 }
 
 export type MonthlyReviews = Record<MonthlyReviewKey, ReviewForCalendar[]>
