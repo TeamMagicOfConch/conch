@@ -66,10 +66,11 @@ export function onRequestError(error: any) {
   return Promise.reject(error)
 }
 
-export function setTokens({ accessToken, refreshToken, rest }: AuthToken & { rest?: Promise<any>[] }) {
+export function setTokens({ accessToken, refreshToken, username, rest }: AuthToken & { rest?: Promise<any>[] }) {
   return Promise.all([
     ...(accessToken ? [AsyncStorage.setItem(consts.asyncStorageKey.accessToken, accessToken)] : []),
     ...(refreshToken ? [AsyncStorage.setItem(consts.asyncStorageKey.refreshToken, refreshToken)] : []),
+    ...(username ? [AsyncStorage.setItem(consts.asyncStorageKey.username, username)] : []),
     ...(rest ? rest : []),
   ])
 }
@@ -123,9 +124,9 @@ export async function refreshToken(): Promise<AuthResponse> {
         'Refresh-Token': _refreshToken,
       },
     })
-    const { accessToken, refreshToken } = responseData?.data || {}
+    const { accessToken, refreshToken, username } = responseData?.data || {}
 
-    setTokens({ accessToken, refreshToken })
+    setTokens({ accessToken, refreshToken, username })
 
     return responseData
   } catch (e) {

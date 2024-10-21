@@ -10,6 +10,7 @@ export interface AuthRequestBody {
 export interface AuthToken {
   accessToken: string | null
   refreshToken: string | null
+  username: string | null
 }
 
 export interface AuthResponseData {
