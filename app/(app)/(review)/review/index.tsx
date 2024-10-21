@@ -26,7 +26,6 @@ const style = StyleSheet.create({
   scrollView: {
     paddingHorizontal: '9%',
     marginBottom: '20%',
-    alignSelf: 'center',
   },
   body: {
     fontSize: 14,

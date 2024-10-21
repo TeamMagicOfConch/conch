@@ -17,8 +17,8 @@ export function useStartUp() {
           setNeedOnboard(true)
         } else {
           setNeedOnboard(false)
-          const { accessToken, refreshToken } = data || {}
-          await setTokens({ accessToken, refreshToken })
+          const { accessToken, refreshToken, username } = data || {}
+          await setTokens({ accessToken, refreshToken, username })
         }
 
         setIsAppReady(true)

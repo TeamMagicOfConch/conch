@@ -20,6 +20,7 @@ export const consts: Consts = {
     osId: 'magicOfConchOsId',
     accessToken: 'magicOfConchAccessToken',
     refreshToken: 'magicOfConchRefreshToken',
+    username: 'magicOfConchUserName',
   },
   tokenDuration: 1000 * 60 * 5, // 5분
 }

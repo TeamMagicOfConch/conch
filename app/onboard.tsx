@@ -15,10 +15,10 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
   const onPress = useCallback(async () => {
     const response = await register({ username, initialReviewCount })
     const {
-      data: { accessToken = null, refreshToken = null },
+      data: { accessToken = null, refreshToken = null, username: usernameRes = null },
     } = response || {}
-    if (accessToken && refreshToken) {
-      setTokens({ accessToken, refreshToken })
+    if (accessToken && refreshToken && username) {
+      setTokens({ accessToken, refreshToken, username: usernameRes })
       setNeedOnboard(false)
     }
   }, [setNeedOnboard, username, initialReviewCount])

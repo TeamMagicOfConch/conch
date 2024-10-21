@@ -3,6 +3,9 @@ import { formatYearMonthDate } from '@/utils/string'
 import { Colors } from '@/assets/colors'
 import { NavigationArrowLeft, NavigationArrowRight } from '@/assets/icons'
 import { useReviewDataAtMonth } from '../hooks'
+import { useEffect, useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { consts } from '@/utils'
 
 interface Props {
   calendarDate: { year: number; month: number }
@@ -10,10 +13,15 @@ interface Props {
 }
 
 export default function DateNavigation({ calendarDate, setCalendarDate }: Props) {
+  const [username, setUsername] = useState<string | null>()
   const { year, month } = calendarDate
   const displayDate = formatYearMonthDate({ year, month: month + 1 })
   const { reviews } = useReviewDataAtMonth({ year, month })
   const reviewsCount = reviews?.length ?? 0
+
+  useEffect(() => {
+    ;(async () => setUsername(await AsyncStorage.getItem(consts.asyncStorageKey.username)))()
+  }, [])
 
   function handlePrevMonth() {
     if (month === 0) {
@@ -40,8 +48,9 @@ export default function DateNavigation({ calendarDate, setCalendarDate }: Props)
       <View style={style.textWrapper}>
         <Text style={style.date}>{displayDate}</Text>
         <Text style={style.reviewsCount}>
-          {month + 1}월에는 총 {reviewsCount}번 회고를 작성했어요
+          {username}님, {month + 1}월에는
         </Text>
+        <Text style={style.reviewsCount}>총 {reviewsCount}번 회고를 작성했어요</Text>
       </View>
       <DateNatigateButton
         direction="next"
