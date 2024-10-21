@@ -23,9 +23,9 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
     }
   }, [setNeedOnboard, username, initialReviewCount])
 
-  const validateInputs = useCallback((username: string, initialReviewCount?: number) => {
+  useEffect(() => {
     const isValidUsername = validateInput(username)
-    const isValidInitialReviewCount = initialReviewCount && 0 <= initialReviewCount && initialReviewCount <= 31
+    const isValidInitialReviewCount = initialReviewCount !== undefined && 0 <= initialReviewCount && initialReviewCount <= 31
     if (isValidUsername && isValidInitialReviewCount) {
       setDisabled(false)
     } else setDisabled(true)
@@ -33,16 +33,7 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
       username: !username || isValidUsername ? '' : '*한글 / 영어 / 숫자 10자 이내로 입력하세요',
       initialReviewCount: !initialReviewCount || Number.isNaN(initialReviewCount) || isValidInitialReviewCount ? '' : '*0~30 사이의 정수를 입력하세요',
     })
-  }, [])
-
-  useEffect(() => {
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      validateInputs(username, initialReviewCount)
-    })
-    return () => {
-      keyboardDidHideListener.remove()
-    }
-  }, [username, initialReviewCount])
+  }, [username, validateInput, initialReviewCount])
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -69,8 +60,8 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
               style={style.input}
               keyboardType="numeric"
               placeholder="0~30 사이의 정수를 입력하세요"
-              value={String(!initialReviewCount ? '' : initialReviewCount)}
-              onChange={(e) => setInitialReviewCount(parseInt(e.nativeEvent.text, 10))}
+              value={String(initialReviewCount !== undefined ? initialReviewCount : '')}
+              onChange={(e) => setInitialReviewCount(e.nativeEvent.text === '' ? undefined : parseInt(e.nativeEvent.text, 10))}
             />
           </View>
           {error.initialReviewCount && <Text style={style.error}>{error.initialReviewCount}</Text>}
