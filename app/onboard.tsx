@@ -1,6 +1,6 @@
 import { Colors } from '@/assets/colors'
 import { PrimaryButton } from '@/components'
-import { authGet, register, setTokens, validateInput } from '@/utils'
+import { register, setTokens, validateInput } from '@/utils'
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { SafeAreaView, View, Text, TextInput, Linking, StyleSheet, Pressable, Keyboard } from 'react-native'
 
@@ -24,14 +24,13 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
   }, [setNeedOnboard, username, initialReviewCount])
 
   const validateInputs = useCallback((username: string, initialReviewCount?: number) => {
-    console.log('param', username, initialReviewCount)
     const isValidUsername = validateInput(username)
     const isValidInitialReviewCount = initialReviewCount && 0 <= initialReviewCount && initialReviewCount <= 31
     if (isValidUsername && isValidInitialReviewCount) {
       setDisabled(false)
-    }
+    } else setDisabled(true)
     setError({
-      username: !username || isValidUsername ? '' : 'username 에러 메시지',
+      username: !username || isValidUsername ? '' : '*한글 / 영어 / 숫자 10자 이내로 입력하세요',
       initialReviewCount: !initialReviewCount || Number.isNaN(initialReviewCount) || isValidInitialReviewCount ? '' : '*0~30 사이의 정수를 입력하세요',
     })
   }, [])
