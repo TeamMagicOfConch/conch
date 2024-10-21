@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { View } from 'react-native'
 import { getToday } from '@/utils'
 import { Calendar, DateNavigation, ReviewButton } from './components'
-import { useTodayReviewWritten } from './hooks'
+import { useReviewDataAtMonth } from './hooks'
 
 export default function CalendarScreen() {
   const { year, month, date: todayDate } = getToday()
   const [date, setDate] = useState({ year, month })
-  const isTodayReviewWritten = useTodayReviewWritten({ year, month, date: todayDate })
+  const { reviews } = useReviewDataAtMonth({ year, month })
+  const todayReview = reviews.find((review) => review.day === todayDate)
 
   return (
     <>
@@ -16,7 +16,7 @@ export default function CalendarScreen() {
         setCalendarDate={setDate}
       />
       <Calendar date={date} />
-      <ReviewButton isTodayReviewWritten={isTodayReviewWritten} />
+      <ReviewButton todayReview={todayReview} />
     </>
   )
 }

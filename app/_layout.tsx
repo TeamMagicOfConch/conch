@@ -4,12 +4,13 @@ import * as SplashScreen from 'expo-splash-screen'
 import { polyfill } from '@/utils'
 import { Slot } from 'expo-router'
 import { useStartUp } from './useStartUp'
+import OnboardScreen from './onboard'
 
 polyfill()
 SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
-  const { isAppReady, error } = useStartUp()
+  const { isAppReady, needOnboard, setNeedOnboard, error } = useStartUp()
 
   const onLayoutRootView = useCallback(async () => {
     if (isAppReady) await SplashScreen.hideAsync()
@@ -18,7 +19,9 @@ export default function Layout() {
   if (!isAppReady) return null
   if (error) console.error(error)
 
-  return (
+  return needOnboard ? (
+    <OnboardScreen setNeedOnboard={setNeedOnboard} />
+  ) : (
     <View
       style={{ flex: 1 }}
       onLayout={onLayoutRootView}

@@ -76,10 +76,10 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
     if (isFocused) fetchAndSetReviewData()
   }, [yearAndMonth, isFocused])
 
+  console.log(isFocused, reviews, reviews[yearAndMonth])
   return { reviews: reviews[yearAndMonth] || [] }
 }
 
-export function useTodayReviewWritten({ year, month, date }: { year: number; month: number; date: number }): boolean {
-  const { reviews } = useReviewDataAtMonth({ year, month })
+export function useTodayReviewWritten({ reviews, year, month, date }: { reviews: ReviewForCalendar[]; year: number; month: number; date: number }): boolean {
   return reviews?.some((review) => review.day === date) || false
 }

@@ -71,7 +71,7 @@ jobs:
         env:
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_OPENAI_API_KEY: ${{ secrets.EXPO_PUBLIC_OPENAI_API_KEY }}
-          EXPO_PUBLIC_TEMP_API_URL: https://backend.comatching.site
+          EXPO_PUBLIC_API_URL: https://magicofconch.site
         run: |
           eas build --local \
             --non-interactive \
