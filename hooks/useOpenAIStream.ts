@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { fetch } from 'react-native-fetch-api'
 import { useSound } from './useSound'
-import type { Review } from '@/types/review'
+import type { Review } from '@/utils/api/review/types'
 import { consts, getApiUrlWithPathAndParams, refreshToken } from '@/utils'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -45,7 +45,7 @@ export function useOpenAIStream(props?: Review) {
 
         const response =
           responseFirstAttempt.status === 401
-            ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await refreshToken()).accessToken}` } })
+            ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await refreshToken())?.data?.accessToken}` } })
             : responseFirstAttempt
 
         const reader = response.body?.getReader()

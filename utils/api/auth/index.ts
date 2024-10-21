@@ -6,10 +6,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { consts } from '@/utils/consts'
 import { AuthToken, AuthRequestBody, AuthResponse } from './types'
 
-const UNREGISTERED_CODE = 'USR-003'
+export const UNREGISTERED_CODE = 'USR-003'
 const REFRESH_TOKEN_EXPIRED_CODE = 'SEC-001'
 
-export const authAxios = axios.create({ baseURL: process.env.EXPO_PUBLIC_TEMP_API_URL })
+export const authAxios = axios.create({ baseURL: process.env.EXPO_PUBLIC_API_URL })
 authAxios.interceptors.response.use(onResponse, onResponseError)
 authAxios.interceptors.request.use(onRequest, onRequestError)
 
@@ -25,16 +25,6 @@ export async function onResponse(response: AxiosResponse<AuthResponse>): Promise
   const { code, data: authData } = data
 
   switch (code) {
-    // this logic will be replaced after onboarding developed
-    case UNREGISTERED_CODE:
-      console.log('register')
-      return await authPost('/user/register', {
-        osId: await DeviceInfo.getUniqueId(),
-        // osId: 'qwer',
-        osType: Platform.OS.toUpperCase(),
-        username: new Date().toISOString(),
-        initialReviewCount: 5,
-      })
     case REFRESH_TOKEN_EXPIRED_CODE:
       return await authPost('/user/login', { osId: await DeviceInfo.getUniqueId() })
     default:
@@ -49,7 +39,7 @@ export async function onResponseError(error: any) {
     originalRequest._retry = true
 
     try {
-      const { accessToken } = await refreshToken()
+      const { accessToken } = (await refreshToken())?.data
       originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
 
       return authAxios(originalRequest)
@@ -84,42 +74,62 @@ export function setTokens({ accessToken, refreshToken, rest }: AuthToken & { res
   ])
 }
 
-const DEFAULT_TOKENS: AuthToken = {
-  accessToken: null,
-  refreshToken: null,
+const DEFAULT_RESPONSE: AuthResponse = {
+  status: 500,
+  code: 'NO_RESPONSE',
+  message: 'response is empty',
+  data: {
+    accessToken: null,
+    refreshToken: null,
+    username: null,
+  },
 }
 
-export async function login(): Promise<AuthToken> {
+export async function register({ username, initialReviewCount }: Pick<AuthRequestBody, 'username' | 'initialReviewCount'>): Promise<AuthResponse> {
   try {
-    const osId = await DeviceInfo.getUniqueId()
-    const { data: axiosData } = await authPost('/user/login', { osId })
-    return axiosData.data
+    const { data: axiosData } = await authPost('/user/register', {
+      osId: await DeviceInfo.getUniqueId(),
+      // osId: 'qwer',
+      osType: Platform.OS.toUpperCase(),
+      username,
+      initialReviewCount,
+    })
+    return axiosData
   } catch (e) {
-    console.error('re-login failed', e)
-    return DEFAULT_TOKENS
+    console.error(e)
+    return DEFAULT_RESPONSE
   }
 }
 
-export async function refreshToken(): Promise<AuthToken> {
+export async function login(): Promise<AuthResponse> {
+  try {
+    const osId = await DeviceInfo.getUniqueId()
+    const { data: axiosData } = await authPost('/user/login', { osId })
+    return axiosData
+  } catch (e) {
+    console.error('re-login failed', e)
+    return DEFAULT_RESPONSE
+  }
+}
+
+export async function refreshToken(): Promise<AuthResponse> {
   console.log('refresh auth')
   const _refreshToken = await AsyncStorage.getItem(consts.asyncStorageKey.refreshToken)
   if (!_refreshToken) return login()
 
   try {
-    const refreshResponse = await authGet('/user/reissue', {
+    const { data: responseData } = await authGet('/user/reissue', {
       headers: {
         'Refresh-Token': _refreshToken,
       },
     })
-    const {
-      data: { accessToken, refreshToken },
-    } = refreshResponse.data
+    const { accessToken, refreshToken } = responseData?.data || {}
 
     setTokens({ accessToken, refreshToken })
 
-    return { accessToken, refreshToken }
+    return responseData
   } catch (e) {
     console.warn('reissue failed', e)
-    return DEFAULT_TOKENS
+    return DEFAULT_RESPONSE
   }
 }

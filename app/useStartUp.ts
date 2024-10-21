@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react'
 import { setTokens } from '@/utils'
-import { login } from '@/utils/api'
+import { UNREGISTERED_CODE, login } from '@/utils/api'
 
 export function useStartUp() {
   const [isAppReady, setIsAppReady] = useState(false)
   const [error, setError] = useState<any>(null)
+  const [needOnboard, setNeedOnboard] = useState(true)
 
   useEffect(() => {
     async function prepare() {
       try {
         const res = await login()
-        const { accessToken, refreshToken } = res
+        const { code, data } = res
 
-        await setTokens({ accessToken, refreshToken })
+        if (code === UNREGISTERED_CODE) {
+          setNeedOnboard(true)
+        } else {
+          setNeedOnboard(false)
+          const { accessToken, refreshToken } = data || {}
+          await setTokens({ accessToken, refreshToken })
+        }
 
         setIsAppReady(true)
       } catch (e) {
@@ -26,5 +33,5 @@ export function useStartUp() {
     prepare()
   }, [])
 
-  return { isAppReady, error }
+  return { isAppReady, needOnboard, setNeedOnboard, error }
 }

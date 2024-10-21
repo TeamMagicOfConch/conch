@@ -48,7 +48,10 @@ export default function Calendar({ date }: Props) {
                 style={[style.alignCenterCell, { width: width / 7 }]}
                 onPress={() =>
                   isMovable &&
-                  router.push({ pathname: isToday ? '/new-review' : '/review', params: { date: reviewDate, ...(feedbackType && { feedbackType }) } })
+                  router.push({
+                    pathname: isToday && !isReviewWritten ? '/new-review' : '/review',
+                    params: { date: reviewDate, ...(feedbackType && { feedbackType }) },
+                  })
                 }
               >
                 {isReviewWritten && (

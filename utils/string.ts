@@ -6,7 +6,7 @@ export function formatYearMonthDate(date: { year: number; month: number }) {
 }
 
 export function getApiUrlWithPathAndParams({ path, params }: { path: string; params?: Record<string, string> }) {
-  const urlWithParams = new URL(`${process.env.EXPO_PUBLIC_TEMP_API_URL}${path}`)
+  const urlWithParams = new URL(`${process.env.EXPO_PUBLIC_API_URL}${path}`)
 
   if (!!params) {
     Object.entries(params).forEach(([key, value]) => {
@@ -15,4 +15,10 @@ export function getApiUrlWithPathAndParams({ path, params }: { path: string; par
   }
 
   return urlWithParams.toString()
+}
+
+export function validateInput(input: string): boolean {
+  if (!input) return false
+  const regex = /^[a-zA-Z0-9가-힣]{1,10}$/
+  return regex.test(input)
 }
