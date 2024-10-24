@@ -4,6 +4,7 @@ import { useSound } from './useSound'
 import type { Review } from '@/utils/api/review/types'
 import { consts, getApiUrlWithPathAndParams, refreshToken } from '@/utils'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { login } from '@/utils/api/auth'
 
 const CHUNK_REGEX = /{(.*)}/g
 
@@ -48,7 +49,11 @@ export function useOpenAIStream(props?: Review) {
             ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await refreshToken())?.data?.accessToken}` } })
             : responseFirstAttempt
 
-        const reader = response.body?.getReader()
+        const finalResponse = response.status === 401
+          ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await login())?.data?.accessToken}` } })
+          : response
+
+        const reader = finalResponse.body?.getReader()
         const decoder = new TextDecoder('utf8')
 
         while (isMounted && reader) {
