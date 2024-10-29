@@ -45,7 +45,10 @@ export async function onResponseError(error: any) {
       return authAxios(originalRequest)
     } catch (error) {
       console.error('로그인 필요')
-      return Promise.reject(error)
+      const { accessToken } = (await login())?.data
+      originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
+
+      return authAxios(originalRequest)
     }
   }
 
