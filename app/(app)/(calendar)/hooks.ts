@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react'
 import { useIsFocused } from '@react-navigation/native'
 import { consts, getToday, reviewGet } from '@/utils'
 import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
+import { useRefresh } from '@/hooks/useRefresh'
 
 type CalendarCell = {
   date: string
@@ -49,31 +50,45 @@ export function useCalendar({ year, month }: { year: number; month: number }): {
   return { calendar }
 }
 
+async function fetchAndSetReviewData({
+  year,
+  month,
+  reviews,
+  setReviews,
+}: {
+  year: number
+  month: number
+  reviews: MonthlyReviews
+  setReviews: Dispatch<SetStateAction<MonthlyReviews>>
+}) {
+  const thisMonth = new Date().getMonth()
+  const isThisMonth = month === thisMonth
+  const isFuture = month > thisMonth
+
+  const yearAndMonth: MonthlyReviewKey = `${year}-${month + 1}`
+
+  if (!isThisMonth && !!reviews[yearAndMonth]) return
+  if (isFuture) return
+
+  const {
+    data: { data: reviewsData },
+  } = await reviewGet('/month', { year, month: month + 1 })
+
+  setReviews((prev) => ({
+    ...prev,
+    [yearAndMonth]: reviewsData,
+  }))
+}
+
 export function useReviewDataAtMonth({ year, month }: { year: number; month: number }): { reviews: ReviewForCalendar[] } {
   const [reviews, setReviews] = useState<MonthlyReviews>({})
+  useRefresh(() => fetchAndSetReviewData({ year, month, reviews, setReviews }))
   const isFocused = useIsFocused()
 
   const yearAndMonth: MonthlyReviewKey = `${year}-${month + 1}`
 
   useEffect(() => {
-    async function fetchAndSetReviewData() {
-      const thisMonth = new Date().getMonth()
-      const isThisMonth = month === thisMonth
-      const isFuture = month > thisMonth
-
-      if (!isThisMonth && !!reviews[yearAndMonth]) return
-      if (isFuture) return
-
-      const {
-        data: { data: reviewsData },
-      } = await reviewGet('/month', { year, month: month + 1 })
-
-      setReviews((prev) => ({
-        ...prev,
-        [yearAndMonth]: reviewsData,
-      }))
-    }
-    if (isFocused) fetchAndSetReviewData()
+    if (isFocused) fetchAndSetReviewData({ year, month, reviews, setReviews })
   }, [yearAndMonth, isFocused])
 
   console.log(isFocused, reviews, reviews[yearAndMonth])
