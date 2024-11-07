@@ -5,11 +5,13 @@ import { polyfill } from '@/utils'
 import { Slot } from 'expo-router'
 import { useStartUp } from './useStartUp'
 import OnboardScreen from './onboard'
+import { useRefresh } from '@/hooks/useRefresh'
 
 polyfill()
 SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
+  useRefresh()
   const { isAppReady, needOnboard, setNeedOnboard, error } = useStartUp()
 
   const onLayoutRootView = useCallback(async () => {

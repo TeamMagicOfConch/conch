@@ -8,7 +8,7 @@ export function formatYearMonthDate(date: { year: number; month: number }) {
 export function getApiUrlWithPathAndParams({ path, params }: { path: string; params?: Record<string, string> }) {
   const urlWithParams = new URL(`${process.env.EXPO_PUBLIC_API_URL}${path}`)
 
-  if (!!params) {
+  if (params) {
     Object.entries(params).forEach(([key, value]) => {
       urlWithParams.searchParams.append(key, value)
     })

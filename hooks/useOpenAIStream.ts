@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { login } from '@/utils/api/auth'
 
 const CHUNK_REGEX = /{(.*)}/g
+const KO_TIME_OFFSET = 9 * 60 * 60 * 1000 // 9시간
 
 export function useOpenAIStream(props?: Review) {
   if (!props) return null
@@ -36,7 +37,7 @@ export function useOpenAIStream(props?: Review) {
           body: JSON.stringify({
             body: reviewBody,
             type: feedbackType,
-            reviewDate: new Date().toISOString().split('T')[0],
+            reviewDate: new Date(new Date().getTime() + KO_TIME_OFFSET).toISOString().split('T')[0],
           }),
           reactNative: {
             textStreaming: true,
@@ -49,9 +50,10 @@ export function useOpenAIStream(props?: Review) {
             ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await refreshToken())?.data?.accessToken}` } })
             : responseFirstAttempt
 
-        const finalResponse = response.status === 401
-          ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await login())?.data?.accessToken}` } })
-          : response
+        const finalResponse =
+          response.status === 401
+            ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await login())?.data?.accessToken}` } })
+            : response
 
         const reader = finalResponse.body?.getReader()
         const decoder = new TextDecoder('utf8')
