@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "953859629885",
+    "project_id": "magicconch-6ea0b",
+    "storage_bucket": "magicconch-6ea0b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953859629885:android:2ad9dac358ac90b3561b54",
+        "android_client_info": {
+          "package_name": "com.magicconch.MagicConch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953859629885-mmgr8e7hsdggc38k77tbnqvqle7vpq91.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.magicconch.MagicConch",
+            "certificate_hash": "9e60fcb75200b66561728d1bf3c5118b2cf0a545"
+          }
+        },
+        {
+          "client_id": "953859629885-caslnaqoi50fldvdd97gdi2ab2g4idbi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOOra4qMqrQRRJAM0tNniUjdtoxQq96v8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953859629885-caslnaqoi50fldvdd97gdi2ab2g4idbi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "953859629885-0c9ams7v8bv49vo2u23iv8iu27s9ffmp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.magicconch.MagicConch"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
