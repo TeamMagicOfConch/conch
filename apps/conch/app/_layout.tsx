@@ -3,9 +3,9 @@ import { View } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import { polyfill } from '@conch/utils'
 import { Slot } from 'expo-router'
+import { useRefresh } from '@conch/hooks/useRefresh'
 import { useStartUp } from './useStartUp'
 import OnboardScreen from './onboard'
-import { useRefresh } from '@conch/hooks/useRefresh'
 
 polyfill()
 SplashScreen.preventAutoHideAsync()

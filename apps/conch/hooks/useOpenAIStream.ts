@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react'
 import { fetch } from 'react-native-fetch-api'
-import { useSound } from './useSound'
 import type { Review } from '@conch/utils/api/review/types'
 import { consts, getApiUrlWithPathAndParams, refreshToken } from '@conch/utils'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { login } from '@conch/utils/api/auth'
+import { useSound } from './useSound'
 
 const CHUNK_REGEX = /{(.*)}/g
 const KO_TIME_OFFSET = 9 * 60 * 60 * 1000 // 9시간
 
 export function useOpenAIStream(props?: Review) {
-  if (!props) return null
-  const { body: reviewBody, feedbackType } = props
+  const { body: reviewBody, feedbackType } = props || {}
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -83,12 +82,14 @@ export function useOpenAIStream(props?: Review) {
       }
     }
 
-    if (!!feedbackType) streamData()
+    if (feedbackType) streamData()
 
     return () => {
       isMounted = false
     }
-  }, [feedbackType])
+  }, [feedbackType, playSound, reviewBody, setToggleFadeOut])
+
+  if (!props) return null
 
   return { response, loading, error }
 }

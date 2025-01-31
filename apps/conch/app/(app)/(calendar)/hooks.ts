@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react'
 import { useIsFocused } from '@react-navigation/native'
 import { consts, getToday, reviewGet } from '@conch/utils'
-import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
 import { useRefresh } from '@conch/hooks/useRefresh'
+import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
 
 type CalendarCell = {
   date: string
@@ -89,7 +89,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
 
   useEffect(() => {
     if (isFocused) fetchAndSetReviewData({ year, month, reviews, setReviews })
-  }, [yearAndMonth, isFocused])
+  }, [yearAndMonth, isFocused, year, month, reviews])
 
   console.log(isFocused, reviews, reviews[yearAndMonth])
   return { reviews: reviews[yearAndMonth] || [] }

@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { NavigationArrowLeft, NavigationArrowRight } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import SoraHandle, { HANDLE_ACTIVE_PERCENT } from './SoraHandle'
 import { useReviewContext } from '../context'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function ReviewSubmitMenu() {
   const [handlePosition, setHandlePosition] = useState(0)

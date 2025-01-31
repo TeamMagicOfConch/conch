@@ -40,13 +40,13 @@ export async function onResponseError(error: any) {
 
     try {
       const { accessToken } = (await refreshToken())?.data
-      originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
+      originalRequest.headers.Authorization = `Bearer ${accessToken}`
 
       return authAxios(originalRequest)
     } catch (error) {
       console.error('로그인 필요')
       const { accessToken } = (await login())?.data
-      originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
+      originalRequest.headers.Authorization = `Bearer ${accessToken}`
 
       return authAxios(originalRequest)
     }
@@ -59,7 +59,7 @@ export async function onRequest(config: InternalAxiosRequestConfig): Promise<Int
   const token = await AsyncStorage.getItem(consts.asyncStorageKey.accessToken)
   const isAuthentication = config.url?.includes('login') || config.url?.includes('register')
   if (token && !isAuthentication) {
-    config.headers['Authorization'] = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`
   }
   config.headers['Content-Type'] = 'application/json'
   return config
@@ -74,7 +74,7 @@ export function setTokens({ accessToken, refreshToken, username, rest }: AuthTok
     ...(accessToken ? [AsyncStorage.setItem(consts.asyncStorageKey.accessToken, accessToken)] : []),
     ...(refreshToken ? [AsyncStorage.setItem(consts.asyncStorageKey.refreshToken, refreshToken)] : []),
     ...(username ? [AsyncStorage.setItem(consts.asyncStorageKey.username, username)] : []),
-    ...(rest ? rest : []),
+    ...(rest || []),
   ])
 }
 

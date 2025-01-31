@@ -1,7 +1,7 @@
-import { useReviewData } from './hooks'
 import { ReviewLayoutBase } from '@conch/components'
 import { Colors } from '@conch/assets/colors'
 import { consts } from '@conch/utils'
+import { useReviewData } from './hooks'
 
 export default function ReviewLayout() {
   const { review } = useReviewData()

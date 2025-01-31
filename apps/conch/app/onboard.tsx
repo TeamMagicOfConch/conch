@@ -10,7 +10,7 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
   const [error, setError] = useState({ username: '', initialReviewCount: '' })
   const [disabled, setDisabled] = useState(true)
 
-  const openURL = useCallback((url: string) => () => Linking.openURL(url), [Linking])
+  const openURL = useCallback((url: string) => () => Linking.openURL(url), [])
 
   const onPress = useCallback(async () => {
     const response = await register({ username, initialReviewCount })
@@ -25,7 +25,7 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
 
   useEffect(() => {
     const isValidUsername = validateInput(username)
-    const isValidInitialReviewCount = initialReviewCount !== undefined && 0 <= initialReviewCount && initialReviewCount <= 31
+    const isValidInitialReviewCount = initialReviewCount !== undefined && initialReviewCount >= 0 && initialReviewCount <= 31
     if (isValidUsername && isValidInitialReviewCount) {
       setDisabled(false)
     } else setDisabled(true)
@@ -33,7 +33,7 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
       username: !username || isValidUsername ? '' : '*한글 / 영어 / 숫자 10자 이내로 입력하세요',
       initialReviewCount: !initialReviewCount || Number.isNaN(initialReviewCount) || isValidInitialReviewCount ? '' : '*0~30 사이의 정수를 입력하세요',
     })
-  }, [username, validateInput, initialReviewCount])
+  }, [username, initialReviewCount])
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
