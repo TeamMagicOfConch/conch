@@ -4,7 +4,7 @@ import { register, setTokens, validateInput } from '@conch/utils'
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
 import { SafeAreaView, View, Text, TextInput, Linking, StyleSheet, Pressable, Keyboard } from 'react-native'
 
-export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Dispatch<SetStateAction<boolean>> }) {
+export default function OnboardScreen({ setNeedOnboard, onLayout }: { setNeedOnboard: Dispatch<SetStateAction<boolean>>; onLayout: () => void }) {
   const [username, setUsername] = useState('')
   const [initialReviewCount, setInitialReviewCount] = useState<number | undefined>()
   const [error, setError] = useState({ username: '', initialReviewCount: '' })
@@ -36,7 +36,10 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
   }, [username, initialReviewCount])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView
+      onLayout={onLayout}
+      style={{ flex: 1 }}
+    >
       <Pressable
         onPress={Keyboard.dismiss}
         style={style.root}

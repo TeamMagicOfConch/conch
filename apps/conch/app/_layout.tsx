@@ -22,7 +22,10 @@ export default function Layout() {
   if (error) console.error(error)
 
   return needOnboard ? (
-    <OnboardScreen setNeedOnboard={setNeedOnboard} />
+    <OnboardScreen
+      onLayout={onLayoutRootView}
+      setNeedOnboard={setNeedOnboard}
+    />
   ) : (
     <View
       style={{ flex: 1 }}

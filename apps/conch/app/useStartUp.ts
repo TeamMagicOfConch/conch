@@ -15,6 +15,7 @@ export function useStartUp() {
         const { code, data } = res
 
         if (code === UNREGISTERED_CODE) {
+          console.log('need onboard')
           setNeedOnboard(true)
         } else {
           setNeedOnboard(false)
@@ -22,6 +23,7 @@ export function useStartUp() {
           await setTokens({ accessToken, refreshToken, username })
         }
 
+        console.log('prepare done', code, data, needOnboard)
         setIsAppReady(true)
       } catch (e) {
         console.warn(e)
@@ -32,7 +34,7 @@ export function useStartUp() {
     }
 
     prepare()
-  }, [])
+  }, [needOnboard])
 
   return { isAppReady, needOnboard, setNeedOnboard, error }
 }
