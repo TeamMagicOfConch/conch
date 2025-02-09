@@ -1,7 +1,7 @@
 import { ReviewLayoutBase } from '@/components'
+import { Keyboard, Pressable } from 'react-native'
 import { ReviewContextProvider } from './context'
 import { NewReviewFooter } from './components'
-import { Keyboard, Pressable } from 'react-native'
 
 export default function ReviewLayout() {
   return (

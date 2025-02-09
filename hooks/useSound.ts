@@ -40,7 +40,7 @@ export function useSound() {
     return () => {
       sound?.unloadAsync()
     }
-  }, [toggleFadeOut])
+  }, [sound, toggleFadeOut])
 
   return {
     playSound,

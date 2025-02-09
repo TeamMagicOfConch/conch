@@ -14,7 +14,7 @@ export function useRefresh(callback?: (elapsed?: number) => void) {
     return () => {
       subscription.remove()
     }
-  }, [])
+  }, [handleAppStateChange])
 
   const handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (appState.current.match(/active/) && nextAppState.match(/background|inactive/)) {
@@ -27,9 +27,9 @@ export function useRefresh(callback?: (elapsed?: number) => void) {
       const elapsedMinutes = elapsed / (1000 * 60)
       const elapsedDay = elapsed / (1000 * 60 * 60 * 24)
 
-      if (10 < elapsedMinutes && elapsedDay < 1) {
+      if (elapsedMinutes > 10 && elapsedDay < 1) {
         refreshToken()
-      } else if (1 < elapsedDay) {
+      } else if (elapsedDay > 1) {
         login()
       }
 

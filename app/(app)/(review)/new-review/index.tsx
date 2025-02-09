@@ -3,9 +3,9 @@ import { ScrollView, TextInput, StyleSheet, Keyboard, useWindowDimensions } from
 import SoraReponseMenu from '@/components/common/SoraReponseMenu'
 import { Colors } from '@/assets/colors'
 import { useOpenAIStream } from '@/hooks'
-import { useReviewContext } from './context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Review } from '@/utils/api/review/types'
+import { useReviewContext } from './context'
 
 const PLACEHOLDER =
   '오늘은 어떤 일이 있었나요?\n무슨 느낌이나 생각이 들었나요?\n(1000자 이내)\n\n*하루에 한 번, 손잡이를 원하는 방향으로 잡아당겨 소라의 답변을 들을 수 있어요.'

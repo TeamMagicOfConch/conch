@@ -35,6 +35,7 @@ module.exports = {
     semi: ['error', 'never'],
     'import/no-extraneous-dependencies': 'off',
     'import/prefer-default-export': 'off',
+    'react/react-in-jsx-scope': 'off',
     'consistent-return': 'warn',
     'no-return-assign': 'off',
     'no-eq-null': 'error',

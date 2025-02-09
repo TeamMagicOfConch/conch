@@ -1,7 +1,7 @@
-import { useReviewData } from './hooks'
 import { ReviewLayoutBase } from '@/components'
 import { Colors } from '@/assets/colors'
 import { consts } from '@/utils'
+import { useReviewData } from './hooks'
 
 export default function ReviewLayout() {
   const { review } = useReviewData()

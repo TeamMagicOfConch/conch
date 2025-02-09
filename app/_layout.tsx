@@ -3,9 +3,9 @@ import { View } from 'react-native'
 import * as SplashScreen from 'expo-splash-screen'
 import { polyfill } from '@/utils'
 import { Slot } from 'expo-router'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useStartUp } from './useStartUp'
 import OnboardScreen from './onboard'
-import { useRefresh } from '@/hooks/useRefresh'
 
 polyfill()
 SplashScreen.preventAutoHideAsync()
@@ -22,7 +22,10 @@ export default function Layout() {
   if (error) console.error(error)
 
   return needOnboard ? (
-    <OnboardScreen setNeedOnboard={setNeedOnboard} />
+    <OnboardScreen
+      onLayout={onLayoutRootView}
+      setNeedOnboard={setNeedOnboard}
+    />
   ) : (
     <View
       style={{ flex: 1 }}

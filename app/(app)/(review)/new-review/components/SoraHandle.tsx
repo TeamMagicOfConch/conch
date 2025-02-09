@@ -4,8 +4,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { Sora } from '@/assets/icons'
 import { Colors } from '@/assets/colors'
-import { useReviewContext } from '../context'
 import { consts } from '@/utils'
+import { useReviewContext } from '../context'
 
 export const HANDLE_ACTIVE_PERCENT = 70
 
@@ -64,7 +64,7 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
           },
         }),
       ),
-    [isReviewWritten],
+    [isReviewWritten, pan, setReview],
   )
 
   return (
