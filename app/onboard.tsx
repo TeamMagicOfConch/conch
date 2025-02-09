@@ -2,9 +2,15 @@ import { Colors } from '@/assets/colors'
 import { PrimaryButton } from '@/components'
 import { register, setTokens, validateInput } from '@/utils'
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
-import { SafeAreaView, View, Text, TextInput, Linking, StyleSheet, Pressable, Keyboard } from 'react-native'
+import { SafeAreaView, View, Text, TextInput, Linking, StyleSheet, Pressable, Keyboard, LayoutChangeEvent } from 'react-native'
 
-export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Dispatch<SetStateAction<boolean>> }) {
+export default function OnboardScreen({
+  onLayout,
+  setNeedOnboard,
+}: {
+  onLayout: (event: LayoutChangeEvent) => void
+  setNeedOnboard: Dispatch<SetStateAction<boolean>>
+}) {
   const [username, setUsername] = useState('')
   const [initialReviewCount, setInitialReviewCount] = useState<number | undefined>()
   const [error, setError] = useState({ username: '', initialReviewCount: '' })
@@ -36,7 +42,10 @@ export default function OnboardScreen({ setNeedOnboard }: { setNeedOnboard: Disp
   }, [username, validateInput, initialReviewCount])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView
+      style={{ flex: 1 }}
+      onLayout={onLayout}
+    >
       <Pressable
         onPress={Keyboard.dismiss}
         style={style.root}
