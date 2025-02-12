@@ -1,6 +1,5 @@
-import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { StyleSheet, Animated, View, PanResponder, type PanResponderInstance, Dimensions } from 'react-native'
-import { useRouter, useLocalSearchParams } from 'expo-router'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { Sora } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
@@ -16,15 +15,11 @@ interface Props {
 }
 
 export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
-  const router = useRouter()
-  const { date: reviewDate } = useLocalSearchParams()
   const [panResponder, setPanResponder] = useState<PanResponderInstance>()
   const lastHapticTime = useRef(Date.now())
   const pan = useRef(new Animated.ValueXY()).current
   const reviewContext = useReviewContext()
-
-  if (!reviewContext) return null
-  const { setReview } = reviewContext
+  const { setReview } = reviewContext || {}
 
   pan.addListener((value) => {
     if (isReviewWritten) {
@@ -32,40 +27,40 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
     }
   })
 
-  useEffect(
-    () =>
-      setPanResponder(
-        PanResponder.create({
-          onMoveShouldSetPanResponder: () => true,
-          onPanResponderMove: Animated.event([null, { dx: pan.x }], {
-            useNativeDriver: false,
-            listener: (evt) => {
-              if (isReviewWritten) {
-                const now = Date.now()
-                if (now - lastHapticTime.current > 100) {
-                  impactAsync(ImpactFeedbackStyle.Light)
-                  lastHapticTime.current = now
-                }
+  useEffect(() => {
+    if (!setReview) return
+
+    setPanResponder(
+      PanResponder.create({
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderMove: Animated.event([null, { dx: pan.x }], {
+          useNativeDriver: false,
+          listener: (evt) => {
+            if (isReviewWritten) {
+              const now = Date.now()
+              if (now - lastHapticTime.current > 100) {
+                impactAsync(ImpactFeedbackStyle.Light)
+                lastHapticTime.current = now
               }
-            },
-          }),
-          onPanResponderRelease: (_, state) => {
-            // -100 ~ 100
-            const dxPercent = (state.dx / Dimensions.get('window').width) * 200
-            const fActivated = dxPercent > HANDLE_ACTIVE_PERCENT
-            const tActivated = dxPercent < -HANDLE_ACTIVE_PERCENT
-            const activated = (fActivated || tActivated) && isReviewWritten
-
-            if (activated) {
-              setReview((prev) => ({ ...prev, feedbackType: tActivated ? consts.reviewType.thinking : consts.reviewType.feeling }))
             }
-
-            Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false, speed: 6, bounciness: 0 }).start()
           },
         }),
-      ),
-    [isReviewWritten, pan, setReview],
-  )
+        onPanResponderRelease: (_, state) => {
+          // -100 ~ 100
+          const dxPercent = (state.dx / Dimensions.get('window').width) * 200
+          const fActivated = dxPercent > HANDLE_ACTIVE_PERCENT
+          const tActivated = dxPercent < -HANDLE_ACTIVE_PERCENT
+          const activated = (fActivated || tActivated) && isReviewWritten
+
+          if (activated) {
+            setReview((prev) => ({ ...prev, feedbackType: tActivated ? consts.reviewType.thinking : consts.reviewType.feeling }))
+          }
+
+          Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false, speed: 6, bounciness: 0 }).start()
+        },
+      }),
+    )
+  }, [isReviewWritten, pan, setReview])
 
   return (
     <>

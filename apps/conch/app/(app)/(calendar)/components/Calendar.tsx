@@ -4,16 +4,18 @@ import { SoraBg } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
 import { FeedbackType } from '@conch/utils/api/review/types'
 import { useCalendar } from '../hooks'
+import { ReviewForCalendar } from '../types'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 
 interface Props {
+  reviews: ReviewForCalendar[]
   date: { year: number; month: number }
 }
 
-export default function Calendar({ date }: Props) {
+export default function Calendar({ reviews, date }: Props) {
   const { year, month } = date
-  const { calendar } = useCalendar({ year, month })
+  const { calendar } = useCalendar({ reviews, year, month })
   const { width } = useWindowDimensions()
   const router = useRouter()
 

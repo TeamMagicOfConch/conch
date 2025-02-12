@@ -33,6 +33,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     semi: ['error', 'never'],
+    'global-require': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/prefer-default-export': 'off',
     'consistent-return': 'warn',

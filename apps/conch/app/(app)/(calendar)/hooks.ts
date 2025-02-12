@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react'
-import { useIsFocused } from '@react-navigation/native'
+import { useState, useEffect, useMemo, Dispatch, SetStateAction, useCallback } from 'react'
 import { consts, getToday, reviewGet } from '@conch/utils'
 import { useRefresh } from '@conch/hooks/useRefresh'
 import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
@@ -11,8 +10,7 @@ type CalendarCell = {
   isTReview: boolean
 }
 
-export function useCalendar({ year, month }: { year: number; month: number }): { calendar: CalendarCell[][] } {
-  const { reviews } = useReviewDataAtMonth({ year, month })
+export function useCalendar({ reviews, year, month }: { reviews: ReviewForCalendar[]; year: number; month: number }): { calendar: CalendarCell[][] } {
   const { reviewType } = consts
   const fReviewDates = reviews.filter((review) => review.feedbackType === reviewType.feeling).map((review) => review.day)
   const tReviewDates = reviews.filter((review) => review.feedbackType === reviewType.thinking).map((review) => review.day)
@@ -50,48 +48,50 @@ export function useCalendar({ year, month }: { year: number; month: number }): {
   return { calendar }
 }
 
-async function fetchAndSetReviewData({
-  year,
-  month,
-  reviews,
-  setReviews,
-}: {
-  year: number
-  month: number
-  reviews: MonthlyReviews
-  setReviews: Dispatch<SetStateAction<MonthlyReviews>>
-}) {
-  const thisMonth = new Date().getMonth()
-  const isThisMonth = month === thisMonth
-  const isFuture = month > thisMonth
-
-  const yearAndMonth: MonthlyReviewKey = `${year}-${month + 1}`
-
-  if (!isThisMonth && !!reviews[yearAndMonth]) return
-  if (isFuture) return
-
-  const {
-    data: { data: reviewsData },
-  } = await reviewGet('/month', { year, month: month + 1 })
-
-  setReviews((prev) => ({
-    ...prev,
-    [yearAndMonth]: reviewsData,
-  }))
-}
-
 export function useReviewDataAtMonth({ year, month }: { year: number; month: number }): { reviews: ReviewForCalendar[] } {
   const [reviews, setReviews] = useState<MonthlyReviews>({})
-  useRefresh(() => fetchAndSetReviewData({ year, month, reviews, setReviews }))
-  const isFocused = useIsFocused()
+  const [date, setDate] = useState<number>(new Date().getDate())
 
-  const yearAndMonth: MonthlyReviewKey = `${year}-${month + 1}`
+  const fetchAndSetReviewData = useCallback(
+    async ({ year, month }: { year: number; month: number }) => {
+      const thisMonth = new Date().getMonth()
+      const isThisMonth = month === thisMonth
+      const isFuture = month > thisMonth
+
+      const yearAndMonth: MonthlyReviewKey = `${year}-${month + 1}`
+
+      if (!isThisMonth && !!reviews[yearAndMonth]) return
+      if (isFuture) return
+
+      const {
+        data: { data: reviewsData },
+      } = await reviewGet('/month', { year, month: month + 1 })
+
+      if (isThisMonth && reviewsData?.length === reviews[yearAndMonth]?.length) return
+      setReviews((prev) => ({
+        ...prev,
+        [yearAndMonth]: reviewsData,
+      }))
+    },
+    [reviews],
+  )
 
   useEffect(() => {
-    if (isFocused) fetchAndSetReviewData({ year, month, reviews, setReviews })
-  }, [yearAndMonth, isFocused, year, month, reviews])
+    fetchAndSetReviewData({ year, month })
+  }, [year, month, fetchAndSetReviewData])
 
-  console.log(isFocused, reviews, reviews[yearAndMonth])
+  const refreshWhenDateChanged = useCallback(() => {
+    const { date: todayDate } = getToday()
+    if (date !== todayDate) {
+      setDate(todayDate)
+      fetchAndSetReviewData({ year, month })
+    }
+  }, [date, fetchAndSetReviewData, year, month])
+
+  useRefresh(() => refreshWhenDateChanged())
+
+  const yearAndMonth = useMemo<MonthlyReviewKey>(() => `${year}-${month + 1}`, [year, month])
+
   return { reviews: reviews[yearAndMonth] || [] }
 }
 

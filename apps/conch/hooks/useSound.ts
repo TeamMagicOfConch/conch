@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Audio } from 'expo-av'
 
 export function useSound() {
   const [sound, setSound] = useState<Audio.Sound>()
   const [toggleFadeOut, setToggleFadeOut] = useState(false)
 
-  async function playSound() {
+  const playSound = useCallback(async () => {
     console.log('Loading Sound')
     const { sound } = await Audio.Sound.createAsync(require('@conch/assets/write-sound.mp3'))
     setSound(sound)
 
     console.log('Playing Sound')
     await sound.playAsync()
-  }
+  }, [])
 
   useEffect(() => {
     async function fadeOut() {

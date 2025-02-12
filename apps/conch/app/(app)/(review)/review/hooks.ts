@@ -17,9 +17,9 @@ export function useReviewData() {
     async function fetchAndSetReviewData() {
       const {
         data: { data: reviewsData },
-      } = await reviewGet('/day', { year, month: month + 1, day })
+      } = await reviewGet<RawReview>('/day', { year, month: month + 1, day })
 
-      const { body, feedback } = reviewsData as RawReview
+      const { body, feedback } = reviewsData
 
       setReview({
         body,

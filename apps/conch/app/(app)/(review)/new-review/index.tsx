@@ -15,9 +15,6 @@ export default function WriteReviewScreen() {
   const { height } = useWindowDimensions()
   const reviewContext = useReviewContext()
   const { response = '', loading, error } = useOpenAIStream(reviewContext?.review) || {}
-  if (!reviewContext) return null
-  const { review, setReview } = reviewContext
-  const reviewSubmitted = !!review.feedbackType
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (e) => {
@@ -33,6 +30,11 @@ export default function WriteReviewScreen() {
       keyboardDidHideListener.remove()
     }
   }, [])
+
+  if (!reviewContext) return null
+
+  const { review, setReview } = reviewContext
+  const reviewSubmitted = !!review.feedbackType
   function setReviewBody(reviewBody: string) {
     setReview((prev: Review) => ({
       ...prev,
@@ -50,7 +52,7 @@ export default function WriteReviewScreen() {
           placeholder={PLACEHOLDER}
           placeholderTextColor={Colors.lightGrey}
           value={review.body}
-          onChangeText={setReviewBody}
+          onChangeText={(text) => setReviewBody(text)}
           style={[style.textInput, { maxHeight: height * 0.85 - keyboardHeight - 50 }]}
         />
       </ScrollView>

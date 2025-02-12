@@ -5,18 +5,18 @@ import { NavigationArrowLeft, NavigationArrowRight } from '@conch/assets/icons'
 import { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { consts } from '@conch/utils'
-import { useReviewDataAtMonth } from '../hooks'
+import { ReviewForCalendar } from '../types'
 
 interface Props {
+  reviews: ReviewForCalendar[]
   calendarDate: { year: number; month: number }
   setCalendarDate: (date: { year: number; month: number }) => void
 }
 
-export default function DateNavigation({ calendarDate, setCalendarDate }: Props) {
+export default function DateNavigation({ reviews, calendarDate, setCalendarDate }: Props) {
   const [username, setUsername] = useState<string | null>()
   const { year, month } = calendarDate
   const displayDate = formatYearMonthDate({ year, month: month + 1 })
-  const { reviews } = useReviewDataAtMonth({ year, month })
   const reviewsCount = reviews?.length ?? 0
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState, useContext, createContext, type Dispatch, type SetStateAction, type ReactNode } from 'react'
+import { useState, useContext, createContext, type Dispatch, type SetStateAction, type ReactNode, useMemo } from 'react'
 import type { Review } from '@conch/utils/api/review/types'
 
 interface ReviewContextType {
@@ -10,8 +10,9 @@ const ReviewContext = createContext<ReviewContextType | undefined>(undefined)
 
 export function ReviewContextProvider({ children }: { children: ReactNode }) {
   const [review, setReview] = useState<Review>({ body: '', feedback: '' })
+  const value = useMemo(() => ({ review, setReview }), [review])
 
-  return <ReviewContext.Provider value={{ review, setReview }}>{children}</ReviewContext.Provider>
+  return <ReviewContext.Provider value={value}>{children}</ReviewContext.Provider>
 }
 
 export function useReviewContext() {

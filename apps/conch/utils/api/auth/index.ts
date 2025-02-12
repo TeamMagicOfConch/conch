@@ -26,7 +26,7 @@ export async function onResponse(response: AxiosResponse<AuthResponse>): Promise
 
   switch (code) {
     case REFRESH_TOKEN_EXPIRED_CODE:
-      return await authPost('/user/login', { osId: await DeviceInfo.getUniqueId() })
+      return authPost('/user/login', { osId: await DeviceInfo.getUniqueId() })
     default:
       return response
   }
@@ -39,13 +39,13 @@ export async function onResponseError(error: any) {
     originalRequest._retry = true
 
     try {
-      const { accessToken } = (await refreshToken())?.data
+      const { accessToken } = (await refreshToken()).data || {}
       originalRequest.headers.Authorization = `Bearer ${accessToken}`
 
       return authAxios(originalRequest)
     } catch (error) {
       console.error('로그인 필요')
-      const { accessToken } = (await login())?.data
+      const { accessToken } = (await login()).data || {}
       originalRequest.headers.Authorization = `Bearer ${accessToken}`
 
       return authAxios(originalRequest)
@@ -55,7 +55,8 @@ export async function onResponseError(error: any) {
   return Promise.reject(error)
 }
 
-export async function onRequest(config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> {
+export async function onRequest(_config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> {
+  const config = { ..._config }
   const token = await AsyncStorage.getItem(consts.asyncStorageKey.accessToken)
   const isAuthentication = config.url?.includes('login') || config.url?.includes('register')
   if (token && !isAuthentication) {
@@ -109,6 +110,7 @@ export async function login(): Promise<AuthResponse> {
   try {
     const osId = await DeviceInfo.getUniqueId()
     const { data: axiosData } = (await authPost('/user/login', { osId })) || {}
+    console.log('login', axiosData)
     return axiosData
   } catch (e) {
     console.error('re-login failed', e, (e as any).stack)
