@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { fetch } from 'react-native-fetch-api'
+import { fetch } from 'expo/fetch'
 import type { Review } from '@conch/utils/api/review/types'
 import { consts, getApiUrlWithPathAndParams, refreshToken } from '@conch/utils'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -30,7 +30,7 @@ export function useOpenAIStream(props?: Review) {
         const option = {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/event-stream',
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
@@ -38,9 +38,6 @@ export function useOpenAIStream(props?: Review) {
             type: feedbackType,
             reviewDate: new Date(new Date().getTime() + KO_TIME_OFFSET).toISOString().split('T')[0],
           }),
-          reactNative: {
-            textStreaming: true,
-          },
         }
         const responseFirstAttempt: Response = await fetch(url, option)
 
@@ -58,9 +55,8 @@ export function useOpenAIStream(props?: Review) {
         const decoder = new TextDecoder('utf8')
 
         while (isMounted && reader) {
-          const data = await reader.read()
-          const { done, value } = data ?? {}
-          if (done) break
+          const { done, value } = await reader.read()
+          if (done) return
           const chunk = decoder.decode(value)
           const matches = [...chunk.matchAll(CHUNK_REGEX)]
           matches?.forEach((match) => {
