@@ -2,7 +2,7 @@ import { Colors } from '@conch/assets/colors'
 import { PrimaryButton } from '@conch/components'
 import { register, setTokens, validateInput } from '@conch/utils'
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
-import { SafeAreaView, View, Text, TextInput, Linking, StyleSheet, Pressable, Keyboard } from 'react-native'
+import { SafeAreaView, View, Text, TextInput, Linking, StyleSheet, Pressable, Keyboard, LayoutChangeEvent } from 'react-native'
 
 export default function OnboardScreen({ setNeedOnboard, onLayout }: { setNeedOnboard: Dispatch<SetStateAction<boolean>>; onLayout: () => void }) {
   const [username, setUsername] = useState('')
