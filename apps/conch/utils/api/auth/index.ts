@@ -110,7 +110,6 @@ export async function login(): Promise<AuthResponse> {
   try {
     const osId = await DeviceInfo.getUniqueId()
     const { data: axiosData } = (await authPost('/user/login', { osId })) || {}
-    console.log('login', axiosData)
     return axiosData
   } catch (e) {
     console.error('re-login failed', e, (e as any).stack)
@@ -119,7 +118,6 @@ export async function login(): Promise<AuthResponse> {
 }
 
 export async function refreshToken(): Promise<AuthResponse> {
-  console.log('refresh auth')
   const _refreshToken = await AsyncStorage.getItem(consts.asyncStorageKey.refreshToken)
   if (!_refreshToken) return login()
 
