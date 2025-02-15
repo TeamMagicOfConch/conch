@@ -1,13 +1,10 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ],
       "@conch/*": [
-        "./apps/conch/*"
+        "./*"
       ]
     }
   },
