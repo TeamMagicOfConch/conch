@@ -9,13 +9,11 @@ export function useStartUp() {
 
   useEffect(() => {
     async function prepare() {
-      console.log('prepare')
       try {
         const res = await login()
         const { code, data } = res
 
         if (code === UNREGISTERED_CODE) {
-          console.log('need onboard')
           setNeedOnboard(true)
         } else {
           setNeedOnboard(false)
@@ -23,7 +21,6 @@ export function useStartUp() {
           await setTokens({ accessToken, refreshToken, username })
         }
 
-        console.log('prepare done', code, data, needOnboard)
         setIsAppReady(true)
       } catch (e) {
         console.warn(e)
