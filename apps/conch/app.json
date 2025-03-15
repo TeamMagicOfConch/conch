@@ -19,7 +19,7 @@
       "supportsTablet": true,
       "usesAppleSignIn": false,
       "bundleIdentifier": "com.magicconch.MagicConch",
-      "buildNumber": "20"
+      "version": "1.0.1"
     },
     "android": {
       "adaptiveIcon": {
