@@ -64,7 +64,7 @@ export default function OnboardScreen({ setNeedOnboard, onLayout }: { setNeedOnb
               keyboardType="numeric"
               placeholder="0~30 사이의 정수를 입력하세요"
               value={String(initialReviewCount !== undefined ? initialReviewCount : '')}
-              onChange={(e) => setInitialReviewCount(e.nativeEvent.text === '' ? undefined : parseInt(e.nativeEvent.text, 10))}
+              onChange={(e) => setInitialReviewCount(e.nativeEvent.text === '' ? undefined : parseInt(e.nativeEvent.text, 10) || 0)}
             />
           </View>
           {error.initialReviewCount && <Text style={style.error}>{error.initialReviewCount}</Text>}
