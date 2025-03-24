@@ -133,11 +133,13 @@ export default function OnboardScreen({ setNeedOnboard, onLayout }: { setNeedOnb
 
 const style = StyleSheet.create({
   root: {
+    position: 'relative',
     flex: 1,
-    padding: 35,
+    padding: 25,
+    paddingBottom: 0,
   },
   container: {
-    marginBottom: 50,
+    marginBottom: 20,
   },
   title: {
     fontWeight: 'bold',
@@ -162,9 +164,9 @@ const style = StyleSheet.create({
     color: Colors.lightGrey,
   },
   bottomContainer: {
-    position: 'absolute',
-    bottom: 35,
-    left: 35,
+    flex: 1,
+    justifyContent: 'flex-end',
+    marginBottom: 25,
   },
   descriptionContainer: {
     alignItems: 'center',
@@ -178,8 +180,8 @@ const style = StyleSheet.create({
     color: Colors.sora,
   },
   infoContainer: {
-    marginTop: 45,
-    padding: 32,
+    marginTop: 25,
+    padding: 20,
     paddingLeft: 10,
     paddingRight: 10,
     alignItems: 'center',
