@@ -53,7 +53,7 @@ module.exports = {
     'object-curly-newline': ['warn', { consistent: true }],
     'jsx-a11y/no-static-element-interactions': 'off',
     'react/react-in-jsx-scope': 'off',
-    'react/jsx-uses-react': 'error',
+    'react/jsx-uses-react': 'off',
     'react/jsx-uses-vars': 'error',
     'react/forbid-prop-types': 'off',
     'react/sort-comp': 'off',
