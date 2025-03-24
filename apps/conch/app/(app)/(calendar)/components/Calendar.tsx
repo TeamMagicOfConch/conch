@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useWindowDimensions, Pressable } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, Pressable, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SoraBg } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
@@ -7,6 +7,16 @@ import { useCalendar } from '../hooks'
 import { ReviewForCalendar } from '../types'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
+const getCalendarMaxWidth = (width: number) => {
+  if (width >= 744) return '80%' // iPad
+  if (width <= 375) return '90%' // iPhone SE
+  return '95%' // iPhone
+}
+
+const getSoraBgTop = (width: number) => {
+  if (width >= 744) return '28%' // iPad
+  return '10%' // iPhone
+}
 
 interface Props {
   reviews: ReviewForCalendar[]
@@ -20,12 +30,12 @@ export default function Calendar({ reviews, date }: Props) {
   const router = useRouter()
 
   return (
-    <>
+    <View style={[style.container, { maxWidth: getCalendarMaxWidth(width) }]}>
       <View style={{ flexDirection: 'row' }}>
         {DAYS.map((day) => (
           <View
             key={day}
-            style={{ ...style.alignCenterCell, width: width / 7 }}
+            style={{ ...style.alignCenterCell, width: Math.min(width, width * 0.8) / 7 }}
           >
             <Text style={style.calendarHeaderText}>{day}</Text>
           </View>
@@ -47,7 +57,7 @@ export default function Calendar({ reviews, date }: Props) {
               <Pressable
                 // eslint-disable-next-line
                 key={`${year}-${month}-${weekIndex}-${dayIndex}`}
-                style={[style.alignCenterCell, { width: width / 7 }]}
+                style={[style.alignCenterCell, { maxWidth: width * 0.8 }]}
                 onPress={() =>
                   isMovable &&
                   router.push({
@@ -59,7 +69,7 @@ export default function Calendar({ reviews, date }: Props) {
                 {isReviewWritten && (
                   <SoraBg
                     color={isFReview ? Colors.fSora : Colors.tSora}
-                    style={style.soraBg}
+                    style={[style.soraBg, { top: getSoraBgTop(width) }]}
                   />
                 )}
                 <Text style={{ ...style.calendarBodyText, ...(isReviewWritten && { fontWeight: 'bold' }) }}>{cellDate}</Text>
@@ -68,11 +78,15 @@ export default function Calendar({ reviews, date }: Props) {
           })}
         </View>
       ))}
-    </>
+    </View>
   )
 }
 
 const style = StyleSheet.create({
+  container: {
+    alignSelf: 'center',
+    width: '100%',
+  },
   alignCenterCell: {
     aspectRatio: 1,
     flex: 1,
@@ -81,7 +95,6 @@ const style = StyleSheet.create({
   },
   soraBg: {
     position: 'absolute',
-    top: '8%',
     zIndex: 0,
   },
   calendarHeaderText: {
