@@ -8,14 +8,18 @@ import { ReviewForCalendar } from '../types'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 const getCalendarMaxWidth = (width: number) => {
-  if (width >= 744) return '80%' // iPad
+  console.log(width)
   if (width <= 375) return '90%' // iPhone SE
-  return '95%' // iPhone
+  if (width < 744) return '95%' // iPhone
+  if (width <= 1032) return '80%' // iPad Portrait
+  return 600 // iPad Landscape (fixed pixel value)
 }
 
 const getSoraBgTop = (width: number) => {
-  if (width >= 744) return '28%' // iPad
-  return '10%' // iPhone
+  if (width <= 375) return '10%' // iPhone SE
+  if (width <= 744) return '15%' // iPhone
+  if (width <= 1032) return '27%' // iPad
+  return '23%' // iPhone
 }
 
 interface Props {
@@ -28,14 +32,18 @@ export default function Calendar({ reviews, date }: Props) {
   const { calendar } = useCalendar({ reviews, year, month })
   const { width } = useWindowDimensions()
   const router = useRouter()
+  const maxWidth = getCalendarMaxWidth(width)
+  const cellWidth = typeof maxWidth === 'string' 
+    ? Math.min(width * (parseInt(maxWidth) / 100)) / 7 
+    : maxWidth / 7
 
   return (
-    <View style={[style.container, { maxWidth: getCalendarMaxWidth(width) }]}>
+    <View style={[style.container, { maxWidth }]}>
       <View style={{ flexDirection: 'row' }}>
         {DAYS.map((day) => (
           <View
             key={day}
-            style={{ ...style.alignCenterCell, width: Math.min(width, width * 0.8) / 7 }}
+            style={{ ...style.alignCenterCell, width: cellWidth }}
           >
             <Text style={style.calendarHeaderText}>{day}</Text>
           </View>
@@ -57,7 +65,7 @@ export default function Calendar({ reviews, date }: Props) {
               <Pressable
                 // eslint-disable-next-line
                 key={`${year}-${month}-${weekIndex}-${dayIndex}`}
-                style={[style.alignCenterCell, { maxWidth: width * 0.8 }]}
+                style={[style.alignCenterCell, { width: cellWidth }]}
                 onPress={() =>
                   isMovable &&
                   router.push({
