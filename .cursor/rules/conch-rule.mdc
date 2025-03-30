@@ -1,0 +1,50 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# 프로젝트 구조
+## 1. 기술 스택
+- 프레임워크: Expo/React Native (모바일 앱)
+- 언어: TypeScript
+- 패키지 매니저: pnpm (v9.0.0)
+- 빌드 도구: Turborepo → eas를 통해 expo에서 빌드
+- 코드 품질 관리:
+    - ESLint (Airbnb 스타일 가이드)
+    - Prettier
+    - Husky (Git hooks)
+    - TypeScript
+
+## 2. 프로젝트 구조
+- 모노레포 구조:
+    - Turborepo를 사용한 모노레포 구성
+    - apps/ 디렉토리 아래에 conch 앱이 위치, 추후 어드민 앱 추가 예정
+    - 워크스페이스 설정 (pnpm-workspace.yaml)
+- 주요 디렉토리:
+    - apps/conch: 메인 모바일 앱
+    - .github: GitHub 관련 설정
+    - .husky: Git hooks 설정
+    - dist: 빌드 결과물
+
+## 3. 개발 시 주의사항
+- 코드 스타일:
+    - Airbnb 스타일 가이드를 따르고 있음
+    - ESLint와 Prettier가 자동으로 코드 스타일을 검사
+    - Git commit 전에 자동으로 코드 스타일 검사가 실행됨
+- 환경 설정:
+    - .env.local 파일을 통한 환경 변수 관리
+    - TypeScript 설정은 tsconfig.json에서 관리
+- 빌드 및 배포:
+    - eas.json을 통한 Expo Application Services 설정
+    - 시뮬레이터 빌드와 실제 빌드 명령어가 구분되어 있음
+- 개발 워크플로우:
+    - pnpm dev:conch: 개발 서버 실행
+    - pnpm build:conch: 프로덕션 빌드
+    - pnpm build:conch:simulator: 시뮬레이터용 빌드
+- 의존성 관리:
+    - pnpm을 사용하므로 npm이나 yarn 대신 pnpm 명령어 사용
+    - 모노레포 구조이므로 루트 디렉토리에서 패키지 설치 시 pnpm install 사용
+- TypeScript:
+    - 엄격한 타입 체크가 적용되어 있으므로 타입 정의에 주의
+    - expo-env.d.ts를 통한 Expo 관련 타입 정의
