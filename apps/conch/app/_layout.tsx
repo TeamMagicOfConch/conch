@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import { Slot } from 'expo-router'
 import { useRefresh } from '@conch/hooks/useRefresh'
 import { useStartUp } from './useStartUp'
-import OnboardScreen from './onboard'
+import OnboardScreen from './onboard/index'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -23,7 +23,7 @@ export default function Layout() {
     <OnboardScreen
       onLayout={onLayoutRootView}
       setNeedOnboard={setNeedOnboard}
-    />
+     />
   ) : (
     <View
       style={{ flex: 1 }}
