@@ -10,6 +10,12 @@ export function useStartUp() {
   useEffect(() => {
     async function prepare() {
       try {
+        if (process.env.EXPO_PUBLIC_FORCE_ONBOARDING === 'true') {
+          setNeedOnboard(true)
+          setIsAppReady(true)
+          return
+        }
+
         const res = await login()
         const { code, data } = res
 

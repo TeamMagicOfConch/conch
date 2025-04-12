@@ -74,12 +74,19 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
 
   // 초기 정보 입력 후 사용자 등록 및 다음 단계로 이동
   const handleInitialInfoSubmit = useCallback(async () => {
+    // 환경변수가 켜져있으면 register 스킵
+    if (process.env.EXPO_PUBLIC_FORCE_ONBOARDING === 'true') {
+      console.log('FORCE_ONBOARDING이 켜져있어 register를 스킵합니다.');
+      goToNextStep();
+      return;
+    }
+
     const { username, initialReviewCount } = onboardingData.userInfo;
     
     try {
       const response = await register({ username, initialReviewCount });
       const {
-        data: { accessToken = null, refreshToken = null, username: usernameRes = null },
+        data: { accessToken = null, refreshToken = null, username: usernameRes = null } = {},
       } = response || {};
       
       if (accessToken && refreshToken && username) {
