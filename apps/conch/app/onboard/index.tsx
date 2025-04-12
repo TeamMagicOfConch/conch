@@ -120,6 +120,16 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
     });
   }, []);
 
+  // 이전 단계로 이동
+  const goToPrevStep = useCallback(() => {
+    setCurrentStep(prev => {
+      if (prev === OnboardStep.INITIAL_INFO) {
+        return prev;
+      }
+      return prev - 1;
+    });
+  }, []);
+
   // 선택한 옵션의 텍스트 값 반환 헬퍼 함수들
   const getWhenValue = useCallback(() => {
     const { optionId, customValue } = onboardingData.whenPreference;
@@ -162,6 +172,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
             data={onboardingData.whenPreference}
             onDataChange={updateWhenPreference}
             onNext={goToNextStep}
+            onPrev={goToPrevStep}
           />
         );
       case OnboardStep.WHERE:
@@ -170,6 +181,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
             data={onboardingData.wherePreference}
             onDataChange={updateWherePreference}
             onNext={goToNextStep}
+            onPrev={goToPrevStep}
           />
         );
       case OnboardStep.GOAL:
@@ -178,6 +190,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
             data={onboardingData.goalPreference}
             onDataChange={updateGoalPreference}
             onNext={completeOnboarding}
+            onPrev={goToPrevStep}
           />
         );
       default:

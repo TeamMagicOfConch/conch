@@ -75,6 +75,7 @@ export interface OnboardStepComponentProps<T> {
   data: T;
   onDataChange: (data: T) => void;
   onNext: () => void;
+  onPrev?: () => void;
 }
 
 // 시간대 설정을 위한 props

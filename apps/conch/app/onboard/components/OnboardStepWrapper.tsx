@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Colors } from '@conch/assets/colors';
 import { PrimaryButton } from '@conch/components';
+import { NavigationArrowLeft } from '@conch/assets/icons';
 
 // 진행 단계 인터페이스
 export interface StepIndicatorProps {
@@ -25,6 +26,7 @@ export interface OnboardStepWrapperProps {
   buttonText: string;
   onButtonPress: () => void;
   buttonDisabled?: boolean;
+  onPrevPress?: () => void; // 뒤로가기 버튼 클릭 핸들러
 }
 
 // 진행 단계 표시기 컴포넌트
@@ -74,13 +76,29 @@ const OnboardStepWrapper = ({
   buttonText,
   onButtonPress,
   buttonDisabled = false,
+  onPrevPress,
 }: OnboardStepWrapperProps) => {
   return (
     <ScrollView style={styles.habitSettingContainer}>
-      <StepIndicator
-        totalSteps={stepIndicator.totalSteps}
-        currentStep={stepIndicator.currentStep}
-      />
+      {/* 상단 네비게이션 영역 */}
+      <View style={styles.navigationContainer}>
+        {/* 뒤로가기 버튼 */}
+        {onPrevPress && (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={onPrevPress}
+          >
+            <NavigationArrowLeft color={Colors.lightGrey} />
+          </TouchableOpacity>
+        )}
+        
+        {/* 프로그레스 바 */}
+        <StepIndicator
+          totalSteps={stepIndicator.totalSteps}
+          currentStep={stepIndicator.currentStep}
+        />
+      </View>
+      
       <StepHeader
         emoji={header.emoji}
         title={header.title}
@@ -104,58 +122,67 @@ const OnboardStepWrapper = ({
 const styles = StyleSheet.create({
   habitSettingContainer: {
     flex: 1,
+    paddingHorizontal: 20,
     backgroundColor: Colors.bgGrey,
+  },
+  navigationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+    paddingVertical: 10,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 0,
+    zIndex: 10,
+    padding: 8,
   },
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingTop: 20,
-    paddingBottom: 10,
     gap: 8,
+    width: '100%',
   },
   progressDot: {
     width: 50,
     height: 3,
-    backgroundColor: Colors.grey,
     borderRadius: 3,
+    backgroundColor: Colors.lightGrey,
   },
   progressDotActive: {
     backgroundColor: '#F9842A',
   },
   habitHeaderContainer: {
     alignItems: 'center',
-    padding: 28,
-    gap: 28,
+    marginVertical: 30,
   },
   habitEmoji: {
     fontSize: 34,
-    fontWeight: 'bold',
+    marginBottom: 10,
   },
   habitTitleContainer: {
     alignItems: 'center',
-    gap: 8,
   },
   habitTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: Colors.writtenGrey,
+    fontWeight: '700',
+    color: '#F9842A',
     textAlign: 'center',
   },
   habitSubtitle: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: Colors.lightGrey,
+    fontWeight: '700',
+    color: Colors.writtenGrey,
     textAlign: 'center',
   },
   contentContainer: {
-    padding: 28,
+    marginTop: 20,
+    flexGrow: 1,
   },
   buttonContainer: {
-    padding: 24,
-    paddingBottom: 40,
+    marginVertical: 30,
   },
   nextButton: {
-    backgroundColor: '#F9842A',
     width: '100%',
   },
 });

@@ -5,7 +5,7 @@ import OnboardStepWrapper from './OnboardStepWrapper';
 import OptionCard from './OptionCard';
 import TimePicker from './TimePicker';
 
-const WhenStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<WhenPreference>) => {
+const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<WhenPreference>) => {
   const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '');
   const [customValue, setCustomValue] = useState<string>(data.customValue || '');
   const [timePickerVisible, setTimePickerVisible] = useState<boolean>(false);
@@ -69,6 +69,7 @@ const WhenStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<When
         buttonText="다음"
         onButtonPress={onNext}
         buttonDisabled={isButtonDisabled}
+        onPrevPress={onPrev}
       >
         <View style={styles.optionsContainer}>
           {whenOptions.map((option) => (

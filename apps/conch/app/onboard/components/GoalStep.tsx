@@ -4,7 +4,7 @@ import { OnboardStepComponentProps, GoalPreference, goalOptions } from './types'
 import OnboardStepWrapper from './OnboardStepWrapper';
 import OptionCard from './OptionCard';
 
-const GoalStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<GoalPreference>) => {
+const GoalStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<GoalPreference>) => {
   const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '');
   const [customValue, setCustomValue] = useState<string>(data.customValue || '');
 
@@ -49,6 +49,7 @@ const GoalStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<Goal
       buttonText="회고 약속 만들기"
       onButtonPress={onNext}
       buttonDisabled={isButtonDisabled}
+      onPrevPress={onPrev}
     >
       <View style={styles.optionsContainer}>
         {goalOptions.map((option) => (

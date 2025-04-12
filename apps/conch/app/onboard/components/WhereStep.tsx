@@ -4,7 +4,7 @@ import { OnboardStepComponentProps, WherePreference, whereOptions } from './type
 import OnboardStepWrapper from './OnboardStepWrapper';
 import OptionCard from './OptionCard';
 
-const WhereStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<WherePreference>) => {
+const WhereStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<WherePreference>) => {
   const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '');
   const [customValue, setCustomValue] = useState<string>(data.customValue || '');
 
@@ -49,6 +49,7 @@ const WhereStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<Whe
       buttonText="다음"
       onButtonPress={onNext}
       buttonDisabled={isButtonDisabled}
+      onPrevPress={onPrev}
     >
       <View style={styles.optionsContainer}>
         {whereOptions.map((option) => (
