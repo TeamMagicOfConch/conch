@@ -1,32 +1,32 @@
-import React, { ReactNode } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Colors } from '@conch/assets/colors';
-import { PrimaryButton } from '@conch/components';
-import { NavigationArrowLeft } from '@conch/assets/icons';
+import React, { ReactNode } from 'react'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { Colors } from '@conch/assets/colors'
+import { PrimaryButton } from '@conch/components'
+import { NavigationArrowLeft } from '@conch/assets/icons'
 
 // 진행 단계 인터페이스
 export interface StepIndicatorProps {
-  totalSteps: number;
-  currentStep: number;
+  totalSteps: number
+  currentStep: number
 }
 
 // 온보딩 단계 헤더 인터페이스
 export interface StepHeaderProps {
-  emoji: string;
-  title: string;
-  subtitle: string;
-  reverse?: boolean; // title과 subtitle의 순서를 반대로 할지 여부
+  emoji: string
+  title: string
+  subtitle: string
+  reverse?: boolean // title과 subtitle의 순서를 반대로 할지 여부
 }
 
 // 온보딩 스텝 랩퍼 props 인터페이스
 export interface OnboardStepWrapperProps {
-  stepIndicator: StepIndicatorProps;
-  header: StepHeaderProps;
-  children: ReactNode;
-  buttonText: string;
-  onButtonPress: () => void;
-  buttonDisabled?: boolean;
-  onPrevPress?: () => void; // 뒤로가기 버튼 클릭 핸들러
+  stepIndicator: StepIndicatorProps
+  header: StepHeaderProps
+  children: ReactNode
+  buttonText: string
+  onButtonPress: () => void
+  buttonDisabled?: boolean
+  onPrevPress?: () => void // 뒤로가기 버튼 클릭 핸들러
 }
 
 // 진행 단계 표시기 컴포넌트
@@ -43,8 +43,8 @@ export const StepIndicator = ({ totalSteps, currentStep }: StepIndicatorProps) =
         />
       ))}
     </View>
-  );
-};
+  )
+}
 
 // 온보딩 단계 헤더 컴포넌트
 export const StepHeader = ({ emoji, title, subtitle, reverse = false }: StepHeaderProps) => {
@@ -65,8 +65,8 @@ export const StepHeader = ({ emoji, title, subtitle, reverse = false }: StepHead
         )}
       </View>
     </View>
-  );
-};
+  )
+}
 
 // 온보딩 단계 랩퍼 컴포넌트
 const OnboardStepWrapper = ({
@@ -116,8 +116,8 @@ const OnboardStepWrapper = ({
         </PrimaryButton>
       </View>
     </ScrollView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   habitSettingContainer: {
@@ -185,6 +185,6 @@ const styles = StyleSheet.create({
   nextButton: {
     width: '100%',
   },
-});
+})
 
-export default OnboardStepWrapper; 
+export default OnboardStepWrapper 

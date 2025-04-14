@@ -1,14 +1,14 @@
-import React from 'react';
-import { Pressable, Text, TextInput, StyleSheet } from 'react-native';
-import { Colors } from '@conch/assets/colors';
-import { HabitOption } from './types';
+import React from 'react'
+import { Pressable, Text, TextInput, StyleSheet } from 'react-native'
+import { Colors } from '@conch/assets/colors'
+import { HabitOption } from './types'
 
 interface OptionCardProps {
-  option: HabitOption;
-  isSelected: boolean;
-  customValue?: string;
-  onSelect: (optionId: string) => void;
-  onCustomValueChange?: (value: string) => void;
+  option: HabitOption
+  isSelected: boolean
+  customValue?: string
+  onSelect: (optionId: string) => void
+  onCustomValueChange?: (value: string) => void
 }
 
 const OptionCard = ({
@@ -18,7 +18,7 @@ const OptionCard = ({
   onSelect,
   onCustomValueChange,
 }: OptionCardProps) => {
-  const isCustomSelected = isSelected && option.isCustom;
+  const isCustomSelected = isSelected && option.isCustom
 
   return (
     <Pressable
@@ -38,8 +38,8 @@ const OptionCard = ({
         />
       )}
     </Pressable>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   optionCard: {
@@ -71,6 +71,6 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.lightGrey,
     paddingVertical: 5,
   },
-});
+})
 
-export default OptionCard; 
+export default OptionCard 

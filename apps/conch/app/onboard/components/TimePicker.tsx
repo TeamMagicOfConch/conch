@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { Colors } from '@conch/assets/colors';
-import { TimePickerProps } from './types';
+import React from 'react'
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native'
+import { BlurView } from 'expo-blur'
+import { Colors } from '@conch/assets/colors'
+import { TimePickerProps } from './types'
 
 const TimePicker = ({
   visible,
@@ -12,9 +12,9 @@ const TimePicker = ({
   setSelectedTime,
 }: TimePickerProps) => {
   const confirmTime = () => {
-    onConfirm(selectedTime);
-    onClose();
-  };
+    onConfirm(selectedTime)
+    onClose()
+  }
 
   return (
     <Modal
@@ -60,8 +60,8 @@ const TimePicker = ({
         </View>
       </TouchableOpacity>
     </Modal>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   modalOverlay: {
@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-});
+})
 
-export default TimePicker; 
+export default TimePicker 

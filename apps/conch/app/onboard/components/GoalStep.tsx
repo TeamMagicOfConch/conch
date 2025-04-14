@@ -1,41 +1,41 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { OnboardStepComponentProps, GoalPreference, goalOptions } from './types';
-import OnboardStepWrapper from './OnboardStepWrapper';
-import OptionCard from './OptionCard';
+import React, { useState, useCallback, useMemo } from 'react'
+import { View, StyleSheet } from 'react-native'
+import { OnboardStepComponentProps, GoalPreference, goalOptions } from './types'
+import OnboardStepWrapper from './OnboardStepWrapper'
+import OptionCard from './OptionCard'
 
 const GoalStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<GoalPreference>) => {
-  const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '');
-  const [customValue, setCustomValue] = useState<string>(data.customValue || '');
+  const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '')
+  const [customValue, setCustomValue] = useState<string>(data.customValue || '')
 
   // 옵션 선택 핸들러
   const handleOptionSelect = useCallback((optionId: string) => {
-    setSelectedOption(optionId);
+    setSelectedOption(optionId)
     
     // 부모 컴포넌트에 데이터 업데이트
     onDataChange({
       optionId,
       customValue: optionId === 'custom' ? customValue : undefined,
-    });
-  }, [customValue, onDataChange]);
+    })
+  }, [customValue, onDataChange])
 
   // 커스텀 입력값 변경 핸들러
   const handleCustomValueChange = useCallback((value: string) => {
-    setCustomValue(value);
+    setCustomValue(value)
     
     // 부모 컴포넌트에 데이터 업데이트
     if (selectedOption === 'custom') {
       onDataChange({
         optionId: selectedOption,
         customValue: value,
-      });
+      })
     }
-  }, [selectedOption, onDataChange]);
+  }, [selectedOption, onDataChange])
 
   // 버튼 비활성화 여부
   const isButtonDisabled = useMemo(() => {
-    return !selectedOption || (selectedOption === 'custom' && !customValue);
-  }, [selectedOption, customValue]);
+    return !selectedOption || (selectedOption === 'custom' && !customValue)
+  }, [selectedOption, customValue])
 
   return (
     <OnboardStepWrapper
@@ -64,13 +64,13 @@ const GoalStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
         ))}
       </View>
     </OnboardStepWrapper>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   optionsContainer: {
     gap: 16,
   },
-});
+})
 
-export default GoalStep; 
+export default GoalStep 

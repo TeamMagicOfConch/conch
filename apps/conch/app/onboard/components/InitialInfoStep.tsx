@@ -1,46 +1,46 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TextInput, Pressable, Keyboard, StyleSheet, Linking } from 'react-native';
-import { Colors } from '@conch/assets/colors';
-import { PrimaryButton } from '@conch/components';
-import { validateInput } from '@conch/utils';
-import { OnboardStepComponentProps, UserInfo } from './types';
+import React, { useEffect, useState, useCallback } from 'react'
+import { View, Text, TextInput, Pressable, Keyboard, StyleSheet, Linking } from 'react-native'
+import { Colors } from '@conch/assets/colors'
+import { PrimaryButton } from '@conch/components'
+import { validateInput } from '@conch/utils'
+import { OnboardStepComponentProps, UserInfo } from './types'
 
 const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<UserInfo>) => {
-  const [username, setUsername] = useState(data.username);
-  const [initialReviewCount, setInitialReviewCount] = useState<number | undefined>(data.initialReviewCount);
-  const [error, setError] = useState({ username: '', initialReviewCount: '' });
-  const [disabled, setDisabled] = useState(true);
+  const [username, setUsername] = useState(data.username)
+  const [initialReviewCount, setInitialReviewCount] = useState<number | undefined>(data.initialReviewCount)
+  const [error, setError] = useState({ username: '', initialReviewCount: '' })
+  const [disabled, setDisabled] = useState(true)
 
-  const openURL = useCallback((url: string) => () => Linking.openURL(url), []);
+  const openURL = useCallback((url: string) => () => Linking.openURL(url), [])
 
   // 입력값 유효성 검사
   useEffect(() => {
-    const isValidUsername = validateInput(username);
-    const isValidInitialReviewCount = initialReviewCount !== undefined && initialReviewCount >= 0 && initialReviewCount <= 31;
+    const isValidUsername = validateInput(username)
+    const isValidInitialReviewCount = initialReviewCount !== undefined && initialReviewCount >= 0 && initialReviewCount <= 31
     
     if (isValidUsername && isValidInitialReviewCount) {
-      setDisabled(false);
+      setDisabled(false)
     } else {
-      setDisabled(true);
+      setDisabled(true)
     }
     
     setError({
       username: !username || isValidUsername ? '' : '*한글 / 영어 / 숫자 10자 이내로 입력하세요',
       initialReviewCount: !initialReviewCount || Number.isNaN(initialReviewCount) || isValidInitialReviewCount ? '' : '*0~30 사이의 정수를 입력하세요',
-    });
+    })
     
     // 부모 컴포넌트에 데이터 업데이트
     if (username !== data.username || initialReviewCount !== data.initialReviewCount) {
-      onDataChange({ username, initialReviewCount });
+      onDataChange({ username, initialReviewCount })
     }
-  }, [username, initialReviewCount, data, onDataChange]);
+  }, [username, initialReviewCount, data, onDataChange])
 
   // 다음 단계로 이동
   const handleNext = () => {
     if (!disabled) {
-      onNext();
+      onNext()
     }
-  };
+  }
 
   return (
     <Pressable
@@ -134,8 +134,8 @@ const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentPro
         </View>
       </View>
     </Pressable>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   root: {
@@ -201,6 +201,6 @@ const styles = StyleSheet.create({
     color: Colors.writtenGrey,
     lineHeight: 24.5,
   },
-});
+})
 
-export default InitialInfoStep; 
+export default InitialInfoStep 
