@@ -26,7 +26,11 @@ const OptionCard = ({
       style={[styles.optionCard, isSelected && styles.optionCardSelected]}
       onPress={() => onSelect(option.id)}
     >
-      <Text style={[styles.optionText, option.isCustom && styles.optionTextCustom]}>
+      <Text style={[
+        styles.optionText, 
+        option.isCustom && styles.optionTextCustom,
+        isSelected && styles.optionTextSelected
+      ]}>
         {option.text}
       </Text>
       {isCustomSelected && onCustomValueChange && (
@@ -55,12 +59,15 @@ const styles = StyleSheet.create({
   },
   optionCardSelected: {
     borderWidth: 1.5,
-    borderColor: '#F9842A',
+    borderColor: '#999999',
   },
   optionText: {
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.writtenGrey,
+    color: '#363636',
+  },
+  optionTextSelected: {
+    color: '#363636',
   },
   optionTextCustom: {
     color: Colors.lightGrey,

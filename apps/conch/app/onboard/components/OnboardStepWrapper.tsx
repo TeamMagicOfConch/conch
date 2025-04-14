@@ -26,6 +26,7 @@ export interface OnboardStepWrapperProps {
   buttonText: string
   onButtonPress: () => void
   buttonDisabled?: boolean
+  hideButton?: boolean // 버튼을 완전히 숨길지 여부
   onPrevPress?: () => void // 뒤로가기 버튼 클릭 핸들러
 }
 
@@ -76,6 +77,7 @@ const OnboardStepWrapper = ({
   buttonText,
   onButtonPress,
   buttonDisabled = false,
+  hideButton = false,
   onPrevPress,
 }: OnboardStepWrapperProps) => {
   return (
@@ -106,15 +108,20 @@ const OnboardStepWrapper = ({
         reverse={header.reverse}
       />
       <View style={styles.contentContainer}>{children}</View>
-      <View style={styles.buttonContainer}>
-        <PrimaryButton
-          disabled={buttonDisabled}
-          onPress={onButtonPress}
-          style={styles.nextButton}
-        >
-          {buttonText}
-        </PrimaryButton>
-      </View>
+      {!hideButton && (
+        <View style={styles.buttonContainer}>
+          <PrimaryButton
+            disabled={buttonDisabled}
+            onPress={onButtonPress}
+            style={[
+              styles.nextButton, 
+              buttonDisabled ? styles.buttonDisabled : styles.buttonEnabled
+            ]}
+          >
+            {buttonText}
+          </PrimaryButton>
+        </View>
+      )}
     </ScrollView>
   )
 }
@@ -147,21 +154,22 @@ const styles = StyleSheet.create({
     width: 50,
     height: 3,
     borderRadius: 3,
-    backgroundColor: Colors.lightGrey,
+    backgroundColor: '#D9D9D9',
   },
   progressDotActive: {
     backgroundColor: '#F9842A',
   },
   habitHeaderContainer: {
     alignItems: 'center',
-    marginVertical: 30,
+    marginVertical: 28,
   },
   habitEmoji: {
     fontSize: 34,
-    marginBottom: 10,
+    marginBottom: 28,
   },
   habitTitleContainer: {
     alignItems: 'center',
+    gap: 8,
   },
   habitTitle: {
     fontSize: 28,
@@ -172,11 +180,11 @@ const styles = StyleSheet.create({
   habitSubtitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: Colors.writtenGrey,
+    color: '#666666',
     textAlign: 'center',
   },
   contentContainer: {
-    marginTop: 20,
+    marginTop: 4,
     flexGrow: 1,
   },
   buttonContainer: {
@@ -184,6 +192,13 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     width: '100%',
+    borderRadius: 200,
+  },
+  buttonEnabled: {
+    backgroundColor: '#F9842A',
+  },
+  buttonDisabled: {
+    backgroundColor: '#D8D8D8',
   },
 })
 

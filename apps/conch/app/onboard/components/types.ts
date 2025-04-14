@@ -85,4 +85,5 @@ export interface TimePickerProps {
   onConfirm: (time: string) => void
   selectedTime: string
   setSelectedTime: (time: string) => void
+  selectedOption?: string // 선택된 옵션 ID
 } 

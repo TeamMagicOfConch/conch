@@ -10,10 +10,27 @@ const TimePicker = ({
   onConfirm,
   selectedTime,
   setSelectedTime,
+  selectedOption,
 }: TimePickerProps) => {
   const confirmTime = () => {
     onConfirm(selectedTime)
     onClose()
+  }
+
+  // 선택된 옵션에 따라 타이틀 텍스트 설정
+  const getTitleText = () => {
+    switch(selectedOption) {
+      case 'after_work':
+        return '퇴근 직후,'
+      case 'before_sleep':
+        return '잠들기 직전,'
+      case 'after_dinner':
+        return '저녁 식사 후,'
+      case 'custom':
+        return '시간 선택,'
+      default:
+        return '시간 선택,'
+    }
   }
 
   return (
@@ -29,17 +46,21 @@ const TimePicker = ({
       >
         <View style={styles.modalContainer}>
           <BlurView intensity={80} style={styles.modalBlur}>
+            <View style={styles.drawerHandleContainer}>
+              <View style={styles.drawerHandle} />
+            </View>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{selectedTime}</Text>
-              <TouchableOpacity onPress={onClose}>
+              <Text style={styles.modalTitle}>{getTitleText()}</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButtonContainer}>
                 <Text style={styles.closeButton}>✕</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.timePickerContainer}>
-              {/* 여기에 휠 피커 구현 (간단한 UI로 대체) */}
+              {/* 피커 위치 조정 */}
               <View style={styles.pickerColumn}>
                 <Text style={styles.pickerItem}>오전</Text>
                 <Text style={[styles.pickerItem, styles.pickerItemSelected]}>오후</Text>
+                <Text style={styles.pickerItem}>오전</Text>
               </View>
               <View style={styles.pickerColumn}>
                 <Text style={styles.pickerItem}>11</Text>
@@ -78,6 +99,16 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 40,
   },
+  drawerHandleContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  drawerHandle: {
+    width: 60,
+    height: 3,
+    backgroundColor: '#999FA3',
+    borderRadius: 1.5,
+  },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -87,10 +118,14 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: 'bold',
+    color: '#000000',
+  },
+  closeButtonContainer: {
+    opacity: 0.7,
+    padding: 4,
   },
   closeButton: {
     fontSize: 24,
-    opacity: 0.7,
   },
   timePickerContainer: {
     flexDirection: 'row',
@@ -102,6 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
+    gap: 10,
   },
   pickerItem: {
     fontSize: 24,
@@ -127,8 +163,8 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     backgroundColor: '#F9842A',
-    borderRadius: 50,
-    padding: 15,
+    borderRadius: 200,
+    padding: 10,
     alignItems: 'center',
     marginTop: 40,
   },

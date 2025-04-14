@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { OnboardStepComponentProps, WhenPreference, whenOptions } from './types'
 import OnboardStepWrapper from './OnboardStepWrapper'
@@ -15,10 +15,8 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
   const handleOptionSelect = useCallback((optionId: string) => {
     setSelectedOption(optionId)
     
-    // 직접 입력 옵션 선택 시 시간 선택 모달 표시
-    if (optionId === 'custom') {
-      setTimePickerVisible(true)
-    }
+    // 모든 옵션 선택 시 시간 선택 모달 표시
+    setTimePickerVisible(true)
     
     // 부모 컴포넌트에 데이터 업데이트
     onDataChange({
@@ -40,7 +38,7 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
     }
   }, [selectedOption, onDataChange])
 
-  // 시간 선택 확인 핸들러
+  // 시간 선택 확인 핸들러 - 선택 완료 후 자동으로 다음 단계로 이동
   const handleTimeConfirm = useCallback((time: string) => {
     setCustomValue(time)
     
@@ -49,12 +47,10 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
       optionId: selectedOption,
       customValue: time,
     })
-  }, [selectedOption, onDataChange])
-
-  // 버튼 비활성화 여부
-  const isButtonDisabled = useMemo(() => {
-    return !selectedOption || (selectedOption === 'custom' && !customValue)
-  }, [selectedOption, customValue])
+    
+    // 자동으로 다음 단계로 이동
+    onNext()
+  }, [selectedOption, onDataChange, onNext])
 
   return (
     <>
@@ -68,7 +64,8 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
         }}
         buttonText="다음"
         onButtonPress={onNext}
-        buttonDisabled={isButtonDisabled}
+        buttonDisabled={true} // 다음 버튼 비활성화 (타임피커로만 진행)
+        hideButton={true} // 다음 버튼 숨김
         onPrevPress={onPrev}
       >
         <View style={styles.optionsContainer}>
@@ -91,6 +88,7 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
         onConfirm={handleTimeConfirm}
         selectedTime={selectedTime}
         setSelectedTime={setSelectedTime}
+        selectedOption={selectedOption}
       />
     </>
   )
@@ -99,6 +97,7 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
 const styles = StyleSheet.create({
   optionsContainer: {
     gap: 16,
+    paddingHorizontal: 8,
   },
 })
 
