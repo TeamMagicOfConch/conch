@@ -9,7 +9,7 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
   const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '')
   const [customValue, setCustomValue] = useState<string>(data.customValue || '')
   const [timePickerVisible, setTimePickerVisible] = useState<boolean>(false)
-  const [selectedTime, setSelectedTime] = useState<string>(data.customValue || '12:30 오후')
+  const [selectedTime, setSelectedTime] = useState<string>(data.customValue || '')
 
   // 옵션 선택 핸들러
   const handleOptionSelect = useCallback((optionId: string) => {
