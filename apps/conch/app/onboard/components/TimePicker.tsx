@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Text, StyleSheet, View, TouchableOpacity, Modal, Platform } from 'react-native'
 import { BlurView } from 'expo-blur'
-import { Picker } from '@react-native-picker/picker'
 import { Colors } from '@conch/assets/colors'
 import { TimePickerProps } from './types'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
-import Constants from 'expo-constants'
 import { DatePicker } from 'react-native-wheel-pick'
-
-// 환경변수를 확인하는 로직
-// 실제 앱에서는 환경변수를 앱 설정에 지정하거나 앱 시작 시 설정할 수 있습니다
-// 여기서는 기본값으로 Android에서는 native picker를, iOS에서는 custom picker를 사용합니다
-const USE_NATIVE_PICKER = Platform.OS === 'android'
 
 // 선택 옵션별 기본 시간값 설정
 const DEFAULT_TIMES: Record<string, { hour: number; minute: number }> = {

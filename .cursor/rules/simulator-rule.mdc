@@ -1,0 +1,8 @@
+---
+description: This task is used when ios-simulator-related job
+globs: 
+alwaysApply: false
+---
+- ios-simulator 관련 명령을 받은 경우, ios-simulator mcp를 활용하세요.
+- 작업을 완료한 뒤 작업내용이 잘 반영되었는지 ios-simulator mcp의 screenshot을 통해 마지막으로 확인하세요.
+    - 에러가 발생했거나 의도대로 작업이 되지 않았음이 판명되면 작업을 멈추지 말고 문제를 수정하세요.

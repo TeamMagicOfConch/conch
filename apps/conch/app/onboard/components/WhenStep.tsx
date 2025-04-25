@@ -76,7 +76,6 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
               isSelected={selectedOption === option.id}
               customValue={customValue}
               onSelect={handleOptionSelect}
-              onCustomValueChange={option.isCustom ? handleCustomValueChange : undefined}
             />
           ))}
         </View>
