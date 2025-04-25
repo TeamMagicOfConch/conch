@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { SafeAreaView } from 'react-native'
+import { View } from 'react-native'
 import { register, setTokens } from '@conch/utils'
 import { 
   InitialInfoStep, 
@@ -199,12 +199,12 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
   }
 
   return (
-    <SafeAreaView
+    <View
       onLayout={onLayout}
       style={{ flex: 1 }}
     >
       {renderStep()}
-    </SafeAreaView>
+    </View>
   )
 }
 

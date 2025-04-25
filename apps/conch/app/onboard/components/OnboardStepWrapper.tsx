@@ -1,8 +1,9 @@
 import React, { ReactNode } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native'
 import { Colors } from '@conch/assets/colors'
 import { PrimaryButton } from '@conch/components'
 import { NavigationArrowLeft } from '@conch/assets/icons'
+import { SafeAreaViewWithDefaultBackgroundColor } from '@conch/components/layout/view'
 
 // 진행 단계 인터페이스
 export interface StepIndicatorProps {
@@ -81,48 +82,51 @@ const OnboardStepWrapper = ({
   onPrevPress,
 }: OnboardStepWrapperProps) => {
   return (
-    <ScrollView style={styles.habitSettingContainer}>
-      {/* 상단 네비게이션 영역 */}
-      <View style={styles.navigationContainer}>
-        {/* 뒤로가기 버튼 */}
-        {onPrevPress && (
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={onPrevPress}
-          >
-            <NavigationArrowLeft color={Colors.lightGrey} />
-          </TouchableOpacity>
-        )}
-        
-        {/* 프로그레스 바 */}
-        <StepIndicator
-          totalSteps={stepIndicator.totalSteps}
-          currentStep={stepIndicator.currentStep}
-        />
-      </View>
-      
-      <StepHeader
-        emoji={header.emoji}
-        title={header.title}
-        subtitle={header.subtitle}
-        reverse={header.reverse}
-      />
-      <View style={styles.contentContainer}>{children}</View>
-      {!hideButton && (
-        <View style={styles.buttonContainer}>
-          <PrimaryButton
-            disabled={buttonDisabled}
-            onPress={onButtonPress}
-            style={[
-              styles.nextButton, 
-              buttonDisabled ? styles.buttonDisabled : styles.buttonEnabled
-            ]}
-          >
-            {buttonText}
-          </PrimaryButton>
+    <SafeAreaViewWithDefaultBackgroundColor>
+      <StatusBar backgroundColor={Colors.bgGrey} barStyle="dark-content" />
+      <ScrollView style={styles.habitSettingContainer}>
+        {/* 상단 네비게이션 영역 */}
+        <View style={styles.navigationContainer}>
+          {/* 뒤로가기 버튼 */}
+          {onPrevPress && (
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={onPrevPress}
+            >
+              <NavigationArrowLeft color={Colors.lightGrey} />
+            </TouchableOpacity>
+          )}
+          
+          {/* 프로그레스 바 */}
+          <StepIndicator
+            totalSteps={stepIndicator.totalSteps}
+            currentStep={stepIndicator.currentStep}
+          />
         </View>
-      )}
-    </ScrollView>
+        
+        <StepHeader
+          emoji={header.emoji}
+          title={header.title}
+          subtitle={header.subtitle}
+          reverse={header.reverse}
+        />
+        <View style={styles.contentContainer}>{children}</View>
+        {!hideButton && (
+          <View style={styles.buttonContainer}>
+            <PrimaryButton
+              disabled={buttonDisabled}
+              onPress={onButtonPress}
+              style={[
+                styles.nextButton, 
+                buttonDisabled ? styles.buttonDisabled : styles.buttonEnabled
+              ]}
+            >
+              {buttonText}
+            </PrimaryButton>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaViewWithDefaultBackgroundColor>
   )
 }
 
