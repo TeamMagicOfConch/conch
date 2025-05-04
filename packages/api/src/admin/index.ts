@@ -16,7 +16,7 @@ const getEnv = (key: string, defaultValue?: string) => {
 
 // Admin API 기본 설정
 const defaultConfig: ApiClientConfig = {
-  baseURL: getEnv('VITE_ADMIN_API_URL', 'http://admin.magicofconch.site'),
+  baseURL: getEnv('VITE_ADMIN_API_URL'),
   timeout: 30000,
 };
 
@@ -37,7 +37,7 @@ export const adminApiClient = createAdminApiClient();
 
 // Admin API Swagger 클라이언트
 export const adminSwaggerClient = new Api({
-  baseURL: getEnv('ADMIN_API_URL', 'http://admin.magicofconch.site'),
+  baseURL: getEnv('ADMIN_API_URL'),
 });
 
 // 인증 헤더 추가 함수
