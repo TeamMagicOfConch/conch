@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Layout from '../components/Layout';
+import { adminSwaggerClient } from '@api/admin';
 
 const Download = () => {
   const [startYear, setStartYear] = useState('2025');
@@ -8,16 +9,72 @@ const Download = () => {
   const [endYear, setEndYear] = useState('2025');
   const [endMonth, setEndMonth] = useState('01');
   const [endDay, setEndDay] = useState('01');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
+  const [fileName, setFileName] = useState('');
 
   const years = ['2025', '2024', '2023'];
   const months = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
   const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'));
+
+  const handleDownload = async () => {
+    const startDate = `${startYear}-${startMonth}-${startDay}`;
+    const endDate = `${endYear}-${endMonth}-${endDay}`;
+
+    // 날짜 유효성 검사
+    if (new Date(startDate) > new Date(endDate)) {
+      setError('시작일은 종료일보다 이전이어야 합니다.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setFileName('');
+    setDownloadUrl('');
+
+    try {
+      // startDate와 endDate를 직접 전달하고, Axios의 responseType을 'arraybuffer'로 설정
+      const response = await adminSwaggerClient.instance.get('/admin/review/export', {
+        params: {
+          startDate,
+          endDate
+        },
+        responseType: 'arraybuffer'
+      });
+
+      // 서버 응답으로부터 파일 생성
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      setDownloadUrl(url);
+
+      // 파일명 생성 (현재 날짜 기준)
+      const date = new Date();
+      const fileNameGenerated = `review_data_${startDate}_to_${endDate}_${date.getTime()}.csv`;
+      setFileName(fileNameGenerated);
+
+      // 자동 다운로드 (선택적)
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileNameGenerated;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    } catch (err) {
+      console.error('다운로드 오류:', err);
+      setError('CSV 파일 다운로드 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Layout>
       <div className="p-8 max-w-4xl mx-auto">
         <div className="space-y-8">
           <div className="space-y-6">
+            <h1 className="text-2xl font-bold text-black">데이터 다운로드</h1>
             <div className="flex items-center gap-8">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-black">Start Date</label>
@@ -83,13 +140,28 @@ const Download = () => {
                   </select>
                 </div>
               </div>
-              <button className="px-8 py-2.5 bg-black text-white rounded-lg hover:bg-black/90 transition-colors mt-8">
-                Get File
+              <button 
+                className="px-8 py-2.5 bg-black text-white rounded-lg hover:bg-black/90 transition-colors mt-8 disabled:bg-gray-400"
+                onClick={handleDownload}
+                disabled={isLoading}
+              >
+                {isLoading ? '파일 가져오는 중...' : 'Get File'}
               </button>
             </div>
-            <div className="mt-4">
-              <p className="text-sm text-black font-medium">CSV File.csv</p>
-            </div>
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
+            {fileName && downloadUrl && (
+              <div className="mt-4">
+                <a 
+                  href={downloadUrl} 
+                  download={fileName}
+                  className="text-sm text-blue-600 hover:underline font-medium"
+                >
+                  {fileName} 다운로드
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

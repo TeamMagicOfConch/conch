@@ -1,6 +1,7 @@
 import { FC, ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Download, LogOut, Shell } from 'lucide-react';
+import { clearAuthToken } from '@api/admin';
 
 interface LayoutProps {
   children: ReactNode;
@@ -11,6 +12,11 @@ const Layout: FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
 
   const handleLogout = () => {
+    // 토큰 제거
+    clearAuthToken();
+    // 로컬 스토리지에서 토큰 제거
+    localStorage.removeItem('adminToken');
+    // 로그인 페이지로 이동
     navigate('/signin');
   };
 

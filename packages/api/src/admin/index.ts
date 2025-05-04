@@ -1,9 +1,22 @@
 import { createApiClient, ApiClientConfig } from '../common/client';
 import { Api } from './types/adminApi';
 
+// 환경 변수 접근 유틸리티 (Vite와 Node.js 환경 모두 지원)
+const getEnv = (key: string, defaultValue?: string) => {
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key] || defaultValue;
+  }
+  // @ts-ignore - Vite 환경을 위한 처리
+  if (import.meta && import.meta.env) {
+    // @ts-ignore
+    return import.meta.env[key] || defaultValue;
+  }
+  return defaultValue;
+};
+
 // Admin API 기본 설정
 const defaultConfig: ApiClientConfig = {
-  baseURL: process.env.ADMIN_API_URL || 'http://admin.magicofconch.site',
+  baseURL: getEnv('VITE_ADMIN_API_URL', 'http://admin.magicofconch.site'),
   timeout: 30000,
 };
 
@@ -24,7 +37,7 @@ export const adminApiClient = createAdminApiClient();
 
 // Admin API Swagger 클라이언트
 export const adminSwaggerClient = new Api({
-  baseURL: process.env.ADMIN_API_URL || 'http://admin.magicofconch.site',
+  baseURL: getEnv('ADMIN_API_URL', 'http://admin.magicofconch.site'),
 });
 
 // 인증 헤더 추가 함수
