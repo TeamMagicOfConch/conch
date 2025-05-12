@@ -17,6 +17,7 @@ export class ApiClient {
         ...(config.headers || {}),
       },
       timeout: config.timeout || 30000,
+      withCredentials: true,
     });
 
     // 요청 인터셉터 설정
