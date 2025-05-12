@@ -163,9 +163,12 @@ export class HttpClient<SecurityDataType = unknown> {
     format,
     ...axiosConfig
   }: ApiConfig<SecurityDataType> = {}) {
+    if (!axiosConfig.baseURL) {
+      throw new Error('baseURL is required');
+    }
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "http://admin.magicofconch.site",
+      baseURL: axiosConfig.baseURL,
     });
     this.secure = secure;
     this.format = format;
