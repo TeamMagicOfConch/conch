@@ -22,7 +22,6 @@ const defaultConfig: ApiClientConfig = {
 
 // Admin API 클라이언트 생성 함수
 export function createAdminApiClient(config: Partial<ApiClientConfig> = {}) {
-    console.table( { ...defaultConfig, ...config })
   return createApiClient({
     ...defaultConfig,
     ...config,
@@ -38,7 +37,7 @@ export const adminApiClient = createAdminApiClient();
 
 // Admin API Swagger 클라이언트
 export const adminSwaggerClient = new Api({
-  baseURL: getEnv('ADMIN_API_URL'),
+  baseURL: getEnv('VITE_ADMIN_API_URL'),
 });
 
 // 인증 헤더 추가 함수
