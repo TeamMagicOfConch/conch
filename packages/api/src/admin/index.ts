@@ -6,6 +6,8 @@ const getEnv = (key: string, defaultValue?: string) => {
   // @ts-ignore - Vite 환경을 위한 처리
   if (import.meta && import.meta.env) {
     // @ts-ignore
+    console.table(import.meta.env)
+    // @ts-ignore
     return import.meta.env[key] || defaultValue;
   }
   if (typeof process !== 'undefined' && process.env) {
