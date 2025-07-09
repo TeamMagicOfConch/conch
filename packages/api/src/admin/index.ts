@@ -1,61 +1,45 @@
-import { createApiClient, ApiClientConfig } from '../common/client';
-import { Api } from './types/adminApi';
+import { createApiClient, ApiClientConfig } from '../common/client'
+import { Api } from './types/adminApi'
 
 // 환경 변수 접근 유틸리티 (Vite와 Node.js 환경 모두 지원)
-const getEnv = (key: string, defaultValue?: string) => {
-  // @ts-ignore - Vite 환경을 위한 처리
-  if (import.meta && import.meta.env) {
-    // @ts-ignore
-    return import.meta.env[key] || defaultValue;
+// 환경변수는 클라이언트에서 전달받도록 수정
+export const createAdminClient = (apiUrl: string) => {
+  // API 클라이언트 생성 로직
+  console.log('Admin API URL:', apiUrl)
+  return {
+    // API 메소드들
   }
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env[key] || defaultValue;
-  }
-  return defaultValue;
-};
-
-// Admin API 기본 설정
-const defaultConfig: ApiClientConfig = {
-  baseURL: getEnv('VITE_ADMIN_API_URL'),
-  timeout: 30000,
-};
+}
 
 // Admin API 클라이언트 생성 함수
-export function createAdminApiClient(config: Partial<ApiClientConfig> = {}) {
-  return createApiClient({
-    ...defaultConfig,
-    ...config,
-    headers: {
-      ...defaultConfig.headers,
-      ...config.headers,
-    },
-  });
+export function createAdminApiClient(config: ApiClientConfig) {
+  return createApiClient(config)
 }
 
-// 기본 Admin API 클라이언트 인스턴스
-export const adminApiClient = createAdminApiClient();
+// Admin API Swagger 클라이언트 생성 함수
+export function createAdminSwaggerClient(baseURL: string) {
+  console.log('Admin API URL:', baseURL)
+  return new Api({
+    baseURL,
+    withCredentials: true,
+  })
+}
 
-// Admin API Swagger 클라이언트
-export const adminSwaggerClient = new Api({
-  baseURL: getEnv('VITE_ADMIN_API_URL'),
-});
+// 인증 헤더 추가 함수 (클라이언트 인스턴스를 받아서 처리)
+export function setAuthToken(apiClient: any, swaggerClient: any, token: string) {
+  // eslint-disable-next-line no-param-reassign
+  apiClient.getAxiosInstance().defaults.headers.common.Authorization = `Bearer ${token}`
 
-// 인증 헤더 추가 함수
-export function setAuthToken(token: string) {
-  // 기존 HTTP 클라이언트에 토큰 설정
-  adminApiClient.getAxiosInstance().defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  
   // Swagger 클라이언트에도 토큰 설정
-  adminSwaggerClient.setSecurityData(token);
+  swaggerClient.setSecurityData(token)
 }
 
-// 인증 헤더 제거 함수
-export function clearAuthToken() {
-  delete adminApiClient.getAxiosInstance().defaults.headers.common['Authorization'];
-  adminSwaggerClient.setSecurityData(null);
+// 인증 헤더 제거 함수 (클라이언트 인스턴스를 받아서 처리)
+export function clearAuthToken(apiClient: any, swaggerClient: any) {
+  // eslint-disable-next-line no-param-reassign
+  delete apiClient.getAxiosInstance().defaults.headers.common.Authorization
+  swaggerClient.setSecurityData(null)
 }
 
 // 생성된 API 타입 내보내기
-export * from './types/adminApi';
-
-export default adminSwaggerClient; 
+export * from './types/adminApi'

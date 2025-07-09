@@ -1,44 +1,44 @@
-import { useState } from 'react';
-import Layout from '../components/Layout';
-import { adminSwaggerClient } from '@api/admin';
+import { useState } from 'react'
+import { adminSwaggerClient } from '../lib/api'
+import Layout from '../components/Layout'
 
-const Decrypt = () => {
-  const [encryptedText, setEncryptedText] = useState('');
-  const [decryptedText, setDecryptedText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+function Decrypt() {
+  const [encryptedText, setEncryptedText] = useState('')
+  const [decryptedText, setDecryptedText] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleDecrypt = async () => {
     if (!encryptedText.trim()) {
-      setError('복호화할 내용을 입력해주세요.');
-      return;
+      setError('복호화할 내용을 입력해주세요.')
+      return
     }
 
-    setIsLoading(true);
-    setError('');
+    setIsLoading(true)
+    setError('')
 
     try {
       // 암호화된 텍스트를 객체로 변환 (JSON 문자열이라고 가정)
-      let requestData: Record<string, string>;
+      let requestData: Record<string, string>
       try {
-        requestData = JSON.parse(encryptedText);
+        requestData = JSON.parse(encryptedText)
       } catch (e) {
         // JSON이 아닌 경우 그냥 text 키로 전송
-        requestData = { text: encryptedText };
+        requestData = { text: encryptedText }
       }
 
       // Record<string, string> 객체를 직접 전달합니다.
-      const response = await adminSwaggerClient.reviewAnalyzeController.decrypt(requestData);
+      const response = await adminSwaggerClient.reviewAnalyzeController.decrypt(requestData)
 
-      setDecryptedText(response.data || '복호화 결과가 없습니다.');
+      setDecryptedText(response.data || '복호화 결과가 없습니다.')
     } catch (err) {
-      console.error('복호화 오류:', err);
-      setError('복호화 과정에서 오류가 발생했습니다.');
-      setDecryptedText('');
+      console.error('복호화 오류:', err)
+      setError('복호화 과정에서 오류가 발생했습니다.')
+      setDecryptedText('')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <Layout>
@@ -54,7 +54,8 @@ const Decrypt = () => {
                 onChange={(e) => setEncryptedText(e.target.value)}
               />
               {error && <p className="text-red-500 text-sm">{error}</p>}
-              <button 
+              <button
+                type="button"
                 className="w-full py-3 bg-black text-white rounded-lg hover:bg-black/90 transition-colors disabled:bg-gray-400"
                 onClick={handleDecrypt}
                 disabled={isLoading}
@@ -73,7 +74,7 @@ const Decrypt = () => {
         </div>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default Decrypt;
+export default Decrypt
