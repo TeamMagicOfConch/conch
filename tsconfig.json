@@ -9,6 +9,9 @@
       ],
       "@conch/*": [
         "./apps/conch/*"
+      ],
+      "@admin/*": [
+        "./apps/admin/*"
       ]
     }
   },

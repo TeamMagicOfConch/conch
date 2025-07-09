@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:conch": "turbo run dev --filter=\"{./apps/conch}...\"",
+    "dev:admin": "turbo run dev --filter=\"{./apps/admin}...\"",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "turbo run test",
     "build": "turbo run build",
     "build:conch": "turbo run build --filter=\"...{./apps/conch}\"",
-    "build:conch:simulator": "turbo run build:simulator --filter=\"...{./apps/conch}\""
+    "build:conch:simulator": "turbo run build:simulator --filter=\"...{./apps/conch}\"",
+    "build:admin": "turbo run build --filter=\"...{./apps/admin}\""
   },
   "keywords": [],
   "author": "",
