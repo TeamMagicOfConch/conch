@@ -42,7 +42,7 @@ const GoalStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
       stepIndicator={{ totalSteps: 3, currentStep: 3 }}
       header={{
         emoji: '💭',
-        title: "'어떤 사람이' 되고 싶어?",
+        title: '‘어떤 사람이’ 되고 싶어?',
         subtitle: '매일 회고를 작성하며',
         reverse: true,
       }}

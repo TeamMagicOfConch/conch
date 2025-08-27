@@ -42,7 +42,7 @@ const WhereStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentP
       stepIndicator={{ totalSteps: 3, currentStep: 2 }}
       header={{
         emoji: '📍',
-        title: "매일 '어디서'",
+        title: '매일 ‘어디서’',
         subtitle: '회고를 작성할거야?',
         reverse: false,
       }}

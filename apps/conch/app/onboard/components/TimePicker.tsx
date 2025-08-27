@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     height: 48,
   },
   confirmButton: {
-    backgroundColor: '#F9842A',
+    backgroundColor: '#413D3D',
     borderRadius: 200,
     padding: 16, // 패딩 증가
     alignItems: 'center',

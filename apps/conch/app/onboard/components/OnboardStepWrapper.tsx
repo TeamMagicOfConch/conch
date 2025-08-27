@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
   },
   progressDotActive: {
-    backgroundColor: '#F9842A',
+    backgroundColor: '#413D3D',
   },
   habitHeaderContainer: {
     alignItems: 'center',
@@ -178,13 +178,13 @@ const styles = StyleSheet.create({
   habitTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#F9842A',
+    color: '#413D3D',
     textAlign: 'center',
   },
   habitSubtitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#666666',
+    color: '#888888',
     textAlign: 'center',
   },
   contentContainer: {
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     borderRadius: 200,
   },
   buttonEnabled: {
-    backgroundColor: '#F9842A',
+    backgroundColor: '#413D3D',
   },
   buttonDisabled: {
     backgroundColor: '#D8D8D8',

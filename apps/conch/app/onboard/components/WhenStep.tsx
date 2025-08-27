@@ -58,7 +58,7 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
         stepIndicator={{ totalSteps: 3, currentStep: 1 }}
         header={{
           emoji: '⏰',
-          title: "매일 '언제'",
+          title: '매일 ‘언제’',
           subtitle: '회고를 작성할거야?',
           reverse: false,
         }}
