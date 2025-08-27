@@ -26,15 +26,15 @@ export default function PrimaryButton({
 
 const innerStyle = StyleSheet.create({
   button: {
-    width: '66.66%',
+    width: '100%',
     height: 48,
 
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
 
-    borderRadius: 50,
-    backgroundColor: Colors.writtenGrey,
+    borderRadius: 200,
+    backgroundColor: Colors.onboardingPrimary,
 
     fontSize: 16,
     fontWeight: 'bold',

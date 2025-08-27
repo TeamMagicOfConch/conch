@@ -5,7 +5,7 @@ export const Colors = {
   black: '#000000',
   yellow: '#A7FF36',
   grey: '#c8c8c8',
-  writtenGrey: '#363636',
+  writtenGrey: '#6b6562',
   bgGrey: '#eeeeee',
   lightGrey: '#888888',
   godong: '#AE704D',
@@ -26,4 +26,5 @@ export const Colors = {
   onboardingDrawerHandle: '#999FA3',
   onboardingTextDefault: '#363636',
   onboardingBg: '#eeeeee',
+  onboardingInfoBg: '#F5F5F5',
 }

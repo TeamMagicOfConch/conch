@@ -4,6 +4,7 @@ import { Colors } from '@conch/assets/colors'
 import { PrimaryButton, SafeAreaViewWithDefaultBackgroundColor } from '@conch/components'
 import { validateInput } from '@conch/utils'
 import { OnboardStepComponentProps, UserInfo } from './types'
+import { LinearGradient } from 'expo-linear-gradient'
 
 const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<UserInfo>) => {
   const [username, setUsername] = useState(data.username)
@@ -43,7 +44,7 @@ const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentPro
   }
 
   return (
-    <SafeAreaViewWithDefaultBackgroundColor>
+    <SafeAreaViewWithDefaultBackgroundColor style={{ backgroundColor: Colors.white }}>
       <Pressable
         onPress={Keyboard.dismiss}
         style={styles.root}
@@ -53,7 +54,8 @@ const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentPro
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
-              placeholder="닉네임 (한글 / 영어 / 숫자 최대 10자)"
+              placeholder="10자 이내의 닉네임을 입력하세요"
+              placeholderTextColor={Colors.lightGrey}
               value={username}
               onChange={(e) => setUsername(e.nativeEvent.text)}
             />
@@ -68,6 +70,7 @@ const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentPro
               style={styles.input}
               keyboardType="numeric"
               placeholder="0~30 사이의 정수를 입력하세요"
+              placeholderTextColor={Colors.lightGrey}
               value={String(initialReviewCount !== undefined ? initialReviewCount : '')}
               onChange={(e) => setInitialReviewCount(e.nativeEvent.text === '' ? undefined : parseInt(e.nativeEvent.text, 10) || 0)}
             />
@@ -76,62 +79,54 @@ const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentPro
         </View>
 
         <View style={styles.bottomContainer}>
-          <View style={styles.descriptionContainer}>
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              style={styles.description}
-            >
-              시작하기 버튼을 누르시면{' '}
-              <Text
-                style={styles.link}
-                onPress={openURL('https://magicofconch.notion.site/11de5767cbb480038426c22fcaca8871?pvs=4')}
-              >
-                서비스 이용약관
-              </Text>{' '}
-              및{' '}
-              <Text
-                style={styles.link}
-                onPress={openURL('https://magicofconch.notion.site/11de5767cbb48082971dc9e739d2bbb5?pvs=4')}
-              >
-                개인정보 처리방침
-              </Text>
-              에
+          <View style={styles.infoContainer}>
+            <LinearGradient
+              pointerEvents="none"
+              colors={["rgba(0,0,0,0.08)", "rgba(0,0,0,0)"]}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={[styles.edge, styles.edgeTop]}
+            />
+            <LinearGradient
+              pointerEvents="none"
+              colors={["rgba(0,0,0,0.08)", "rgba(0,0,0,0)"]}
+              start={{ x: 0.5, y: 1 }}
+              end={{ x: 0.5, y: 0 }}
+              style={[styles.edge, styles.edgeBottom]}
+            />
+            <LinearGradient
+              pointerEvents="none"
+              colors={["rgba(0,0,0,0.08)", "rgba(0,0,0,0)"]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={[styles.edge, styles.edgeLeft]}
+            />
+            <LinearGradient
+              pointerEvents="none"
+              colors={["rgba(0,0,0,0.08)", "rgba(0,0,0,0)"]}
+              start={{ x: 1, y: 0.5 }}
+              end={{ x: 0, y: 0.5 }}
+              style={[styles.edge, styles.edgeRight]}
+            />
+            <Text style={styles.infoMain}>
+              현재 <Text style={styles.infoEmphasis}>하나의 기기에서만 서비스 이용이</Text> 가능하여,{"\n"}
+              다른 기기에서 생성한 데이터를 <Text style={styles.infoWarning}>동기화할 수 없습니다.</Text>
             </Text>
-            <Text style={[styles.description, { marginTop: 7 }]}>동의하는 것으로 간주되오니, 이용 전에 확인하시기 바랍니다.</Text>
+            <Text style={styles.infoSub}>동기화 기능은 추후 구현될 예정입니다.</Text>
           </View>
 
           <PrimaryButton
+            style={{ width: '100%', borderRadius: 200 }}
             disabled={disabled}
             onPress={handleNext}
           >
             소라의 마법 시작하기
           </PrimaryButton>
 
-          <View style={styles.infoContainer}>
-            <Text
-              style={[styles.info, { fontWeight: 'bold' }]}
-              adjustsFontSizeToFit
-              numberOfLines={1}
-            >
-              현재 하나의 기기에서만 서비스 이용이 가능하여,
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.description}>
+              시작하기 버튼을 누르시면 <Text style={styles.link} onPress={openURL('https://magicofconch.notion.site/11de5767cbb480038426c22fcaca8871?pvs=4')}>서비스 이용약관</Text> 및 <Text style={styles.link} onPress={openURL('https://magicofconch.notion.site/11de5767cbb48082971dc9e739d2bbb5?pvs=4')}>개인정보 처리방침</Text>에 동의하는 것으로 간주되오니, 이용 전에 확인하시기 바랍니다.
             </Text>
-            <Text
-              style={styles.info}
-              adjustsFontSizeToFit
-              numberOfLines={1}
-            >
-              다른 기기에서 생성한 데이터나 콘텐츠를{' '}
-              <Text
-                style={{ color: Colors.fSoraBold, fontWeight: 'bold' }}
-                adjustsFontSizeToFit
-                numberOfLines={1}
-              >
-                동기화할 수 없습니다.
-              </Text>
-            </Text>
-            <Text>{'\n'}</Text>
-            <Text style={{ fontSize: 12, color: Colors.lightGrey }}>동기화 기능은 추후 구현될 예정입니다.</Text>
           </View>
         </View>
       </Pressable>
@@ -145,6 +140,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 25,
     paddingBottom: 0,
+    backgroundColor: Colors.white,
   },
   container: {
     marginBottom: 20,
@@ -153,6 +149,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     lineHeight: 27,
+    color: Colors.writtenGrey,
   },
   error: {
     marginTop: 10,
@@ -165,11 +162,15 @@ const styles = StyleSheet.create({
     borderColor: Colors.grey,
     borderRadius: 10,
     marginTop: 20,
-    padding: 17,
-    paddingLeft: 22,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    alignSelf: 'stretch',
   },
   input: {
-    color: Colors.lightGrey,
+    color: Colors.onboardingTextDefault,
+    fontSize: 14,
+    textAlign: 'center',
+    width: '100%',
   },
   bottomContainer: {
     flex: 1,
@@ -178,30 +179,75 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     alignItems: 'center',
-    marginTop: -7,
-    marginBottom: 30,
+    marginTop: 20,
+    marginBottom: 0,
   },
   description: {
-    color: Colors.lightGrey,
+    color: Colors.onboardingSubtitle,
+    fontSize: 12,
+    textAlign: 'center',
   },
   link: {
-    color: Colors.sora,
+    color: Colors.tSoraBold,
   },
   infoContainer: {
-    marginTop: 25,
+    marginTop: 0,
     padding: 20,
     paddingLeft: 10,
     paddingRight: 10,
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 0,
     borderRadius: 10,
-    borderColor: Colors.lightGrey,
-    backgroundColor: Colors.bgGrey,
+    backgroundColor: Colors.onboardingInfoBg,
+    marginBottom: 20,
+    overflow: 'hidden',
   },
-  info: {
-    fontSize: 14,
-    color: Colors.writtenGrey,
-    lineHeight: 24.5,
+  edge: {
+    position: 'absolute',
+  },
+  edgeTop: {
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 12,
+  },
+  edgeBottom: {
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 12,
+  },
+  edgeLeft: {
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 12,
+  },
+  edgeRight: {
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 12,
+  },
+  infoMain: {
+    fontSize: 13,
+    color: Colors.onboardingTextDefault,
+    lineHeight: 21,
+    textAlign: 'center',
+  },
+  infoEmphasis: {
+    fontWeight: 'bold',
+    color: Colors.onboardingTextDefault,
+  },
+  infoWarning: {
+    fontWeight: 'bold',
+    color: Colors.fSoraBold,
+  },
+  infoSub: {
+    fontSize: 12,
+    color: Colors.onboardingSubtitle,
+    textAlign: 'center',
+    marginTop: 12,
   },
 })
 
