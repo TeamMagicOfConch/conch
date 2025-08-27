@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    backgroundColor: 'white',
+    backgroundColor: Colors.white,
     overflow: 'hidden',
   },
   modalBlur: {
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   drawerHandle: {
     width: 60,
     height: 3,
-    backgroundColor: '#999FA3',
+    backgroundColor: Colors.onboardingDrawerHandle,
     borderRadius: 1.5,
   },
   modalHeader: {
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#000000',
+    color: Colors.black,
   },
   closeButtonContainer: {
     opacity: 0.7,
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     height: 48,
   },
   confirmButton: {
-    backgroundColor: '#413D3D',
+    backgroundColor: Colors.onboardingPrimary,
     borderRadius: 200,
     padding: 16, // 패딩 증가
     alignItems: 'center',
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   timeInputContainer: {
-    backgroundColor: '#F5F7FA',
+    backgroundColor: Colors.onboardingTimeInputBg,
     padding: 20,
     borderRadius: 12,
     marginVertical: 20,
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   timeInputText: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.black,
   },
 })
 

@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   habitSettingContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: Colors.bgGrey,
+    backgroundColor: Colors.onboardingBg,
   },
   navigationContainer: {
     flexDirection: 'row',
@@ -158,10 +158,10 @@ const styles = StyleSheet.create({
     width: 50,
     height: 3,
     borderRadius: 3,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: Colors.onboardingProgressBase,
   },
   progressDotActive: {
-    backgroundColor: '#413D3D',
+    backgroundColor: Colors.onboardingPrimary,
   },
   habitHeaderContainer: {
     alignItems: 'center',
@@ -178,13 +178,13 @@ const styles = StyleSheet.create({
   habitTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#413D3D',
+    color: Colors.onboardingPrimary,
     textAlign: 'center',
   },
   habitSubtitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#888888',
+    color: Colors.onboardingSubtitle,
     textAlign: 'center',
   },
   contentContainer: {
@@ -199,10 +199,10 @@ const styles = StyleSheet.create({
     borderRadius: 200,
   },
   buttonEnabled: {
-    backgroundColor: '#413D3D',
+    backgroundColor: Colors.onboardingPrimary,
   },
   buttonDisabled: {
-    backgroundColor: '#D8D8D8',
+    backgroundColor: Colors.onboardingDisabled,
   },
 })
 

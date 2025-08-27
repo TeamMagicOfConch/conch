@@ -59,15 +59,15 @@ const styles = StyleSheet.create({
   },
   optionCardSelected: {
     borderWidth: 1.5,
-    borderColor: '#999999',
+    borderColor: Colors.onboardingCardBorder,
   },
   optionText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#363636',
+    color: Colors.onboardingTextDefault,
   },
   optionTextSelected: {
-    color: '#363636',
+    color: Colors.onboardingTextDefault,
   },
   optionTextCustom: {
     color: Colors.lightGrey,

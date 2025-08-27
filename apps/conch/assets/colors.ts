@@ -17,4 +17,13 @@ export const Colors = {
   tSora: '#A7BEFF',
   tSoraBold: '#3860FF',
   tSoraBg: '#DCDEF0',
+  onboardingPrimary: '#413D3D',
+  onboardingSubtitle: '#888888',
+  onboardingDisabled: '#D8D8D8',
+  onboardingProgressBase: '#D9D9D9',
+  onboardingTimeInputBg: '#F5F7FA',
+  onboardingCardBorder: '#999999',
+  onboardingDrawerHandle: '#999FA3',
+  onboardingTextDefault: '#363636',
+  onboardingBg: '#eeeeee',
 }
