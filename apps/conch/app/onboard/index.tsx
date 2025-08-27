@@ -7,11 +7,7 @@ import {
   WhereStep, 
   GoalStep,
   OnboardStep,
-  OnboardingData,
-  UserInfo,
-  WhenPreference,
-  WherePreference,
-  GoalPreference
+  OnboardingData
 } from './components'
 
 interface OnboardScreenProps {
@@ -31,6 +27,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
     },
     whenPreference: {
       optionId: '',
+      time: undefined 
     },
     wherePreference: {
       optionId: '',
@@ -40,35 +37,11 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
     },
   })
 
-  // 사용자 정보 업데이트
-  const updateUserInfo = useCallback((data: UserInfo) => {
+  // 온보딩 데이터 공통 업데이트 헬퍼
+  const updateOnboarding = useCallback(<K extends keyof OnboardingData>(key: K, data: OnboardingData[K]) => {
     setOnboardingData(prev => ({
       ...prev,
-      userInfo: data,
-    }))
-  }, [])
-
-  // 시간 선택 정보 업데이트
-  const updateWhenPreference = useCallback((data: WhenPreference) => {
-    setOnboardingData(prev => ({
-      ...prev,
-      whenPreference: data,
-    }))
-  }, [])
-
-  // 장소 선택 정보 업데이트
-  const updateWherePreference = useCallback((data: WherePreference) => {
-    setOnboardingData(prev => ({
-      ...prev,
-      wherePreference: data,
-    }))
-  }, [])
-
-  // 목표 선택 정보 업데이트
-  const updateGoalPreference = useCallback((data: GoalPreference) => {
-    setOnboardingData(prev => ({
-      ...prev,
-      goalPreference: data,
+      [key]: data,
     }))
   }, [])
 
@@ -101,11 +74,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
   // 마지막 단계에서 모든 정보 등록 및 앱으로 이동
   const completeOnboarding = useCallback(async () => {
     // TODO: 서버에 습관 설정 정보 저장 로직 추가
-    console.log('최종 온보딩 데이터:', {
-      when: getWhenValue(),
-      where: getWhereValue(),
-      goal: getGoalValue(),
-    })
+    console.log('최종 온보딩 데이터:', onboardingData)
     
     setNeedOnboard(false)
   }, [onboardingData, setNeedOnboard])
@@ -130,31 +99,6 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
     })
   }, [])
 
-  // 선택한 옵션의 텍스트 값 반환 헬퍼 함수들
-  const getWhenValue = useCallback(() => {
-    const { optionId, customValue } = onboardingData.whenPreference
-    if (optionId === 'custom' && customValue) {
-      return customValue
-    }
-    return optionId
-  }, [onboardingData.whenPreference])
-
-  const getWhereValue = useCallback(() => {
-    const { optionId, customValue } = onboardingData.wherePreference
-    if (optionId === 'custom' && customValue) {
-      return customValue
-    }
-    return optionId
-  }, [onboardingData.wherePreference])
-
-  const getGoalValue = useCallback(() => {
-    const { optionId, customValue } = onboardingData.goalPreference
-    if (optionId === 'custom' && customValue) {
-      return customValue
-    }
-    return optionId
-  }, [onboardingData.goalPreference])
-
   // 현재 단계에 맞는 컴포넌트 렌더링
   const renderStep = () => {
     switch (currentStep) {
@@ -162,7 +106,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
         return (
           <InitialInfoStep
             data={onboardingData.userInfo}
-            onDataChange={updateUserInfo}
+            onDataChange={(data) => updateOnboarding('userInfo', data)}
             onNext={handleInitialInfoSubmit}
           />
         )
@@ -170,7 +114,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
         return (
           <WhenStep
             data={onboardingData.whenPreference}
-            onDataChange={updateWhenPreference}
+            onDataChange={(data) => updateOnboarding('whenPreference', data)}
             onNext={goToNextStep}
             onPrev={goToPrevStep}
           />
@@ -179,7 +123,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
         return (
           <WhereStep
             data={onboardingData.wherePreference}
-            onDataChange={updateWherePreference}
+            onDataChange={(data) => updateOnboarding('wherePreference', data)}
             onNext={goToNextStep}
             onPrev={goToPrevStep}
           />
@@ -188,7 +132,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
         return (
           <GoalStep
             data={onboardingData.goalPreference}
-            onDataChange={updateGoalPreference}
+            onDataChange={(data) => updateOnboarding('goalPreference', data)}
             onNext={completeOnboarding}
             onPrev={goToPrevStep}
           />

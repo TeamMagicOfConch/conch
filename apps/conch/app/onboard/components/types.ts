@@ -44,23 +44,22 @@ export interface UserInfo {
   initialReviewCount: number | undefined
 }
 
-// 회고 습관 시간 정보 인터페이스
-export interface WhenPreference {
+// 회고 습관 기본 정보 베이스 인터페이스
+export interface HabitPreferenceBase {
   optionId: string
   customValue?: string
+}
+
+// 회고 습관 시간 정보 인터페이스
+export interface WhenPreference extends HabitPreferenceBase {
+  time?: string
 }
 
 // 회고 습관 장소 정보 인터페이스
-export interface WherePreference {
-  optionId: string
-  customValue?: string
-}
+export interface WherePreference extends HabitPreferenceBase {}
 
 // 회고 습관 목표 정보 인터페이스
-export interface GoalPreference {
-  optionId: string
-  customValue?: string
-}
+export interface GoalPreference extends HabitPreferenceBase {}
 
 // 온보딩 데이터 전체 인터페이스
 export interface OnboardingData {
