@@ -3,6 +3,9 @@ import type { SaveReq } from './types/conchApi'
 const CHUNK_REGEX = /{(.*)}/g
 const KO_TIME_OFFSET = 9 * 60 * 60 * 1000 // 9시간
 
+type FetchLikeResponse = { body?: { getReader: () => any }; status: number }
+type FetchLike = (url: string, init?: any) => Promise<FetchLikeResponse>
+
 export type SubmitReviewSSEOptions = {
   baseURL: string
   path?: string // default: '/auth/user/api/review/submit'
@@ -10,7 +13,7 @@ export type SubmitReviewSSEOptions = {
   onChunk: (text: string) => void
   onError?: (error: Error) => void
   onDone?: () => void
-  fetchImpl?: typeof fetch
+  fetchImpl?: FetchLike
   // 토큰 전략: 우선순위 token → getAccessToken → undefined
   token?: string | null
   getAccessToken?: () => Promise<string | null>
@@ -31,9 +34,9 @@ async function resolveInitialToken(opts: SubmitReviewSSEOptions): Promise<string
 }
 
 async function tryRefetchWith(
-  fetchFn: typeof fetch,
+  fetchFn: FetchLike,
   url: string,
-  option: RequestInit & { headers: Record<string, string> },
+  option: any,
   getToken: (() => Promise<string | null>) | undefined,
 ) {
   if (!getToken) return null
@@ -44,7 +47,7 @@ async function tryRefetchWith(
 }
 
 export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<void> {
-  const fetchFn = opts.fetchImpl ?? fetch
+  const fetchFn: FetchLike = opts.fetchImpl ?? (globalThis.fetch as any)
   const path = opts.path ?? '/stream/review'
   const url = `${opts.baseURL}${path}`
 
@@ -60,7 +63,7 @@ export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<voi
     reviewDate: buildReviewDate(opts.review.reviewDate),
   }
 
-  const option: RequestInit & { headers: Record<string, string> } = {
+  const option: any = {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
