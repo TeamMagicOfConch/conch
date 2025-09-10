@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { fetch } from 'expo/fetch'
-import { submitReviewSSE } from '@conch/api'
+import { submitReviewSSE } from '@api/conch'
 import type { Review } from '@conch/utils/api/review/types'
 import { consts, refreshToken } from '@conch/utils'
 import AsyncStorage from '@react-native-async-storage/async-storage'

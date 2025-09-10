@@ -1,4 +1,4 @@
-import { createConchSwaggerClient } from '@conch/api'
+import { createConchSwaggerClient } from '@api/conch'
 
 let client: ReturnType<typeof createConchSwaggerClient> | null = null
 
