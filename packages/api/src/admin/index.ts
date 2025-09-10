@@ -41,5 +41,5 @@ export function clearAuthToken(apiClient: any, swaggerClient: any) {
   swaggerClient.setSecurityData(null)
 }
 
-// 생성된 API 타입 내보내기
-export * from './types/adminApi'
+// 생성된 API 타입을 네임스페이스로 내보내 충돌 방지
+export * as AdminApiTypes from './types/adminApi'
