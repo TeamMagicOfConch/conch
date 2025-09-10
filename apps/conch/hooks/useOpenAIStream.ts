@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { fetch } from 'expo/fetch'
+import { submitReviewSSE } from '@conch/api'
 import type { Review } from '@conch/utils/api/review/types'
-import { consts, getApiUrlWithPathAndParams, refreshToken } from '@conch/utils'
+import { consts, refreshToken } from '@conch/utils'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { login } from '@conch/utils/api/auth'
 import { useSound } from './useSound'
@@ -23,49 +24,27 @@ export function useOpenAIStream(props?: Review) {
       playSound()
       setResponse('')
       setError(null)
-      const url = getApiUrlWithPathAndParams({ path: '/auth/user/api/review/submit' })
       const accessToken = await AsyncStorage.getItem(consts.asyncStorageKey.accessToken)
 
       try {
-        const option = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/event-stream',
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
+        await submitReviewSSE({
+          baseURL: process.env.EXPO_PUBLIC_API_URL as string,
+          // path 기본값: '/stream/review'
+          review: {
             body: reviewBody,
             type: feedbackType,
-            reviewDate: new Date(new Date().getTime() + KO_TIME_OFFSET).toISOString().split('T')[0],
-          }),
-        }
-        const responseFirstAttempt: Response = await fetch(url, option)
-
-        const response =
-          responseFirstAttempt.status === 401
-            ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await refreshToken())?.data?.accessToken}` } })
-            : responseFirstAttempt
-
-        const finalResponse =
-          response.status === 401
-            ? await fetch(url, { ...option, headers: { ...option.headers, Authorization: `Bearer ${(await login())?.data?.accessToken}` } })
-            : response
-
-        const reader = finalResponse.body?.getReader()
-        const decoder = new TextDecoder('utf8')
-
-        while (isMounted && reader) {
-          const { done, value } = await reader.read()
-          if (done) return
-          const chunk = decoder.decode(value)
-          const matches = [...chunk.matchAll(CHUNK_REGEX)]
-          matches?.forEach((match) => {
-            if (match && match[0]) {
-              const { value } = JSON.parse(match[0])
-              setResponse((prev) => prev + (value || ''))
-            }
-          })
-        }
+            // reviewDate 미지정 시 헬퍼에서 KST(+9) yyyy-MM-dd 자동 생성
+          } as any,
+          token: accessToken,
+          refreshToken: async () => (await refreshToken())?.data?.accessToken ?? null,
+          login: async () => (await login())?.data?.accessToken ?? null,
+          fetchImpl: fetch,
+          onChunk: (text) => setResponse((prev) => prev + (text || '')),
+          onError: (e) => {
+            setError(e.message)
+            setResponse(`error occurred: ${e.message}`)
+          },
+        })
       } catch (e) {
         console.error(e)
         if (e instanceof Error) {
