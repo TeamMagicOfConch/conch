@@ -3,7 +3,7 @@ import type { SaveReq } from './types/conchApi'
 const CHUNK_REGEX = /{(.*)}/g
 const KO_TIME_OFFSET = 9 * 60 * 60 * 1000 // 9시간
 
-type FetchLikeResponse = { body?: { getReader: () => any }; status: number }
+type FetchLikeResponse = { body?: any; status: number }
 type FetchLike = (url: string, init?: any) => Promise<FetchLikeResponse>
 
 export type SubmitReviewSSEOptions = {
@@ -87,7 +87,7 @@ export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<voi
 
     const res = finalRes ?? first
 
-    const reader = res.body?.getReader()
+    const reader = res.body?.getReader?.()
     const decoder = new TextDecoder('utf8')
 
     while (reader) {

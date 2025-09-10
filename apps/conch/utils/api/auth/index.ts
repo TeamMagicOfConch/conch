@@ -5,9 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { consts } from '@conch/utils/consts'
 import { AuthToken, AuthRequestBody, AuthResponse } from './types'
+import { getConchClient, setConchToken } from '../conchClient'
 
 export const UNREGISTERED_CODE = 'USR-003'
 const REFRESH_TOKEN_EXPIRED_CODE = 'SEC-001'
+const OS_ID_DEBUG = null
 
 export const authAxios = axios.create({ baseURL: process.env.EXPO_PUBLIC_API_URL })
 authAxios.interceptors.response.use(onResponse, onResponseError)
@@ -26,7 +28,7 @@ export async function onResponse(response: AxiosResponse<AuthResponse>): Promise
 
   switch (code) {
     case REFRESH_TOKEN_EXPIRED_CODE:
-      return authPost('/user/login', { osId: await DeviceInfo.getUniqueId() })
+      return authPost('/user/login', { osId: OS_ID_DEBUG || await DeviceInfo.getUniqueId() })
     default:
       return response
   }
@@ -93,7 +95,7 @@ const DEFAULT_RESPONSE: AuthResponse = {
 export async function register({ username, initialReviewCount }: Pick<AuthRequestBody, 'username' | 'initialReviewCount'>): Promise<AuthResponse> {
   try {
     const { data: axiosData } = await authPost('/user/register', {
-      osId: await DeviceInfo.getUniqueId(),
+      osId: OS_ID_DEBUG || await DeviceInfo.getUniqueId(),
       // osId: 'qwer',
       osType: Platform.OS.toUpperCase(),
       username,
@@ -108,9 +110,12 @@ export async function register({ username, initialReviewCount }: Pick<AuthReques
 
 export async function login(): Promise<AuthResponse> {
   try {
-    const osId = await DeviceInfo.getUniqueId()
-    const { data: axiosData } = (await authPost('/user/login', { osId })) || {}
-    return axiosData
+    const osId = OS_ID_DEBUG || await DeviceInfo.getUniqueId()
+    const { data } = await getConchClient().authController.login({ osId })
+    const { accessToken, refreshToken, username } = (data as any)?.data || {}
+    await setTokens({ accessToken, refreshToken, username })
+    setConchToken(accessToken)
+    return data as AuthResponse
   } catch (e) {
     console.error('re-login failed', e, (e as any).stack)
     return DEFAULT_RESPONSE
@@ -122,16 +127,15 @@ export async function refreshToken(): Promise<AuthResponse> {
   if (!_refreshToken) return login()
 
   try {
-    const { data: responseData } = await authGet('/user/reissue', {
-      headers: {
-        'Refresh-Token': _refreshToken,
-      },
+    const { data: responseData } = await getConchClient().authController.reissue({
+      headers: { 'Refresh-Token': _refreshToken },
     })
-    const { accessToken, refreshToken, username } = responseData?.data || {}
+    const { accessToken, refreshToken, username } = (responseData as any)?.data || {}
 
     setTokens({ accessToken, refreshToken, username })
+    setConchToken(accessToken)
 
-    return responseData
+    return responseData as any
   } catch (e) {
     console.warn('reissue failed', e)
     return DEFAULT_RESPONSE
