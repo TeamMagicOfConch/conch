@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { View } from 'react-native'
 import { register, setTokens } from '@conch/utils'
 import { 
@@ -13,11 +13,13 @@ import {
 interface OnboardScreenProps {
   setNeedOnboard: React.Dispatch<React.SetStateAction<boolean>>
   onLayout: () => void
+  initialStep?: OnboardStep
 }
 
-const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
+const OnboardScreen = ({ setNeedOnboard, onLayout, initialStep = OnboardStep.INITIAL_INFO }: OnboardScreenProps) => {
   // 현재 온보딩 단계
-  const [currentStep, setCurrentStep] = useState<OnboardStep>(OnboardStep.INITIAL_INFO)
+  const initialStepRef = useRef<OnboardStep>(initialStep)
+  const [currentStep, setCurrentStep] = useState<OnboardStep>(initialStepRef.current)
   
   // 온보딩 데이터
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
@@ -92,7 +94,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
   // 이전 단계로 이동
   const goToPrevStep = useCallback(() => {
     setCurrentStep(prev => {
-      if (prev === OnboardStep.INITIAL_INFO) {
+      if (prev === initialStepRef.current) {
         return prev
       }
       return prev - 1
@@ -101,6 +103,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
 
   // 현재 단계에 맞는 컴포넌트 렌더링
   const renderStep = () => {
+    const canGoBack = currentStep > initialStepRef.current
     switch (currentStep) {
       case OnboardStep.INITIAL_INFO:
         return (
@@ -116,7 +119,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
             data={onboardingData.whenPreference}
             onDataChange={(data) => updateOnboarding('whenPreference', data)}
             onNext={goToNextStep}
-            onPrev={goToPrevStep}
+            onPrev={canGoBack ? goToPrevStep : undefined}
           />
         )
       case OnboardStep.WHERE:
@@ -125,7 +128,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
             data={onboardingData.wherePreference}
             onDataChange={(data) => updateOnboarding('wherePreference', data)}
             onNext={goToNextStep}
-            onPrev={goToPrevStep}
+            onPrev={canGoBack ? goToPrevStep : undefined}
           />
         )
       case OnboardStep.GOAL:
@@ -134,7 +137,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout }: OnboardScreenProps) => {
             data={onboardingData.goalPreference}
             onDataChange={(data) => updateOnboarding('goalPreference', data)}
             onNext={completeOnboarding}
-            onPrev={goToPrevStep}
+            onPrev={canGoBack ? goToPrevStep : undefined}
           />
         )
       default:

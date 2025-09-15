@@ -10,7 +10,7 @@ SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
   useRefresh()
-  const { isAppReady, needOnboard, setNeedOnboard, error } = useStartUp()
+  const { isAppReady, needOnboard, setNeedOnboard, error, initialOnboardStep } = useStartUp()
 
   const onLayoutRootView = useCallback(async () => {
     if (isAppReady) await SplashScreen.hideAsync()
@@ -23,6 +23,7 @@ export default function Layout() {
     <OnboardScreen
       onLayout={onLayoutRootView}
       setNeedOnboard={setNeedOnboard}
+      initialStep={initialOnboardStep}
      />
   ) : (
     <View
