@@ -1,7 +1,7 @@
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { Api as ConchApi, ResponseAuthRes } from './types/conchApi'
 import { decodeJwtPayload } from './util'
-import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
+import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE, OS_ID_DEBUG } from './consts'
 
 export { UNREGISTERED_CODE, REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
@@ -73,17 +73,28 @@ export function createConchAuthHelpers(
   }
 
   async function login() {
+    // const osId = OS_ID_DEBUG || (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
     const osId = (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
-    const res = await deps.swaggerClient.authController.login({ osId })
-    const payload = res.data
-    const { accessToken, refreshToken, username } = (payload?.data ?? {}) as TokenBundle
-    await setTokens({ accessToken: accessToken ?? null, refreshToken: refreshToken ?? null, username })
-    // 비즈니스 로직: 세미 유저면 온보딩 필요 코드로 변환
-    const claims = decodeJwtPayload(accessToken ?? '') || {}
-    if (claims?.role === SEMI_USER_ROLE) {
-      return { ...payload, code: NEED_MORE_ONBOARDING_CODE }
+    try {
+      const res = await deps.swaggerClient.authController.login({ osId })
+      const payload = res.data
+      console.log('payload', payload)
+      const { accessToken, refreshToken, username } = (payload?.data ?? {}) as TokenBundle
+      await setTokens({ accessToken: accessToken ?? null, refreshToken: refreshToken ?? null, username })
+      // 비즈니스 로직: 세미 유저면 온보딩 필요 코드로 변환
+      const claims = decodeJwtPayload(accessToken ?? '') || {}
+      if (claims?.role === SEMI_USER_ROLE) {
+        return { ...payload, code: NEED_MORE_ONBOARDING_CODE }
+      }
+      return payload
+    } catch (error: any) {
+      // 로그인에서 400은 "유저 미등록" 정상 흐름이므로 reject하지 않고 payload를 그대로 반환
+      if (error?.response?.status === 400) {
+        const payload = error.response.data
+        return payload
+      }
+      return Promise.reject(error)
     }
-    return payload
   }
 
   async function register(args: { username?: string; initialReviewCount?: number }) {
