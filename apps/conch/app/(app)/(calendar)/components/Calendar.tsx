@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, useWindowDimensions, Pressable, Platform } from
 import { useRouter } from 'expo-router'
 import { SoraBg } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
-import { FeedbackType } from '@conch/utils/api/review/types'
 import { useCalendar } from '../hooks'
 import { ReviewForCalendar } from '../types'
 
@@ -58,7 +57,7 @@ export default function Calendar({ reviews, date }: Props) {
           {week.map(({ date: cellDate, isToday, isFReview, isTReview }, dayIndex) => {
             const isMovable = !!cellDate && (isFReview || isTReview || isToday)
             const isReviewWritten = isFReview || isTReview
-            const feedbackType: FeedbackType | null = isFReview ? 'FEELING' : isTReview ? 'THINKING' : null
+            const feedbackType = isFReview ? 'FEELING' : isTReview ? 'THINKING' : null
             const reviewDate = `${year}-${month}-${cellDate}`
 
             return (

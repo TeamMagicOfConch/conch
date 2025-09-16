@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { setTokens } from '@conch/utils'
-import { UNREGISTERED_CODE, login, NEED_MORE_ONBOARDING_CODE } from '@conch/utils/api'
+import { UNREGISTERED_CODE, NEED_MORE_ONBOARDING_CODE } from '@api/conch'
+import { login, setTokens } from '@conch/utils/api'
 import { OnboardStep } from './onboard/components'
 
 export function useStartUp() {

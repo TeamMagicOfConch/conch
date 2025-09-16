@@ -32,7 +32,7 @@ export interface OnboardStepWrapperProps {
 }
 
 // 진행 단계 표시기 컴포넌트
-export const StepIndicator = ({ totalSteps, currentStep }: StepIndicatorProps) => {
+export function StepIndicator({ totalSteps, currentStep }: StepIndicatorProps) {
   return (
     <View style={styles.progressContainer}>
       {Array.from({ length: totalSteps }, (_, index) => (
@@ -49,7 +49,7 @@ export const StepIndicator = ({ totalSteps, currentStep }: StepIndicatorProps) =
 }
 
 // 온보딩 단계 헤더 컴포넌트
-export const StepHeader = ({ emoji, title, subtitle, reverse = false }: StepHeaderProps) => {
+export function StepHeader({ emoji, title, subtitle, reverse = false }: StepHeaderProps) {
   return (
     <View style={styles.habitHeaderContainer}>
       <Text style={styles.habitEmoji}>{emoji}</Text>
@@ -71,7 +71,7 @@ export const StepHeader = ({ emoji, title, subtitle, reverse = false }: StepHead
 }
 
 // 온보딩 단계 랩퍼 컴포넌트
-const OnboardStepWrapper = ({
+function OnboardStepWrapper({
   stepIndicator,
   header,
   children,
@@ -80,10 +80,12 @@ const OnboardStepWrapper = ({
   buttonDisabled = false,
   hideButton = false,
   onPrevPress,
-}: OnboardStepWrapperProps) => {
+}: OnboardStepWrapperProps) {
   return (
     <SafeAreaViewWithDefaultBackgroundColor>
-      <StatusBar backgroundColor={Colors.bgGrey} barStyle="dark-content" />
+      <StatusBar
+        backgroundColor={Colors.bgGrey}
+        barStyle="dark-content" />
       <ScrollView style={styles.habitSettingContainer}>
         {/* 상단 네비게이션 영역 */}
         <View style={styles.navigationContainer}>
