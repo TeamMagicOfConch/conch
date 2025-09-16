@@ -24,7 +24,7 @@ export default function Layout() {
       onLayout={onLayoutRootView}
       setNeedOnboard={setNeedOnboard}
       initialStep={initialOnboardStep}
-     />
+    />
   ) : (
     <View
       style={{ flex: 1 }}

@@ -1,14 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { View } from 'react-native'
 import { register, setTokens } from '@conch/utils'
-import { 
-  InitialInfoStep, 
-  WhenStep, 
-  WhereStep, 
-  GoalStep,
-  OnboardStep,
-  OnboardingData
-} from './components'
+import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep, OnboardingData } from './components'
 
 interface OnboardScreenProps {
   setNeedOnboard: React.Dispatch<React.SetStateAction<boolean>>
@@ -16,11 +9,12 @@ interface OnboardScreenProps {
   initialStep?: OnboardStep
 }
 
-const OnboardScreen = ({ setNeedOnboard, onLayout, initialStep = OnboardStep.INITIAL_INFO }: OnboardScreenProps) => {
+function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INITIAL_INFO }: OnboardScreenProps) {
+  console.log('initialStep', initialStep)
   // 현재 온보딩 단계
   const initialStepRef = useRef<OnboardStep>(initialStep)
   const [currentStep, setCurrentStep] = useState<OnboardStep>(initialStepRef.current)
-  
+
   // 온보딩 데이터
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     userInfo: {
@@ -29,7 +23,7 @@ const OnboardScreen = ({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     },
     whenPreference: {
       optionId: '',
-      time: undefined 
+      time: undefined,
     },
     wherePreference: {
       optionId: '',
@@ -41,10 +35,38 @@ const OnboardScreen = ({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
 
   // 온보딩 데이터 공통 업데이트 헬퍼
   const updateOnboarding = useCallback(<K extends keyof OnboardingData>(key: K, data: OnboardingData[K]) => {
-    setOnboardingData(prev => ({
+    setOnboardingData((prev) => ({
       ...prev,
       [key]: data,
     }))
+  }, [])
+
+  // 마지막 단계에서 모든 정보 등록 및 앱으로 이동
+  const completeOnboarding = useCallback(async () => {
+    // TODO: 서버에 습관 설정 정보 저장 로직 추가
+    console.log('최종 온보딩 데이터:', onboardingData)
+
+    setNeedOnboard(false)
+  }, [onboardingData, setNeedOnboard])
+
+  // 다음 단계로 이동
+  const goToNextStep = useCallback(() => {
+    setCurrentStep((prev) => {
+      if (prev === OnboardStep.COMPLETED) {
+        return prev
+      }
+      return prev + 1
+    })
+  }, [])
+
+  // 이전 단계로 이동
+  const goToPrevStep = useCallback(() => {
+    setCurrentStep((prev) => {
+      if (prev === initialStepRef.current) {
+        return prev
+      }
+      return prev - 1
+    })
   }, [])
 
   // 초기 정보 입력 후 사용자 등록 및 다음 단계로 이동
@@ -57,13 +79,11 @@ const OnboardScreen = ({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     }
 
     const { username, initialReviewCount } = onboardingData.userInfo
-    
+
     try {
       const response = await register({ username, initialReviewCount })
-      const {
-        data: { accessToken = null, refreshToken = null, username: usernameRes = null } = {},
-      } = response || {}
-      
+      const { data: { accessToken = null, refreshToken = null, username: usernameRes = null } = {} } = response || {}
+
       if (accessToken && refreshToken && username) {
         setTokens({ accessToken, refreshToken, username: usernameRes })
         goToNextStep()
@@ -71,35 +91,8 @@ const OnboardScreen = ({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     } catch (error) {
       console.error('회원가입 에러:', error)
     }
-  }, [onboardingData.userInfo])
+  }, [goToNextStep, onboardingData.userInfo])
 
-  // 마지막 단계에서 모든 정보 등록 및 앱으로 이동
-  const completeOnboarding = useCallback(async () => {
-    // TODO: 서버에 습관 설정 정보 저장 로직 추가
-    console.log('최종 온보딩 데이터:', onboardingData)
-    
-    setNeedOnboard(false)
-  }, [onboardingData, setNeedOnboard])
-
-  // 다음 단계로 이동
-  const goToNextStep = useCallback(() => {
-    setCurrentStep(prev => {
-      if (prev === OnboardStep.COMPLETED) {
-        return prev
-      }
-      return prev + 1
-    })
-  }, [])
-
-  // 이전 단계로 이동
-  const goToPrevStep = useCallback(() => {
-    setCurrentStep(prev => {
-      if (prev === initialStepRef.current) {
-        return prev
-      }
-      return prev - 1
-    })
-  }, [])
 
   // 현재 단계에 맞는 컴포넌트 렌더링
   const renderStep = () => {
@@ -155,4 +148,4 @@ const OnboardScreen = ({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
   )
 }
 
-export default OnboardScreen 
+export default OnboardScreen

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { setTokens } from '@conch/utils'
-import { UNREGISTERED_CODE, login } from '@conch/utils/api'
+import { UNREGISTERED_CODE, login, NEED_MORE_ONBOARDING_CODE } from '@conch/utils/api'
 import { OnboardStep } from './onboard/components'
 
 export function useStartUp() {
@@ -26,8 +26,12 @@ export function useStartUp() {
 
         const res = await login()
         const { code, data } = res
+        console.log('code', code)
 
-        if (code === UNREGISTERED_CODE) {
+        if (code === NEED_MORE_ONBOARDING_CODE) {
+          setNeedOnboard(true)
+          setInitialOnboardStep(OnboardStep.WHEN)
+        } else if (code === UNREGISTERED_CODE) {
           setNeedOnboard(true)
           setInitialOnboardStep(OnboardStep.INITIAL_INFO)
         } else {
