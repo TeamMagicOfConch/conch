@@ -315,6 +315,7 @@ function NativeTimePicker({
 
 // 메인 TimePicker 컴포넌트 - 환경변수나 플랫폼에 따라 적절한 구현을 선택
 function TimePicker(props: TimePickerProps) {
+  console.log(props)
   // 아래 코드에서 환경변수를 사용하여 피커 타입을 선택할 수 있습니다
   // 기본적으로는 안드로이드에서는 네이티브 피커, iOS에서는 커스텀 피커를 사용합니다
   // 추후 환경변수를 활용해 전환할 수 있습니다

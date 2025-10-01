@@ -40,7 +40,7 @@ function from24hToKo(time24: string): string {
 function WhenStep({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<StreakReq['reviewAt']>) {
   const [selectedOptionIndex, setSelectedOptionIndex] = useState<number>(0)
   const [timePickerVisible, setTimePickerVisible] = useState<boolean>(false)
-  const [selectedTime, setSelectedTime] = useState<string>(data ? from24hToKo(data) : '')
+  const [selectedTime, setSelectedTime] = useState<string>(from24hToKo(data || '18:30'))
 
   // 옵션 선택 핸들러
   const handleOptionSelect = useCallback((optionId: number) => {

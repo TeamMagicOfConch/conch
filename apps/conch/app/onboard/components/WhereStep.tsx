@@ -25,9 +25,9 @@ function WhereStep({ data, onDataChange, onNext, onPrev }: OnboardStepComponentP
     
     // 부모 컴포넌트에 데이터 업데이트
     if (WHERE_OPTIONS[selectedOptionIndex].isCustom) {
-      onDataChange(customValue)
+      onDataChange(value)
     }
-  }, [selectedOptionIndex, onDataChange, customValue])
+  }, [selectedOptionIndex, onDataChange])
 
   // 버튼 비활성화 여부
   const isButtonDisabled = useMemo(() => !Number.isInteger(selectedOptionIndex) || (selectedOption.isCustom && !customValue), [selectedOptionIndex, selectedOption.isCustom, customValue])

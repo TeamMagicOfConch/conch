@@ -25,9 +25,9 @@ function GoalStep({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
     
     // 부모 컴포넌트에 데이터 업데이트
     if (selectedOption.isCustom) {
-      onDataChange(customValue)
+      onDataChange(value)
     }
-  }, [selectedOption.isCustom, onDataChange, customValue])
+  }, [selectedOption.isCustom, onDataChange])
 
   // 버튼 비활성화 여부
   const isButtonDisabled = useMemo(() => !Number.isInteger(selectedOptionIndex) || (selectedOption.isCustom && !customValue), [selectedOptionIndex, selectedOption.isCustom, customValue])

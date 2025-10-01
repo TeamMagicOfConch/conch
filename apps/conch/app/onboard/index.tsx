@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react'
 import { View } from 'react-native'
+import { registerOnboarding } from '@conch/utils'
 import { RegisterReq, StreakReq } from '@api/conch/types/conchApi'
 import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep } from './components'
 
@@ -19,7 +20,7 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     initialReviewCount: undefined,
   })
   const [onboardingData, setOnboardingData] = useState<StreakReq>({
-    reviewTime: '', // deprecated
+    reviewTime: 'null', // deprecated
     reviewAt: '',
     writeLocation: '',
     aspiration: '',
@@ -33,14 +34,6 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     }))
   }, [])
 
-  // 마지막 단계에서 모든 정보 등록 및 앱으로 이동
-  const completeOnboarding = useCallback(async () => {
-    // TODO: 서버에 습관 설정 정보 저장 로직 추가
-    console.log('최종 온보딩 데이터:', onboardingData)
-
-    setNeedOnboard(false)
-  }, [onboardingData, setNeedOnboard])
-
   // 다음 단계로 이동
   const goToNextStep = useCallback(() => {
     setCurrentStep((prev) => {
@@ -50,6 +43,16 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
       return prev + 1
     })
   }, [])
+
+  // 마지막 단계에서 모든 정보 등록 및 앱으로 이동
+  const completeOnboarding = useCallback(async () => {
+    // TODO: 서버에 습관 설정 정보 저장 로직 추가
+    const registerSucceed = await registerOnboarding(onboardingData)
+    if (registerSucceed) {
+      setNeedOnboard(false)
+      goToNextStep()
+    }
+  }, [goToNextStep, onboardingData, setNeedOnboard])
 
   // 이전 단계로 이동
   const goToPrevStep = useCallback(() => {
@@ -77,8 +80,8 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
       case OnboardStep.WHEN:
         return (
           <WhenStep
-            data={onboardingData.reviewTime}
-            onDataChange={(data) => updateOnboarding('reviewTime', data)}
+            data={onboardingData.reviewAt}
+            onDataChange={(data) => updateOnboarding('reviewAt', data)}
             onNext={goToNextStep}
             onPrev={canGoBack ? goToPrevStep : undefined}
           />
