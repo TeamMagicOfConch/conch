@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import { View } from 'react-native'
-import { register, setTokens } from '@conch/utils'
-import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep, OnboardingData } from './components'
+import { RegisterReq, StreakReq } from '@api/conch/types/conchApi'
+import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep } from './components'
 
 interface OnboardScreenProps {
   setNeedOnboard: React.Dispatch<React.SetStateAction<boolean>>
@@ -10,31 +10,23 @@ interface OnboardScreenProps {
 }
 
 function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INITIAL_INFO }: OnboardScreenProps) {
-  console.log('initialStep', initialStep)
-  // 현재 온보딩 단계
   const initialStepRef = useRef<OnboardStep>(initialStep)
   const [currentStep, setCurrentStep] = useState<OnboardStep>(initialStepRef.current)
 
   // 온보딩 데이터
-  const [onboardingData, setOnboardingData] = useState<OnboardingData>({
-    userInfo: {
-      username: '',
-      initialReviewCount: undefined,
-    },
-    whenPreference: {
-      optionId: '',
-      time: undefined,
-    },
-    wherePreference: {
-      optionId: '',
-    },
-    goalPreference: {
-      optionId: '',
-    },
+  const [registerData, setRegisterData] = useState<RegisterReq>({
+    username: '',
+    initialReviewCount: undefined,
+  })
+  const [onboardingData, setOnboardingData] = useState<StreakReq>({
+    reviewTime: '', // deprecated
+    reviewAt: '',
+    writeLocation: '',
+    aspiration: '',
   })
 
   // 온보딩 데이터 공통 업데이트 헬퍼
-  const updateOnboarding = useCallback(<K extends keyof OnboardingData>(key: K, data: OnboardingData[K]) => {
+  const updateOnboarding = useCallback(<K extends keyof StreakReq>(key: keyof StreakReq, data: StreakReq[K]) => {
     setOnboardingData((prev) => ({
       ...prev,
       [key]: data,
@@ -69,30 +61,6 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     })
   }, [])
 
-  // 초기 정보 입력 후 사용자 등록 및 다음 단계로 이동
-  const handleInitialInfoSubmit = useCallback(async () => {
-    // 환경변수가 켜져있으면 register 스킵
-    if (process.env.EXPO_PUBLIC_FORCE_ONBOARDING === 'true') {
-      console.log('FORCE_ONBOARDING이 켜져있어 register를 스킵합니다.')
-      goToNextStep()
-      return
-    }
-
-    const { username, initialReviewCount } = onboardingData.userInfo
-
-    try {
-      const response = await register({ username, initialReviewCount })
-      const { data: { accessToken = null, refreshToken = null, username: usernameRes = null } = {} } = response || {}
-
-      if (accessToken && refreshToken && username) {
-        setTokens({ accessToken, refreshToken, username: usernameRes })
-        goToNextStep()
-      }
-    } catch (error) {
-      console.error('회원가입 에러:', error)
-    }
-  }, [goToNextStep, onboardingData.userInfo])
-
 
   // 현재 단계에 맞는 컴포넌트 렌더링
   const renderStep = () => {
@@ -101,16 +69,16 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
       case OnboardStep.INITIAL_INFO:
         return (
           <InitialInfoStep
-            data={onboardingData.userInfo}
-            onDataChange={(data) => updateOnboarding('userInfo', data)}
-            onNext={handleInitialInfoSubmit}
+            data={registerData}
+            onDataChange={(data) => setRegisterData(data)}
+            onNext={goToNextStep}
           />
         )
       case OnboardStep.WHEN:
         return (
           <WhenStep
-            data={onboardingData.whenPreference}
-            onDataChange={(data) => updateOnboarding('whenPreference', data)}
+            data={onboardingData.reviewTime}
+            onDataChange={(data) => updateOnboarding('reviewTime', data)}
             onNext={goToNextStep}
             onPrev={canGoBack ? goToPrevStep : undefined}
           />
@@ -118,8 +86,8 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
       case OnboardStep.WHERE:
         return (
           <WhereStep
-            data={onboardingData.wherePreference}
-            onDataChange={(data) => updateOnboarding('wherePreference', data)}
+            data={onboardingData.writeLocation}
+            onDataChange={(data) => updateOnboarding('writeLocation', data)}
             onNext={goToNextStep}
             onPrev={canGoBack ? goToPrevStep : undefined}
           />
@@ -127,8 +95,8 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
       case OnboardStep.GOAL:
         return (
           <GoalStep
-            data={onboardingData.goalPreference}
-            onDataChange={(data) => updateOnboarding('goalPreference', data)}
+            data={onboardingData.aspiration}
+            onDataChange={(data) => updateOnboarding('aspiration', data)}
             onNext={completeOnboarding}
             onPrev={canGoBack ? goToPrevStep : undefined}
           />

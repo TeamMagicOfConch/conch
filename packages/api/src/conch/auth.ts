@@ -1,5 +1,5 @@
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { Api as ConchApi, ResponseAuthRes } from './types/conchApi'
+import { Api as ConchApi, RegisterReq, ResponseAuthRes, StreakReq } from './types/conchApi'
 import { decodeJwtPayload } from './util'
 import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
@@ -30,9 +30,10 @@ export type ConchAuthDeps = {
 }
 
 export type ConchAuthHelpers = {
-  setTokens: (tokens: TokenBundle) => Promise<void>
+  setTokens: (tokens: TokenBundle) => Promise<boolean>
   login: () => Promise<ResponseAuthRes>
-  register: (args: { username?: string; initialReviewCount?: number }) => Promise<ResponseAuthRes>
+  register: (args: { username?: string; initialReviewCount?: number }) => Promise<boolean>
+  registerOnboarding: (args: StreakReq) => Promise<boolean>
   refreshToken: () => Promise<ResponseAuthRes>
 }
 
@@ -63,13 +64,16 @@ export function createConchAuthHelpers(
 
   const axiosInstance = deps.swaggerClient.instance
 
-  async function setTokens(tokens: TokenBundle): Promise<void> {
+  async function setTokens(tokens: TokenBundle): Promise<boolean> {
     const tasks: Array<Promise<void>> = []
     if (tokens.accessToken) tasks.push(setStored(deps.storage, accessTokenKey, tokens.accessToken))
     if (tokens.refreshToken) tasks.push(setStored(deps.storage, refreshTokenKey, tokens.refreshToken))
     if (tokens.username) tasks.push(setStored(deps.storage, usernameKey, tokens.username))
     if (tokens.accessToken !== null) deps.swaggerClient.setSecurityData(tokens.accessToken)
-    await Promise.all(tasks)
+    if (tasks.length === 0) return true
+    const results = await Promise.allSettled(tasks)
+    const allSucceeded = results.every((r) => r.status === 'fulfilled')
+    return allSucceeded
   }
 
   async function login() {
@@ -78,9 +82,11 @@ export function createConchAuthHelpers(
     try {
       const res = await deps.swaggerClient.authController.login({ osId })
       const payload = res.data
-      console.log('payload', payload)
       const { accessToken, refreshToken, username } = (payload?.data ?? {}) as TokenBundle
-      await setTokens({ accessToken: accessToken ?? null, refreshToken: refreshToken ?? null, username })
+      const setTokensResult = await setTokens({ accessToken: accessToken ?? null, refreshToken: refreshToken ?? null, username })
+      if (!setTokensResult) {
+        return Promise.reject(new Error('Failed to set tokens'))
+      }
       // 비즈니스 로직: 세미 유저면 온보딩 필요 코드로 변환
       const claims = decodeJwtPayload(accessToken ?? '') || {}
       if (claims?.role === SEMI_USER_ROLE) {
@@ -97,17 +103,25 @@ export function createConchAuthHelpers(
     }
   }
 
-  async function register(args: { username?: string; initialReviewCount?: number }) {
+  async function register(args: Pick<RegisterReq, 'username' | 'initialReviewCount'>) {
     const osId = (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
     const osType = deps.getPlatformOS ? deps.getPlatformOS().toUpperCase() : undefined
     const res = await deps.swaggerClient.authController.registerUser({
       osId,
       osType,
-      username: args.username,
-      initialReviewCount: args.initialReviewCount,
+      ...args,
     })
     const payload = res.data
-    return payload
+    const { accessToken, refreshToken: newRefresh, username } = (payload?.data ?? {}) as TokenBundle
+    return setTokens({ accessToken: accessToken ?? null, refreshToken: newRefresh ?? null, username })
+  }
+
+  async function registerOnboarding(args: StreakReq) {
+    console.log(args)
+    const res = await deps.swaggerClient.semiUserController.registerStreak(args)
+    const payload = res.data
+    const { accessToken, refreshToken: newRefresh } = (payload?.data ?? {}) as TokenBundle
+    return setTokens({ accessToken: accessToken ?? null, refreshToken: newRefresh ?? null })
   }
 
   async function refreshToken() {
@@ -195,6 +209,7 @@ export function createConchAuthHelpers(
     setTokens,
     login,
     register,
+    registerOnboarding,
     refreshToken,
   }
 }

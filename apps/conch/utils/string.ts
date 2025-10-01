@@ -17,7 +17,7 @@ export function getApiUrlWithPathAndParams({ path, params }: { path: string; par
   return urlWithParams.toString()
 }
 
-export function validateInput(input: string): boolean {
+export function validateInput(input: string | undefined | null): boolean {
   if (!input) return false
   const regex = /^[a-zA-Z0-9가-힣]{1,10}$/
   return regex.test(input)

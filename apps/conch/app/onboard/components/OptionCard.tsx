@@ -4,34 +4,37 @@ import { Colors } from '@conch/assets/colors'
 import { HabitOption } from './types'
 
 interface OptionCardProps {
+  index: number
   option: HabitOption
   isSelected: boolean
   customValue?: string
-  onSelect: (optionId: string) => void
+  onSelect: (optionId: number) => void
   onCustomValueChange?: (value: string) => void
 }
 
-const OptionCard = ({
+function OptionCard ({
+  index,
   option,
   isSelected,
   customValue,
   onSelect,
   onCustomValueChange,
-}: OptionCardProps) => {
+}: OptionCardProps) {
   const isCustomSelected = isSelected && option.isCustom
 
   return (
     <Pressable
       key={option.id}
       style={[styles.optionCard, isSelected && styles.optionCardSelected]}
-      onPress={() => onSelect(option.id)}
+      onPress={() => onSelect(index)}
     >
-      <Text style={[
-        styles.optionText, 
-        option.isCustom && styles.optionTextCustom,
-        isSelected && styles.optionTextSelected
-      ]}>
-        {option.text}
+      <Text
+        style={[
+          styles.optionText, 
+          option.isCustom && styles.optionTextCustom,
+          isSelected && styles.optionTextSelected
+        ]}>
+        {option.label}
       </Text>
       {isCustomSelected && onCustomValueChange && (
         <TextInput

@@ -2,11 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { View, Text, TextInput, Pressable, Keyboard, StyleSheet, Linking } from 'react-native'
 import { Colors } from '@conch/assets/colors'
 import { PrimaryButton, SafeAreaViewWithDefaultBackgroundColor } from '@conch/components'
-import { validateInput } from '@conch/utils'
-import { OnboardStepComponentProps, UserInfo } from './types'
+import { register, validateInput } from '@conch/utils'
 import { LinearGradient } from 'expo-linear-gradient'
+import { RegisterReq } from '@api/conch/types/conchApi'
+import { OnboardStepComponentProps } from './types'
 
-const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentProps<UserInfo>) => {
+function InitialInfoStep({ data, onDataChange, onNext }: OnboardStepComponentProps<RegisterReq>) {
   const [username, setUsername] = useState(data.username)
   const [initialReviewCount, setInitialReviewCount] = useState<number | undefined>(data.initialReviewCount)
   const [error, setError] = useState({ username: '', initialReviewCount: '' })
@@ -37,11 +38,14 @@ const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentPro
   }, [username, initialReviewCount, data, onDataChange])
 
   // 다음 단계로 이동
-  const handleNext = () => {
+  const handleNext = useCallback(async () => {
     if (!disabled) {
-      onNext()
+      const registered = await register({ username, initialReviewCount })
+      if (registered) {
+        onNext()
+      }
     }
-  }
+  }, [username, initialReviewCount, disabled, onNext])
 
   return (
     <SafeAreaViewWithDefaultBackgroundColor style={{ backgroundColor: Colors.white }}>
@@ -125,7 +129,11 @@ const InitialInfoStep = ({ data, onDataChange, onNext }: OnboardStepComponentPro
 
           <View style={styles.descriptionContainer}>
             <Text style={styles.description}>
-              시작하기 버튼을 누르시면 <Text style={styles.link} onPress={openURL('https://magicofconch.notion.site/11de5767cbb480038426c22fcaca8871?pvs=4')}>서비스 이용약관</Text> 및 <Text style={styles.link} onPress={openURL('https://magicofconch.notion.site/11de5767cbb48082971dc9e739d2bbb5?pvs=4')}>개인정보 처리방침</Text>에 동의하는 것으로 간주되오니, 이용 전에 확인하시기 바랍니다.
+              시작하기 버튼을 누르시면 <Text
+                style={styles.link}
+                onPress={openURL('https://magicofconch.notion.site/11de5767cbb480038426c22fcaca8871?pvs=4')}>서비스 이용약관</Text> 및 <Text
+                style={styles.link}
+                onPress={openURL('https://magicofconch.notion.site/11de5767cbb48082971dc9e739d2bbb5?pvs=4')}>개인정보 처리방침</Text>에 동의하는 것으로 간주되오니, 이용 전에 확인하시기 바랍니다.
             </Text>
           </View>
         </View>

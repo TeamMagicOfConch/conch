@@ -1,22 +1,22 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { OnboardStepComponentProps, WherePreference, whereOptions } from './types'
+import { StreakReq } from '@api/conch/types/conchApi'
+import { OnboardStepComponentProps, WHERE_OPTIONS } from './types'
 import OnboardStepWrapper from './OnboardStepWrapper'
 import OptionCard from './OptionCard'
 
-const WhereStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<WherePreference>) => {
-  const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '')
-  const [customValue, setCustomValue] = useState<string>(data.customValue || '')
+function WhereStep({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<StreakReq['writeLocation']>) {
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number>(0)
+  const [customValue, setCustomValue] = useState<string>(data || '')
+  const selectedOption = WHERE_OPTIONS[selectedOptionIndex]
 
   // 옵션 선택 핸들러
-  const handleOptionSelect = useCallback((optionId: string) => {
-    setSelectedOption(optionId)
+  const handleOptionSelect = useCallback((optionId: number) => {
+    const option = WHERE_OPTIONS[optionId]
+    setSelectedOptionIndex(optionId)
     
     // 부모 컴포넌트에 데이터 업데이트
-    onDataChange({
-      optionId,
-      customValue: optionId === 'custom' ? customValue : undefined,
-    })
+    onDataChange(option.isCustom ? customValue : option.value)
   }, [customValue, onDataChange])
 
   // 커스텀 입력값 변경 핸들러
@@ -24,18 +24,13 @@ const WhereStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentP
     setCustomValue(value)
     
     // 부모 컴포넌트에 데이터 업데이트
-    if (selectedOption === 'custom') {
-      onDataChange({
-        optionId: selectedOption,
-        customValue: value,
-      })
+    if (WHERE_OPTIONS[selectedOptionIndex].isCustom) {
+      onDataChange(customValue)
     }
-  }, [selectedOption, onDataChange])
+  }, [selectedOptionIndex, onDataChange, customValue])
 
   // 버튼 비활성화 여부
-  const isButtonDisabled = useMemo(() => {
-    return !selectedOption || (selectedOption === 'custom' && !customValue)
-  }, [selectedOption, customValue])
+  const isButtonDisabled = useMemo(() => !Number.isInteger(selectedOptionIndex) || (selectedOption.isCustom && !customValue), [selectedOptionIndex, selectedOption.isCustom, customValue])
 
   return (
     <OnboardStepWrapper
@@ -52,11 +47,12 @@ const WhereStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentP
       onPrevPress={onPrev}
     >
       <View style={styles.optionsContainer}>
-        {whereOptions.map((option) => (
+        {WHERE_OPTIONS.map((option, index) => (
           <OptionCard
+            index={index}
             key={option.id}
             option={option}
-            isSelected={selectedOption === option.id}
+            isSelected={selectedOptionIndex === index}
             customValue={customValue}
             onSelect={handleOptionSelect}
             onCustomValueChange={option.isCustom ? handleCustomValueChange : undefined}

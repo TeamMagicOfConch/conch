@@ -2,38 +2,30 @@ import { useState, useEffect } from 'react'
 import { Text, StyleSheet, View, TouchableOpacity, Modal, Platform } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { Colors } from '@conch/assets/colors'
-import { TimePickerProps } from './types'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { DatePicker } from 'react-native-wheel-pick'
-
-// 선택 옵션별 기본 시간값 설정
-const DEFAULT_TIMES: Record<string, { hour: number; minute: number }> = {
-  after_work: { hour: 18, minute: 30 }, // 오후 6시 30분
-  before_sleep: { hour: 23, minute: 0 }, // 오후 11시 정각
-  after_dinner: { hour: 19, minute: 0 }, // 오후 7시 정각
-  custom: { hour: 18, minute: 0 }, // 오후 6시 정각
-}
+import { TimePickerProps, WHEN_OPTIONS } from './types'
 
 // 옵션에 따른 기본 시간 생성 함수
-const getDefaultTimeByOption = (option: string): Date => {
-  const defaultTime = DEFAULT_TIMES[option] || DEFAULT_TIMES.custom
+const getDefaultTimeByOption = (option: number): Date => {
+  const defaultTime = WHEN_OPTIONS[option]
+  const [hour, minute] = defaultTime.value.split(':')
   const date = new Date()
   // 24시간 형식으로 시간 설정
-  date.setHours(defaultTime.hour, defaultTime.minute, 0)
+  date.setHours(parseInt(hour, 10), parseInt(minute, 10), 0)
   return date
 }
 
 // 커스텀 피커 구현 (react-native-wheel-pick 사용)
-const CustomTimePicker = ({
+function CustomTimePicker({
   visible,
   onClose,
   onConfirm,
   selectedTime,
   selectedOption,
-  setSelectedTime,
-}: TimePickerProps) => {
+}: TimePickerProps) {
   // 초기 시간값 설정
-  const [initialTime, setInitialTime] = useState<Date>(getDefaultTimeByOption(selectedOption || 'custom'))
+  const [initialTime, setInitialTime] = useState<Date>(getDefaultTimeByOption(selectedOption || 0))
 
   // selectedOption이나 selectedTime이 변경될 때 초기 날짜 설정
   useEffect(() => {
@@ -94,27 +86,11 @@ const CustomTimePicker = ({
     setInitialTime(date)
   }
 
-  // 선택된 옵션에 따라 타이틀 텍스트 설정
-  const getTitleText = () => {
-    switch(selectedOption) {
-      case 'after_work':
-        return '퇴근 직후,'
-      case 'before_sleep':
-        return '잠들기 직전,'
-      case 'after_dinner':
-        return '저녁 식사 후,'
-      case 'custom':
-        return '시간 선택,'
-      default:
-        return '시간 선택,'
-    }
-  }
-
   return (
     <Modal
       visible={visible}
       animationType="slide"
-      transparent={true}
+      transparent
     >
       <View style={styles.modalContainer}>
         {/* 배경 오버레이 */}
@@ -126,13 +102,17 @@ const CustomTimePicker = ({
         
         {/* 컨텐츠 영역 */}
         <View style={styles.contentContainer}>
-          <BlurView intensity={80} style={styles.modalBlur}>
+          <BlurView
+            intensity={80}
+            style={styles.modalBlur}>
             <View style={styles.drawerHandleContainer}>
               <View style={styles.drawerHandle} />
             </View>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{getTitleText()}</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeButtonContainer}>
+              <Text style={styles.modalTitle}>{WHEN_OPTIONS[selectedOption || 0].label}</Text>
+              <TouchableOpacity
+                onPress={onClose}
+                style={styles.closeButtonContainer}>
                 <Text style={styles.closeButton}>✕</Text>
               </TouchableOpacity>
             </View>
@@ -151,7 +131,9 @@ const CustomTimePicker = ({
               />
             </View>
             
-            <TouchableOpacity style={styles.confirmButton} onPress={confirmTime}>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={confirmTime}>
               <Text style={styles.confirmButtonText}>확인</Text>
             </TouchableOpacity>
           </BlurView>
@@ -162,16 +144,15 @@ const CustomTimePicker = ({
 }
 
 // 네이티브 피커 구현 (react-native-modal-datetime-picker 사용)
-const NativeTimePicker = ({
+function NativeTimePicker({
   visible,
   onClose,
   onConfirm,
   selectedTime,
   selectedOption,
-  setSelectedTime,
-}: TimePickerProps) => {
+}: TimePickerProps) {
   // 초기 시간값 설정
-  const [initialDate, setInitialDate] = useState<Date>(getDefaultTimeByOption(selectedOption || 'custom'))
+  const [initialDate, setInitialDate] = useState<Date>(getDefaultTimeByOption(selectedOption || 0))
   // 피커 표시 여부
   const [showPicker, setShowPicker] = useState<boolean>(false)
 
@@ -241,22 +222,6 @@ const NativeTimePicker = ({
     setShowPicker(false)
   }
 
-  // 선택된 옵션에 따라 타이틀 텍스트 설정
-  const getTitleText = () => {
-    switch(selectedOption) {
-      case 'after_work':
-        return '퇴근 직후,'
-      case 'before_sleep':
-        return '잠들기 직전,'
-      case 'after_dinner':
-        return '저녁 식사 후,'
-      case 'custom':
-        return '시간 선택,'
-      default:
-        return '시간 선택,'
-    }
-  }
-
   // 현재 선택된 시간 포맷팅
   const getFormattedTime = () => {
     if (selectedTime) return selectedTime
@@ -285,7 +250,7 @@ const NativeTimePicker = ({
       <Modal
         visible={visible}
         animationType="slide"
-        transparent={true}
+        transparent
       >
         <View style={styles.modalContainer}>
           {/* 배경 오버레이 */}
@@ -297,13 +262,17 @@ const NativeTimePicker = ({
           
           {/* 컨텐츠 영역 */}
           <View style={styles.contentContainer}>
-            <BlurView intensity={80} style={styles.modalBlur}>
+            <BlurView
+              intensity={80}
+              style={styles.modalBlur}>
               <View style={styles.drawerHandleContainer}>
                 <View style={styles.drawerHandle} />
               </View>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{getTitleText()}</Text>
-                <TouchableOpacity onPress={onClose} style={styles.closeButtonContainer}>
+                <Text style={styles.modalTitle}>{WHEN_OPTIONS[selectedOption || 0].label}</Text>
+                <TouchableOpacity
+                  onPress={onClose}
+                  style={styles.closeButtonContainer}>
                   <Text style={styles.closeButton}>✕</Text>
                 </TouchableOpacity>
               </View>
@@ -316,7 +285,9 @@ const NativeTimePicker = ({
                 <Text style={styles.timeInputText}>{getFormattedTime()}</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.confirmButton} onPress={onClose}>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={onClose}>
                 <Text style={styles.confirmButtonText}>확인</Text>
               </TouchableOpacity>
             </BlurView>
@@ -343,7 +314,7 @@ const NativeTimePicker = ({
 }
 
 // 메인 TimePicker 컴포넌트 - 환경변수나 플랫폼에 따라 적절한 구현을 선택
-const TimePicker = (props: TimePickerProps) => {
+function TimePicker(props: TimePickerProps) {
   // 아래 코드에서 환경변수를 사용하여 피커 타입을 선택할 수 있습니다
   // 기본적으로는 안드로이드에서는 네이티브 피커, iOS에서는 커스텀 피커를 사용합니다
   // 추후 환경변수를 활용해 전환할 수 있습니다

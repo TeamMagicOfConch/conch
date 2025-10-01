@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { OnboardStepComponentProps, WhenPreference, whenOptions } from './types'
+import { StreakReq } from '@api/conch/types/conchApi'
+import { OnboardStepComponentProps, WHEN_OPTIONS } from './types'
 import OnboardStepWrapper from './OnboardStepWrapper'
 import OptionCard from './OptionCard'
 import TimePicker from './TimePicker'
@@ -36,54 +37,29 @@ function from24hToKo(time24: string): string {
   return `${hour}:${minuteStr} ${period}`
 }
 
-const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<WhenPreference>) => {
-  const [selectedOption, setSelectedOption] = useState<string>(data.optionId || '')
-  const [customValue, setCustomValue] = useState<string>(data.customValue || '')
+function WhenStep({ data, onDataChange, onNext, onPrev }: OnboardStepComponentProps<StreakReq['reviewAt']>) {
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number>(0)
   const [timePickerVisible, setTimePickerVisible] = useState<boolean>(false)
-  const [selectedTime, setSelectedTime] = useState<string>(data.time ? from24hToKo(data.time) : data.customValue || '')
+  const [selectedTime, setSelectedTime] = useState<string>(data ? from24hToKo(data) : '')
 
   // 옵션 선택 핸들러
-  const handleOptionSelect = useCallback((optionId: string) => {
-    setSelectedOption(optionId)
+  const handleOptionSelect = useCallback((optionId: number) => {
+    const option = WHEN_OPTIONS[optionId]
+
+    setSelectedOptionIndex(optionId)
     
     // 모든 옵션 선택 시 시간 선택 모달 표시
     setTimePickerVisible(true)
     
     // 부모 컴포넌트에 데이터 업데이트
-    onDataChange({
-      optionId,
-      customValue: optionId === 'custom' ? customValue : undefined,
-    })
-  }, [customValue, onDataChange])
-
-  // 커스텀 입력값 변경 핸들러
-  const handleCustomValueChange = useCallback((value: string) => {
-    setCustomValue(value)
-    
-    // 부모 컴포넌트에 데이터 업데이트
-    if (selectedOption === 'custom') {
-      onDataChange({
-        optionId: selectedOption,
-        customValue: value,
-      })
-    }
-  }, [selectedOption, onDataChange])
+    onDataChange(option.value)
+  }, [onDataChange])
 
   // 시간 선택 확인 핸들러 - 선택 완료 후 자동으로 다음 단계로 이동
   const handleTimeConfirm = useCallback((time: string) => {
-    setCustomValue(time)
-    setSelectedTime(time)
-    
-    // 부모 컴포넌트에 데이터 업데이트
-    onDataChange({
-      optionId: selectedOption,
-      customValue: selectedOption === 'custom' ? time : undefined,
-      time: to24Hour(time),
-    })
-    
-    // 자동으로 다음 단계로 이동
+    onDataChange(to24Hour(time))
     onNext()
-  }, [selectedOption, onDataChange, onNext, to24Hour])
+  }, [onDataChange, onNext])
 
   return (
     <>
@@ -97,17 +73,17 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
         }}
         buttonText="다음"
         onButtonPress={onNext}
-        buttonDisabled={true} // 다음 버튼 비활성화 (타임피커로만 진행)
-        hideButton={true} // 다음 버튼 숨김
+        buttonDisabled // 다음 버튼 비활성화 (타임피커로만 진행)
+        hideButton // 다음 버튼 숨김
         onPrevPress={onPrev}
       >
         <View style={styles.optionsContainer}>
-          {whenOptions.map((option) => (
+          {Object.values(WHEN_OPTIONS).map((option, index) => (
             <OptionCard
               key={option.id}
+              index={index}
               option={option}
-              isSelected={selectedOption === option.id}
-              customValue={customValue}
+              isSelected={selectedOptionIndex === index}
               onSelect={handleOptionSelect}
             />
           ))}
@@ -120,7 +96,7 @@ const WhenStep = ({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
         onConfirm={handleTimeConfirm}
         selectedTime={selectedTime}
         setSelectedTime={setSelectedTime}
-        selectedOption={selectedOption}
+        selectedOption={selectedOptionIndex}
       />
     </>
   )
