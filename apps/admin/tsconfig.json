@@ -21,7 +21,7 @@
     "noFallthroughCasesInSwitch": true,
     
     "paths": {
-      "@conch/api": ["../../packages/api/src"]
+      "@api/*": ["../../packages/api/src/*"]
     }
   },
   "include": ["src"],

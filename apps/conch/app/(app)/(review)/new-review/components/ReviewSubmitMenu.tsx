@@ -14,7 +14,7 @@ export default function ReviewSubmitMenu() {
   const { bottom } = useSafeAreaInsets()
 
   const { width } = Dimensions.get('window')
-  const isReviewWritten = review ? review.body.length > 0 : false
+  const isReviewWritten = review?.body ? review.body.length > 0 : false
   // -50 ~ 50
   const handlePositionPercent = (handlePosition / width) * 100
   const leftOpacity = Math.max(0, Math.min(0.5, -handlePositionPercent / HANDLE_ACTIVE_PERCENT))

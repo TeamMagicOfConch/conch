@@ -8,11 +8,11 @@ import { ReviewScreensNavbar } from './navbar'
 
 export default function ReviewLayoutBase({ backgroundColor: _backgroundColor = Colors.bgGrey }) {
   const newReviewContext = useReviewContext()
-  const { feedbackType } = newReviewContext?.review || {}
+  const { type } = newReviewContext?.review || {}
   const { reviewType } = consts
   const backgroundColor = newReviewContext
-    ? feedbackType
-      ? feedbackType === reviewType.thinking
+    ? type
+      ? type === reviewType.thinking
         ? Colors.tSoraBg
         : Colors.fSoraBg
       : _backgroundColor
