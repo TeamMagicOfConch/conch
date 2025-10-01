@@ -1,7 +1,7 @@
 import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { Api as ConchApi, ResponseAuthRes } from './types/conchApi'
 import { decodeJwtPayload } from './util'
-import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE, OS_ID_DEBUG } from './consts'
+import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
 export { UNREGISTERED_CODE, REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
