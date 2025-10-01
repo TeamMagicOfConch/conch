@@ -11,7 +11,10 @@
  */
 
 export interface StreakReq {
-  /** @minLength 1 */
+  /** 
+   * @minLength 1
+   * @deprecated
+   */
   reviewTime: string;
   reviewAt: string;
   /** @minLength 1 */
