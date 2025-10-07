@@ -5,11 +5,11 @@ import BottomSheet, { BottomSheetScrollView, type BottomSheetScrollViewMethods }
 
 import { Colors } from '@conch/assets/colors'
 import { Sora } from '@conch/assets/icons'
-import type { Review } from '@conch/utils/api/review/types'
 import { consts } from '@conch/utils'
 import { useRouteInfo } from 'expo-router/build/hooks'
+import type { ReviewResponse } from '@conch/app/(app)/(review)/review/hooks'
 
-type Props = Pick<Review, 'feedbackType' | 'feedback'> & {
+type Props = Pick<ReviewResponse, 'feedbackType' | 'feedback'> & {
   loading?: boolean
   error?: string | null
 }
@@ -24,7 +24,7 @@ export default function SoraReponseMenu({ feedbackType, feedback: responseBody, 
   const conchName = isFeeling ? 'F소라' : 'T소라'
 
   useEffect(() => {
-    if (pathname !== '/review' && responseBody?.length > 0) {
+    if (pathname !== '/review' && responseBody?.length && responseBody.length > 0) {
       bottomSheetRef.current?.expand()
       if (scrollViewRef.current) scrollViewRef.current.scrollToEnd({ animated: true })
     }

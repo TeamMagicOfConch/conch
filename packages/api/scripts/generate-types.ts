@@ -25,17 +25,20 @@ const endpoints: EndpointConfig[] = [
     url: process.env.ADMIN_SWAGGER_URL || 'http://localhost:8000/admin/api-docs/swagger.json',
     outputPath: path.resolve(__dirname, '../src/admin/types'),
   },
-  // conch API는 나중에 추가할 예정
-  // {
-  //   name: 'conch',
-  //   url: process.env.CONCH_SWAGGER_URL || 'http://localhost:8000/api-docs/swagger.json',
-  //   outputPath: path.resolve(__dirname, '../src/conch/types'),
-  // },
+  {
+    name: 'conch',
+    url:
+      process.env.CONCH_SWAGGER_URL ||
+      process.env.VITE_CONCH_SWAGGER_URL ||
+      'https://test.magicofconch.site/api-docs',
+    outputPath: path.resolve(__dirname, '../src/conch/types'),
+  },
 ];
 
 // 환경 변수 확인 로그
 console.log('Using environment variables:');
 console.log(`ADMIN_SWAGGER_URL: ${process.env.ADMIN_SWAGGER_URL || '(not set)'}`);
+console.log(`CONCH_SWAGGER_URL: ${process.env.CONCH_SWAGGER_URL || process.env.VITE_CONCH_SWAGGER_URL || '(not set)'}`);
 
 async function generateTypes() {
   for (const endpoint of endpoints) {

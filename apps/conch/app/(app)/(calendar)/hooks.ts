@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, Dispatch, SetStateAction, useCallback } from 'react'
-import { consts, getToday, reviewGet } from '@conch/utils'
+import { consts, getToday, inquiryMonth } from '@conch/utils'
 import { useRefresh } from '@conch/hooks/useRefresh'
 import { useIsFocused } from '@react-navigation/native'
 import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
@@ -65,9 +65,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
       if (!isThisMonth && !!reviews[yearAndMonth]) return
       if (isFuture) return
 
-      const {
-        data: { data: reviewsData },
-      } = await reviewGet('/month', { year, month: month + 1 })
+      const reviewsData = await inquiryMonth({ year, month: month + 1 })
 
       if (isThisMonth && reviewsData?.length === reviews[yearAndMonth]?.length) return
       setReviews((prev) => ({

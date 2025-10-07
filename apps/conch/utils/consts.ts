@@ -1,8 +1,6 @@
-import { FeedbackType } from '@conch/utils/api/review/types'
-
 interface Consts {
   reviewType: {
-    [key: string]: FeedbackType
+    [key: string]: 'FEELING' | 'THINKING'
   }
   asyncStorageKey: {
     [key: string]: string

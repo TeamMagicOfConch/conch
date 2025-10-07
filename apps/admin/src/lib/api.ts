@@ -1,4 +1,4 @@
-import { createAdminApiClient, createAdminSwaggerClient, setAuthToken, clearAuthToken } from '@conch/api'
+import { createAdminApiClient, createAdminSwaggerClient, setAuthToken, clearAuthToken } from '@api/admin'
 
 // 환경변수 읽기
 const apiUrl = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3001'

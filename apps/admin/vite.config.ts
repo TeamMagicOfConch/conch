@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@conch/api': path.resolve(__dirname, '../../packages/api/src'),
+      '@api': path.resolve(__dirname, '../../packages/api/src'),
     },
   },
 })
