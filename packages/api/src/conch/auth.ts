@@ -5,6 +5,8 @@ import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE }
 
 export { UNREGISTERED_CODE, REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
+const OS_ID_DEBUG = null
+
 export type StorageLike = {
   getItem(key: string): string | null | Promise<string | null>
   setItem(key: string, value: string): void | Promise<void>
@@ -77,8 +79,7 @@ export function createConchAuthHelpers(
   }
 
   async function login() {
-    // const osId = OS_ID_DEBUG || (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
-    const osId = (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
+    const osId = OS_ID_DEBUG || (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
     try {
       const res = await deps.swaggerClient.authController.login({ osId })
       const payload = res.data
@@ -104,7 +105,7 @@ export function createConchAuthHelpers(
   }
 
   async function register(args: Pick<RegisterReq, 'username' | 'initialReviewCount'>) {
-    const osId = (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
+    const osId = OS_ID_DEBUG || (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
     const osType = deps.getPlatformOS ? deps.getPlatformOS().toUpperCase() : undefined
     const res = await deps.swaggerClient.authController.registerUser({
       osId,
@@ -117,7 +118,6 @@ export function createConchAuthHelpers(
   }
 
   async function registerOnboarding(args: StreakReq) {
-    console.log(args)
     const res = await deps.swaggerClient.semiUserController.registerStreak(args)
     const payload = res.data
     const { accessToken, refreshToken: newRefresh } = (payload?.data ?? {}) as TokenBundle
