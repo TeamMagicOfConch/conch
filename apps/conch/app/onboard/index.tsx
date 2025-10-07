@@ -83,7 +83,6 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
             data={onboardingData.reviewAt}
             onDataChange={(data) => updateOnboarding('reviewAt', data)}
             onNext={goToNextStep}
-            onPrev={canGoBack ? goToPrevStep : undefined}
           />
         )
       case OnboardStep.WHERE:
