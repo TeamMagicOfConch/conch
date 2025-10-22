@@ -5,8 +5,9 @@ import { Slot } from 'expo-router'
 import { useRefresh } from '@conch/hooks/useRefresh'
 import OnboardScreen from './onboard/index'
 import { useStartUp } from './useStartUp'
+import DebugJarScreen from './debug-jar'
 
-SplashScreen.preventAutoHideAsync()
+// SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
   useRefresh()
@@ -16,6 +17,9 @@ export default function Layout() {
     if (isAppReady) await SplashScreen.hideAsync()
   }, [isAppReady])
 
+  const debugJar = process.env.EXPO_PUBLIC_DEBUG_JAR === '1'
+
+  if (debugJar) return <DebugJarScreen />
   if (!isAppReady) return null
   if (error) console.error(error)
 
