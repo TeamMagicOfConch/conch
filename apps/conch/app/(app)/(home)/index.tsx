@@ -14,6 +14,7 @@ export default function HomeScreen() {
 
   const handleToggle = () => {
     setViewMode((prev) => (prev === 'calendar' ? 'list' : 'calendar'))
+    setDate({ year, month })
   }
 
   // calendar 모드일 때는 해당 월의 리뷰, list 모드일 때는 전체 리뷰에서 todayReview 찾기
