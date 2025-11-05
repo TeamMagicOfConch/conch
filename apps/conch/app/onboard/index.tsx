@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import { router } from 'expo-router'
 import { registerOnboarding } from '@conch/utils'
 import { RegisterReq, StreakReq } from '@api/conch/types/conchApi'
-import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep } from './components'
+import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep, DEFAULT_ONBOARDING_DATA } from './components'
 
 interface OnboardScreenProps {
   setNeedOnboard: React.Dispatch<React.SetStateAction<boolean>>
@@ -22,9 +22,7 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
   })
   const [onboardingData, setOnboardingData] = useState<StreakReq>({
     reviewTime: 'null', // deprecated
-    reviewAt: '',
-    writeLocation: '',
-    aspiration: '',
+    ...DEFAULT_ONBOARDING_DATA,
   })
 
   // 온보딩 데이터 공통 업데이트 헬퍼
@@ -51,7 +49,7 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     const registerSucceed = await registerOnboarding(onboardingData)
     if (registerSucceed) {
       setNeedOnboard(false)
-      router.replace('/(app)/(calendar)')
+      router.replace('/(app)/(home)')
     }
   }, [onboardingData, setNeedOnboard])
 
