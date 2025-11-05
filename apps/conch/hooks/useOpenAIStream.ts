@@ -30,7 +30,7 @@ export function useOpenAIStream(props?: Review) {
         const option = {
           method: 'POST',
           headers: {
-            'Content-Type': 'text/event-stream',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
