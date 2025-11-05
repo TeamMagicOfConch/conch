@@ -23,7 +23,7 @@ export function useOpenAIStream(props?: Review) {
       playSound()
       setResponse('')
       setError(null)
-      const url = getApiUrlWithPathAndParams({ path: '/auth/user/api/review/submit' })
+      const url = getApiUrlWithPathAndParams({ path: '/stream/review' })
       const accessToken = await AsyncStorage.getItem(consts.asyncStorageKey.accessToken)
 
       try {
