@@ -53,7 +53,7 @@ export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<voi
 
   const initialToken = await resolveInitialToken(opts)
   const headers: Record<string, string> = {
-    'Content-Type': 'text/event-stream',
+    'Content-Type': 'application/json',
   }
   if (initialToken) headers.Authorization = `Bearer ${initialToken}`
 
