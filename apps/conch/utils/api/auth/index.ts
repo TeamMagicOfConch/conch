@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { Platform } from 'react-native'
 import DeviceInfo from 'react-native-device-info'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -35,6 +35,15 @@ export async function onResponse(response: AxiosResponse<AuthResponse>): Promise
 export async function onResponseError(error: any) {
   const originalRequest = error.config
 
+  if (originalRequest.url?.includes('login') && (error as AxiosError).status === 400 || (error as AxiosError).status === 404) {
+    return {
+      data: { ...DEFAULT_RESPONSE, code: UNREGISTERED_CODE },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: originalRequest,
+    } as AxiosResponse<AuthResponse>
+  }
   if (error.response && error.response.status === 401 && !originalRequest._retry) {
     originalRequest._retry = true
 
@@ -109,10 +118,12 @@ export async function register({ username, initialReviewCount }: Pick<AuthReques
 export async function login(): Promise<AuthResponse> {
   try {
     const osId = await DeviceInfo.getUniqueId()
+    // const osId = 'qwer'
     const { data: axiosData } = (await authPost('/user/login', { osId })) || {}
     return axiosData
   } catch (e) {
-    console.error('re-login failed', e, (e as any).stack)
+    const error = e as AxiosError
+    console.error('re-login failed', error?.status)
     return DEFAULT_RESPONSE
   }
 }

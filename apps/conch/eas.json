@@ -26,7 +26,6 @@
       }
     },
     "production": {
-      "appVersionSource": "remote",
       "autoIncrement": true,
       "android": {
         "image": "latest"
