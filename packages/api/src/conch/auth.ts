@@ -95,8 +95,8 @@ export function createConchAuthHelpers(
       }
       return payload
     } catch (error: any) {
-      // 로그인에서 400은 "유저 미등록" 정상 흐름이므로 reject하지 않고 payload를 그대로 반환
-      if (error?.response?.status === 400) {
+      // 로그인에서 400 | 404은 "유저 미등록" 정상 흐름이므로 reject하지 않고 payload를 그대로 반환
+      if (error?.response?.status === 400 || error?.response?.status === 404) {
         const payload = error.response.data
         return payload
       }
