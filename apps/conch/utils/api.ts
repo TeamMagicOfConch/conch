@@ -7,7 +7,7 @@ export const { setTokens, login, register, registerOnboarding, refreshToken } = 
   swaggerClient: conch,
 })
 
-export const { save, inquiryMonth, inquiryDate, testSecurity, submitStreaming } = createConchReviewHelpers({
+export const { save, list, inquiryMonth, inquiryDate, testSecurity, submitStreaming } = createConchReviewHelpers({
   swaggerClient: conch,
   storage: AsyncStorage,
   login,

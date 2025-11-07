@@ -1,4 +1,4 @@
-import { Api as ConchApi, SaveReq, ResponseListInquiryMonthRes, ResponseInquiryDayRes } from './types/conchApi'
+import { Api as ConchApi, SaveReq, ResponseListInquiryMonthRes, ResponseInquiryDayRes, CursorBaseReviewRes } from './types/conchApi'
 import { submitReviewSSE, type SubmitReviewSSEOptions } from './sse'
 import type { StorageLike } from './auth'
 
@@ -12,6 +12,7 @@ export type ConchReviewDeps = {
 }
 
 export type ConchReviewHelpers = {
+  list: (args?: { after?: string }) => Promise<CursorBaseReviewRes | undefined>
   save: (review: SaveReq) => Promise<any>
   inquiryMonth: (args: { year: number; month: number }) => Promise<ResponseListInquiryMonthRes['data']>
   inquiryDate: (args: { year: number; month: number; day: number }) => Promise<ResponseInquiryDayRes['data']>
@@ -37,6 +38,13 @@ export function createConchReviewHelpers(deps: ConchReviewDeps): ConchReviewHelp
   const axiosInstance = deps.swaggerClient.instance
   const baseURL = (axiosInstance.defaults.baseURL || '') as string
   const accessTokenKey = deps.accessTokenKey || 'CONCH_ACCESS_TOKEN'
+
+  async function list(args?: { after?: string }): Promise<CursorBaseReviewRes | undefined> {
+    const res = await deps.swaggerClient.reviewController.list(
+      args?.after ? { after: args.after } : undefined,
+    )
+    return res.data.data
+  }
 
   async function save(review: SaveReq) {
     const res = await deps.swaggerClient.reviewController.saveReview(review)
@@ -96,6 +104,7 @@ export function createConchReviewHelpers(deps: ConchReviewDeps): ConchReviewHelp
   }
 
   return {
+    list,
     save,
     inquiryMonth,
     inquiryDate,

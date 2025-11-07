@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, Dispatch, SetStateAction, useCallback } from 'react'
-import { consts, getToday, inquiryMonth } from '@conch/utils'
+import { consts, getToday, inquiryMonth, list } from '@conch/utils'
 import { useRefresh } from '@conch/hooks/useRefresh'
 import { useIsFocused } from '@react-navigation/native'
-import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey } from './types'
+import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey, ReviewForList } from './types'
 
 type CalendarCell = {
   date: string
@@ -97,4 +97,68 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
 
 export function useTodayReviewWritten({ reviews, year, month, date }: { reviews: ReviewForCalendar[]; year: number; month: number; date: number }): boolean {
   return reviews?.some((review) => review.day === date) || false
+}
+
+export function useReviewList() {
+  const [reviews, setReviews] = useState<ReviewForList[]>([])
+  const [nextCursor, setNextCursor] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const isFocused = useIsFocused()
+
+  const fetchReviews = useCallback(async (cursor?: string) => {
+    try {
+      setIsLoading(true)
+      const response = await list(cursor ? { after: cursor } : undefined)
+      
+      if (response?.items) {
+        const newReviews: ReviewForList[] = response.items.map((item) => ({
+          feedbackType: item.feedbackType || 'FEELING',
+          body: item.body || '',
+          reviewDate: item.reviewDate || '',
+        }))
+
+        if (cursor) {
+          setReviews((prev) => [...prev, ...newReviews])
+        } else {
+          setReviews(newReviews)
+        }
+      }
+
+      setNextCursor(response?.hasNext ? response.nextCursor || null : null)
+    } catch (error) {
+      console.error('Failed to fetch reviews:', error)
+    } finally {
+      setIsLoading(false)
+      setIsRefreshing(false)
+    }
+  }, [])
+
+  const loadMore = useCallback(() => {
+    if (nextCursor && !isLoading) {
+      fetchReviews(nextCursor)
+    }
+  }, [nextCursor, isLoading, fetchReviews])
+
+  const refresh = useCallback(async () => {
+    setIsRefreshing(true)
+    await fetchReviews()
+  }, [fetchReviews])
+
+  useEffect(() => {
+    if (isFocused && reviews.length === 0) {
+      fetchReviews()
+    }
+  }, [isFocused, fetchReviews, reviews.length])
+
+  useRefresh(() => refresh())
+
+  return {
+    reviews,
+    isLoading,
+    isRefreshing,
+    loadMore,
+    refresh,
+    hasMore: !!nextCursor,
+  }
 }

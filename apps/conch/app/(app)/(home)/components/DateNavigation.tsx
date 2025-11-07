@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native'
 import { formatYearMonthDate } from '@conch/utils/string'
 import { Colors } from '@conch/assets/colors'
 import { NavigationArrowLeft, NavigationArrowRight } from '@conch/assets/icons'
@@ -8,12 +8,13 @@ import { consts } from '@conch/utils'
 import { ReviewForCalendar } from '../types'
 
 interface Props {
+  mode: 'calendar' | 'list'
   reviews: ReviewForCalendar[]
   calendarDate: { year: number; month: number }
   setCalendarDate: (date: { year: number; month: number }) => void
 }
 
-export default function DateNavigation({ reviews, calendarDate, setCalendarDate }: Props) {
+export default function DateNavigation({ mode, reviews, calendarDate, setCalendarDate }: Props) {
   const [username, setUsername] = useState<string | null>()
   const { year, month } = calendarDate
   const displayDate = formatYearMonthDate({ year, month: month + 1 })
@@ -40,22 +41,43 @@ export default function DateNavigation({ reviews, calendarDate, setCalendarDate 
   }
 
   return (
-    <View style={style.root}>
-      <DateNatigateButton
-        direction="prev"
-        onPress={() => handlePrevMonth()}
-      />
+    <View
+      style={[
+        style.root,
+        {
+          marginTop: 74,
+          marginBottom: mode === 'calendar' ? 114 : 34,
+          justifyContent: mode === 'calendar' ? 'space-between' : 'center',
+        },
+      ]}
+    >
+      {mode === 'calendar' && (
+        <DateNatigateButton
+          direction="prev"
+          onPress={() => handlePrevMonth()}
+        />
+      )}
       <View style={style.textWrapper}>
         <Text style={style.date}>{displayDate}</Text>
-        <Text style={style.reviewsCount}>
-          {username}님, {month + 1}월에는
-        </Text>
-        <Text style={style.reviewsCount}>총 {reviewsCount}번 회고를 작성했어요</Text>
+        {mode === 'calendar' ? (
+          <>
+            <Text style={style.reviewsCount}>
+              {username}님, {month + 1}월에는
+            </Text>
+            <Text style={style.reviewsCount}>총 {reviewsCount}번 회고를 작성했어요</Text>
+          </>
+        ) : (
+          <Text style={style.listModeText}>
+            지금까지 총 <Text style={style.countHighlight}>{reviewsCount}</Text>번 회고를 작성했어요
+          </Text>
+        )}
       </View>
-      <DateNatigateButton
-        direction="next"
-        onPress={() => handleNextMonth()}
-      />
+      {mode === 'calendar' && (
+        <DateNatigateButton
+          direction="next"
+          onPress={() => handleNextMonth()}
+        />
+      )}
     </View>
   )
 }
@@ -80,21 +102,29 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 60,
-    marginBottom: 40,
   },
   textWrapper: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
   },
   date: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
+    letterSpacing: -0.4,
+    color: Colors.writtenGrey,
   },
   reviewsCount: {
     fontSize: 12,
     color: Colors.lightGrey,
   },
+  listModeText: {
+    fontSize: 15,
+    color: Colors.lightGrey,
+  },
+  countHighlight: {
+    color: '#555555',
+  },
 })
+

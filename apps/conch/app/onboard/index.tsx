@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useRef } from 'react'
 import { View } from 'react-native'
+import { router } from 'expo-router'
 import { registerOnboarding } from '@conch/utils'
 import { RegisterReq, StreakReq } from '@api/conch/types/conchApi'
-import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep } from './components'
+import { InitialInfoStep, WhenStep, WhereStep, GoalStep, OnboardStep, DEFAULT_ONBOARDING_DATA } from './components'
 
 interface OnboardScreenProps {
   setNeedOnboard: React.Dispatch<React.SetStateAction<boolean>>
@@ -21,9 +22,7 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
   })
   const [onboardingData, setOnboardingData] = useState<StreakReq>({
     reviewTime: 'null', // deprecated
-    reviewAt: '',
-    writeLocation: '',
-    aspiration: '',
+    ...DEFAULT_ONBOARDING_DATA,
   })
 
   // 온보딩 데이터 공통 업데이트 헬퍼
@@ -50,9 +49,9 @@ function OnboardScreen({ setNeedOnboard, onLayout, initialStep = OnboardStep.INI
     const registerSucceed = await registerOnboarding(onboardingData)
     if (registerSucceed) {
       setNeedOnboard(false)
-      goToNextStep()
+      router.replace('/(app)/(home)')
     }
-  }, [goToNextStep, onboardingData, setNeedOnboard])
+  }, [onboardingData, setNeedOnboard])
 
   // 이전 단계로 이동
   const goToPrevStep = useCallback(() => {
