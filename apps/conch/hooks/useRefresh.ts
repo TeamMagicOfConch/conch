@@ -6,7 +6,7 @@ import { useIsFocused } from '@react-navigation/native'
 
 export function useRefresh(callback?: (elapsed?: number) => void) {
   const appState = useRef(AppState.currentState)
-  const lastBackgroundTime = useRef<number>()
+  const lastBackgroundTime = useRef<number | undefined>(undefined)
   const isFocused = useIsFocused()
 
   const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
