@@ -2,7 +2,7 @@
   "expo": {
     "name": "conch",
     "slug": "conch",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "conch",
@@ -19,8 +19,7 @@
       "supportsTablet": true,
       "usesAppleSignIn": false,
       "bundleIdentifier": "com.magicconch.MagicConch",
-      "buildNumber": "20",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -39,8 +38,7 @@
       "package": "com.magicconch.MagicConch",
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
-      ],
-      "versionCode": 8
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -66,6 +64,6 @@
     "updates": {
       "url": "https://u.expo.dev/a5d2561e-b491-4f9a-afc8-052690d979a8"
     },
-    "runtimeVersion": "1.0.0"
+    "runtimeVersion": "1.1.0"
   }
 }
