@@ -19,7 +19,6 @@ export default function DateNavigation({ mode, reviews, calendarDate, setCalenda
   const { year, month } = calendarDate
   const displayDate = formatYearMonthDate({ year, month: month + 1 })
   const reviewsCount = reviews?.length ?? 0
-  const { height } = useWindowDimensions()
 
   useEffect(() => {
     ;(async () => setUsername(await AsyncStorage.getItem(consts.asyncStorageKey.username)))()
@@ -47,7 +46,7 @@ export default function DateNavigation({ mode, reviews, calendarDate, setCalenda
         style.root,
         {
           marginTop: 74,
-          marginBottom: 114,
+          marginBottom: mode === 'calendar' ? 114 : 34,
           justifyContent: mode === 'calendar' ? 'space-between' : 'center',
         },
       ]}

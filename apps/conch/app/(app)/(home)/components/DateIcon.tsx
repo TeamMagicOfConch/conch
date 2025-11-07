@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    marginTop: -4
+    marginTop: -6
   },
   dayText: {
     position: 'absolute',
