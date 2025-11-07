@@ -20,7 +20,10 @@ export default function ViewToggleButton({ viewMode, onToggle }: ViewToggleButto
       ]}
       onPress={onToggle}
     >
-      <Icon width={24} height={24} />
+      <Icon
+        width={24}
+        height={24}
+      />
     </Pressable>
   )
 }
@@ -28,22 +31,14 @@ export default function ViewToggleButton({ viewMode, onToggle }: ViewToggleButto
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 56,
-    height: 56,
+    bottom: 104,
+    right: 24,
+    width: 54,
+    height: 54,
     borderRadius: 28,
-    backgroundColor: Colors.writtenGrey,
+    backgroundColor: Colors.onboardingPrimary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   pressed: {
     opacity: 0.8,

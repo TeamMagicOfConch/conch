@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native'
 import { formatYearMonthDate } from '@conch/utils/string'
 import { Colors } from '@conch/assets/colors'
 import { NavigationArrowLeft, NavigationArrowRight } from '@conch/assets/icons'
@@ -19,6 +19,7 @@ export default function DateNavigation({ mode, reviews, calendarDate, setCalenda
   const { year, month } = calendarDate
   const displayDate = formatYearMonthDate({ year, month: month + 1 })
   const reviewsCount = reviews?.length ?? 0
+  const { height } = useWindowDimensions()
 
   useEffect(() => {
     ;(async () => setUsername(await AsyncStorage.getItem(consts.asyncStorageKey.username)))()
@@ -41,7 +42,16 @@ export default function DateNavigation({ mode, reviews, calendarDate, setCalenda
   }
 
   return (
-    <View style={style.root}>
+    <View
+      style={[
+        style.root,
+        {
+          marginTop: 74,
+          marginBottom: 114,
+          justifyContent: mode === 'calendar' ? 'space-between' : 'center',
+        },
+      ]}
+    >
       {mode === 'calendar' && (
         <DateNatigateButton
           direction="prev"
@@ -50,13 +60,17 @@ export default function DateNavigation({ mode, reviews, calendarDate, setCalenda
       )}
       <View style={style.textWrapper}>
         <Text style={style.date}>{displayDate}</Text>
-        {mode === 'calendar' && (
+        {mode === 'calendar' ? (
           <>
             <Text style={style.reviewsCount}>
               {username}님, {month + 1}월에는
             </Text>
             <Text style={style.reviewsCount}>총 {reviewsCount}번 회고를 작성했어요</Text>
           </>
+        ) : (
+          <Text style={style.listModeText}>
+            지금까지 총 <Text style={style.countHighlight}>{reviewsCount}</Text>번 회고를 작성했어요
+          </Text>
         )}
       </View>
       {mode === 'calendar' && (
@@ -89,22 +103,29 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 60,
-    marginBottom: 40,
   },
   textWrapper: {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
   },
   date: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
+    letterSpacing: -0.4,
+    color: Colors.writtenGrey,
   },
   reviewsCount: {
     fontSize: 12,
     color: Colors.lightGrey,
+  },
+  listModeText: {
+    fontSize: 15,
+    color: Colors.lightGrey,
+  },
+  countHighlight: {
+    color: '#555555',
   },
 })
 

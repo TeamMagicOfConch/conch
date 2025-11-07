@@ -21,13 +21,13 @@ export default function HomeScreen() {
   const todayReview = viewMode === 'calendar'
     ? reviews.find((review) => review.day === todayDate)
     : listReviews.find((review) => {
-        const reviewDate = new Date(review.reviewDate)
-        return (
-          reviewDate.getFullYear() === year &&
+      const reviewDate = new Date(review.reviewDate)
+      return (
+        reviewDate.getFullYear() === year &&
           reviewDate.getMonth() === month &&
           reviewDate.getDate() === todayDate
-        )
-      })
+      )
+    })
 
   const calendarTodayReview = todayReview
     ? 'day' in todayReview
@@ -44,12 +44,16 @@ export default function HomeScreen() {
         setCalendarDate={setDate}
       />
       {viewMode === 'calendar' ? (
-        <CalendarView reviews={reviews} date={date} />
+        <CalendarView
+          reviews={reviews}
+          date={date} />
       ) : (
         <ListView />
       )}
       <ReviewButton todayReview={calendarTodayReview} />
-      <ViewToggleButton viewMode={viewMode} onToggle={handleToggle} />
+      <ViewToggleButton
+        viewMode={viewMode}
+        onToggle={handleToggle} />
     </>
   )
 }

@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router'
 import { getToday } from '@conch/utils'
 import { PrimaryButton } from '@conch/components'
 import { useMemo } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, useWindowDimensions } from 'react-native'
 import { ReviewForCalendar } from '../types'
 
 const BUTTON_NOT_WRITTEN_TEXT = '오늘 있던 일 소라에게 들려주기'
@@ -15,12 +15,13 @@ export default function ReviewButton({ todayReview }: { todayReview?: ReviewForC
   const targetScreen = isTodayReviewWritten ? '/review' : '/new-review'
   const buttonTitle = isTodayReviewWritten ? BUTTON_WRITTEN_TEXT : BUTTON_NOT_WRITTEN_TEXT
   const date = `${year}-${month}-${todayDate}`
+  const { width } = useWindowDimensions()
 
   const { feedbackType } = todayReview || {}
   const onPress = () => router.push({ pathname: targetScreen, params: { date, feedbackType } })
 
   return (
-    <View style={style.container}>
+    <View style={[style.container, { paddingHorizontal: width * 0.06 }]}>
       <PrimaryButton onPress={onPress}>
         {buttonTitle}
       </PrimaryButton>
@@ -33,7 +34,7 @@ const style = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: '15%',
+    bottom: 44,
     alignItems: 'center',
   },
 })

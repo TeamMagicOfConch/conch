@@ -1,4 +1,4 @@
-import { Calendar } from '.'
+import Calendar from './Calendar'
 import { ReviewForCalendar } from '../types'
 
 interface Props {
@@ -7,6 +7,10 @@ interface Props {
 }
 
 export default function CalendarView({ reviews, date }: Props) {
-  return <Calendar reviews={reviews} date={date} />
+  return (
+    <Calendar
+      reviews={reviews}
+      date={date} />
+  )
 }
 

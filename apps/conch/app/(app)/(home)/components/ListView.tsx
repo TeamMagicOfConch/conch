@@ -1,9 +1,9 @@
-import { FlatList, StyleSheet, Text, View, Pressable, ActivityIndicator } from 'react-native'
+import { FlatList, StyleSheet, Text, View, Pressable, ActivityIndicator, useWindowDimensions } from 'react-native'
 import { useRouter } from 'expo-router'
-import { SoraBg } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
 import { useReviewList } from '../hooks'
 import type { ReviewForList } from '../types'
+import DateIcon from './DateIcon'
 
 function formatReviewDate(dateString: string): string {
   const date = new Date(dateString)
@@ -19,24 +19,21 @@ interface ListItemProps {
 }
 
 function ListItem({ item, onPress }: ListItemProps) {
-  const isFReview = item.feedbackType === 'FEELING'
+  const date = new Date(item.reviewDate)
+  const day = date.getDate()
 
   return (
     <Pressable style={styles.listItem} onPress={onPress}>
       <View style={styles.listItemContent}>
-        <Text style={styles.dateText}>{formatReviewDate(item.reviewDate)}</Text>
-        <View style={styles.itemBody}>
-          <View style={styles.iconContainer}>
-            <SoraBg
-              color={isFReview ? Colors.fSora : Colors.tSora}
-              width={32}
-              height={32}
-            />
-          </View>
+        <View style={styles.headerRow}>
+          <DateIcon day={day} feedbackType={item.feedbackType} size={36} />
+          <Text style={styles.dateText}>{formatReviewDate(item.reviewDate)}</Text>
+          <Text style={styles.arrowIcon}>›</Text>
+        </View>
+        <View style={styles.bodyRow}>
           <Text style={styles.bodyText} numberOfLines={2} ellipsizeMode="tail">
             {item.body}
           </Text>
-          <Text style={styles.arrowIcon}>›</Text>
         </View>
       </View>
     </Pressable>
@@ -46,6 +43,7 @@ function ListItem({ item, onPress }: ListItemProps) {
 export default function ListView() {
   const { reviews, isLoading, isRefreshing, loadMore, refresh, hasMore } = useReviewList()
   const router = useRouter()
+  const { width, height } = useWindowDimensions()
 
   const handleItemPress = (item: ReviewForList) => {
     router.push({
@@ -100,7 +98,13 @@ export default function ListView() {
       onRefresh={refresh}
       ListFooterComponent={renderFooter}
       ListEmptyComponent={renderEmpty}
-      contentContainerStyle={styles.listContent}
+      contentContainerStyle={[
+        styles.listContent,
+        {
+          paddingHorizontal: width * 0.06,
+          paddingTop: height * 0.025,
+        },
+      ]}
     />
   )
 }
@@ -108,43 +112,35 @@ export default function ListView() {
 const styles = StyleSheet.create({
   listContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
   },
   listItem: {
-    marginBottom: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGrey + '20',
+    marginBottom: 20,
   },
   listItemContent: {
     gap: 8,
   },
-  dateText: {
-    fontSize: 12,
-    color: Colors.lightGrey,
-    marginBottom: 4,
-  },
-  itemBody: {
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bodyText: {
+  dateText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: 'bold',
     color: Colors.writtenGrey,
-    lineHeight: 20,
   },
   arrowIcon: {
     fontSize: 24,
     color: Colors.lightGrey,
+  },
+  bodyRow: {
+    paddingLeft: 48,
+  },
+  bodyText: {
+    fontSize: 15,
+    color: Colors.writtenGrey,
+    lineHeight: 21,
   },
   footer: {
     paddingVertical: 20,
