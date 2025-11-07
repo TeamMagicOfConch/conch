@@ -1,4 +1,4 @@
-import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosResponse, InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { Api as ConchApi, RegisterReq, ResponseAuthRes, StreakReq } from './types/conchApi'
 import { decodeJwtPayload } from './util'
 import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
@@ -78,7 +78,7 @@ export function createConchAuthHelpers(
     return allSucceeded
   }
 
-  async function login() {
+  async function login(): Promise<ResponseAuthRes> {
     const osId = OS_ID_DEBUG || (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
     try {
       const res = await deps.swaggerClient.authController.login({ osId })
@@ -94,11 +94,12 @@ export function createConchAuthHelpers(
         return { ...payload, code: NEED_MORE_ONBOARDING_CODE }
       }
       return payload
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as AxiosError
       // 로그인에서 400 | 404은 "유저 미등록" 정상 흐름이므로 reject하지 않고 payload를 그대로 반환
       if (error?.response?.status === 400 || error?.response?.status === 404) {
         const payload = error.response.data
-        return payload
+        return payload as ResponseAuthRes
       }
       return Promise.reject(error)
     }
@@ -124,7 +125,7 @@ export function createConchAuthHelpers(
     return setTokens({ accessToken: accessToken ?? null, refreshToken: newRefresh ?? null })
   }
 
-  async function refreshToken() {
+  async function refreshToken(): Promise<ResponseAuthRes> {
     const storedRefresh = await getStored(deps.storage, refreshTokenKey)
     if (!storedRefresh) return login()
     const res = await deps.swaggerClient.authController.reissue({
