@@ -5,33 +5,42 @@ import { useReviewList } from '../hooks'
 import type { ReviewForList } from '../types'
 import DateIcon from './DateIcon'
 
-function formatReviewDate(dateString: string): string {
+function getReviewDateObject(dateString: string): { year: number, month: number, day: number } {
   const date = new Date(dateString)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}.${month}.${day}`
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth(),
+    day: date.getDate(),
+  }
 }
 
 interface ListItemProps {
   item: ReviewForList
+  index: number
   onPress: () => void
 }
 
-function ListItem({ item, onPress }: ListItemProps) {
-  const date = new Date(item.reviewDate)
-  const day = date.getDate()
-
+function ListItem({ item, index, onPress }: ListItemProps) {
+  const { year, month, day } = getReviewDateObject(item.reviewDate)
   return (
-    <Pressable style={styles.listItem} onPress={onPress}>
+    <Pressable
+      style={styles.listItem}
+      onPress={onPress}>
       <View style={styles.listItemContent}>
         <View style={styles.headerRow}>
-          <DateIcon day={day} feedbackType={item.feedbackType} size={36} />
-          <Text style={styles.dateText}>{formatReviewDate(item.reviewDate)}</Text>
+          <DateIcon
+            day={index + 1}
+            type={item.feedbackType}
+            size={36}
+          />
+          <Text style={styles.dateText}>{`${year}.${String(month + 1).padStart(2, '0')}.${String(day).padStart(2, '0')}`}</Text>
           <Text style={styles.arrowIcon}>›</Text>
         </View>
         <View style={styles.bodyRow}>
-          <Text style={styles.bodyText} numberOfLines={2} ellipsizeMode="tail">
+          <Text
+            style={styles.bodyText}
+            numberOfLines={2}
+            ellipsizeMode="tail">
             {item.body}
           </Text>
         </View>
@@ -46,17 +55,23 @@ export default function ListView() {
   const { width, height } = useWindowDimensions()
 
   const handleItemPress = (item: ReviewForList) => {
+    const { year, month, day } = getReviewDateObject(item.reviewDate)
+    const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
     router.push({
       pathname: '/review',
       params: {
-        date: item.reviewDate,
+        date,
         feedbackType: item.feedbackType,
       },
     })
   }
 
-  const renderItem = ({ item }: { item: ReviewForList }) => (
-    <ListItem item={item} onPress={() => handleItemPress(item)} />
+  const renderItem = ({ item, index }: { item: ReviewForList, index: number }) => (
+    <ListItem
+      item={item}
+      index={index}
+      onPress={() => handleItemPress(item)}
+    />
   )
 
   const renderFooter = () => {
