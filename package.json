@@ -41,5 +41,10 @@
   "dependencies": {
     "expo-linear-gradient": "^14.0.2",
     "react-native-wheel-pick": "^1.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "@react-native-community/datetimepicker": "8.4.4"
+    }
   }
 }
