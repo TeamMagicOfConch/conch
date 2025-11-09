@@ -37,7 +37,7 @@ jobs:
         id: fingerprint
         run: |
           cd apps/conch
-          npx expo-fingerprint@latest > current-fingerprint.json
+          npx @expo/fingerprint@latest > current-fingerprint.json
           echo "fingerprint_hash=$(cat current-fingerprint.json | jq -r '.hash')" >> $GITHUB_OUTPUT
         
       - name: 🔍 Get previous fingerprint from EAS
