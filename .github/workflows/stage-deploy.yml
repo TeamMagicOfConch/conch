@@ -59,6 +59,8 @@ jobs:
         id: previous-fingerprint
         run: |
           cd apps/conch
+          
+          # Git history에서 이전 커밋의 fingerprint 계산
           git fetch origin ${{ github.ref_name }} --depth=2
           PREV_COMMIT=$(git rev-parse HEAD~1 2>/dev/null || echo "")
           
@@ -66,19 +68,22 @@ jobs:
             # 이전 커밋으로 체크아웃
             git checkout $PREV_COMMIT -- package.json ${{ matrix.platform }} app.json 2>/dev/null || true
             
+            # Fingerprint 계산
             if [ "${{ matrix.platform }}" = "ios" ]; then
               PREV_HASH=$(find ios package.json app.json -type f 2>/dev/null | sort | xargs cat | sha256sum | cut -d' ' -f1 || echo "none")
             else
               PREV_HASH=$(find android package.json app.json -type f 2>/dev/null | sort | xargs cat | sha256sum | cut -d' ' -f1 || echo "none")
             fi
             
-            echo "previous_hash=$PREV_HASH" >> $GITHUB_OUTPUT
-            echo "Previous ${{ matrix.platform }} fingerprint: $PREV_HASH"
-            
             # 원래대로 복구
             git checkout HEAD -- package.json ${{ matrix.platform }} app.json 2>/dev/null || true
+            
+            echo "previous_hash=$PREV_HASH" >> $GITHUB_OUTPUT
+            echo "✅ Previous ${{ matrix.platform }} fingerprint: $PREV_HASH"
           else
+            # 첫 커밋이면 빌드 필요
             echo "previous_hash=none" >> $GITHUB_OUTPUT
+            echo "🆕 First commit - will build"
           fi
         continue-on-error: true
 
@@ -105,7 +110,12 @@ jobs:
         if: steps.compare.outputs.needs_build == 'false'
         run: |
           cd apps/conch
-          eas update --platform ${{ matrix.platform }} --channel stage --message "Auto update ${{ matrix.platform }} from ${{ github.ref_name }} [${{ github.sha }}]" --non-interactive
+          eas update \
+            --platform ${{ matrix.platform }} \
+            --channel stage \
+            --environment preview \
+            --message "Auto update ${{ matrix.platform }} from ${{ github.ref_name }} [${{ github.sha }}]" \
+            --non-interactive
 
       - name: 🔨 EAS Build & Submit (Native changes detected)
         id: build
@@ -113,7 +123,18 @@ jobs:
         run: |
           cd apps/conch
           set -o pipefail
-          eas build --platform ${{ matrix.platform }} --profile preview --auto-submit --non-interactive 2>&1 | tee build-output-${{ matrix.platform }}.txt
+          
+          # Fingerprint를 빌드 메시지에 포함
+          FINGERPRINT_HASH="${{ steps.fingerprint.outputs.hash }}"
+          
+          eas build \
+            --platform ${{ matrix.platform }} \
+            --profile preview \
+            --environment preview \
+            --auto-submit \
+            --non-interactive \
+            --message "Build from ${{ github.ref_name }} [${{ github.sha }}] - FP: ${FINGERPRINT_HASH:0:12}" \
+            2>&1 | tee build-output-${{ matrix.platform }}.txt
           
           BUILD_URL=$(grep -o 'https://expo.dev/accounts/.*/projects/.*/builds/[^"]*' build-output-${{ matrix.platform }}.txt | head -1 || echo "")
           echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
