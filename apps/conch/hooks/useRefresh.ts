@@ -2,12 +2,10 @@ import { useEffect, useRef, useCallback } from 'react'
 import { AppState, AppStateStatus } from 'react-native'
 
 import { login, refreshToken } from '@conch/utils'
-import { useIsFocused } from '@react-navigation/native'
 
 export function useRefresh(callback?: (elapsed?: number) => void) {
   const appState = useRef(AppState.currentState)
-  const lastBackgroundTime = useRef<number>()
-  const isFocused = useIsFocused()
+  const lastBackgroundTime = useRef<number | undefined>(undefined)
 
   const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
     console.log('handleAppStateChange', appState.current, nextAppState)
@@ -28,11 +26,11 @@ export function useRefresh(callback?: (elapsed?: number) => void) {
         login()
       }
 
-      if (isFocused) callback?.(elapsed)
+      callback?.(elapsed)
     }
 
     appState.current = nextAppState
-  }, [callback, isFocused])
+  }, [callback])
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', handleAppStateChange)

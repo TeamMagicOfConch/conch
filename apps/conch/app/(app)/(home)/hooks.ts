@@ -1,8 +1,19 @@
 import { useState, useEffect, useMemo, Dispatch, SetStateAction, useCallback } from 'react'
 import { consts, getToday, inquiryMonth, list } from '@conch/utils'
 import { useRefresh } from '@conch/hooks/useRefresh'
-import { useIsFocused } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import type { ReviewForCalendar, MonthlyReviews, MonthlyReviewKey, ReviewForList } from './types'
+
+// Safe wrapper for useIsFocused to handle cases outside NavigationContainer
+function useSafeIsFocused(): boolean {
+  try {
+    const navigation = useNavigation()
+    const isFocused = useIsFocused()
+    return isFocused
+  } catch {
+    return true // Default to true if navigation context is not available
+  }
+}
 
 type CalendarCell = {
   date: string
@@ -52,7 +63,7 @@ export function useCalendar({ reviews, year, month }: { reviews: ReviewForCalend
 export function useReviewDataAtMonth({ year, month }: { year: number; month: number }): { reviews: ReviewForCalendar[] } {
   const [reviews, setReviews] = useState<MonthlyReviews>({})
   const [date, setDate] = useState<number>(new Date().getDate())
-  const isFocused = useIsFocused()
+  const isFocused = useSafeIsFocused()
 
   const fetchAndSetReviewData = useCallback(
     async ({ year, month }: { year: number; month: number }) => {
@@ -104,7 +115,7 @@ export function useReviewList() {
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const isFocused = useIsFocused()
+  const isFocused = useSafeIsFocused()
 
   const fetchReviews = useCallback(async (cursor?: string) => {
     try {
