@@ -6,9 +6,14 @@ on:
       - stage-deploy
 
 jobs:
+  # iOS와 Android 병렬 실행을 위한 Matrix Strategy
   deploy:
-    name: Deploy to Stage
+    name: Deploy to Stage - ${{ matrix.platform }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ios, android]
+      fail-fast: false  # 한쪽 실패해도 다른 쪽 계속 진행
     
     steps:
       - name: 🏗 Checkout repository
@@ -37,84 +42,114 @@ jobs:
         id: fingerprint
         run: |
           cd apps/conch
-          npx @expo/fingerprint@latest > current-fingerprint.json
-          echo "fingerprint_hash=$(cat current-fingerprint.json | jq -r '.hash')" >> $GITHUB_OUTPUT
+          
+          if [ "${{ matrix.platform }}" = "ios" ]; then
+            # iOS 관련 파일만 해싱
+            HASH=$(find ios package.json app.json -type f 2>/dev/null | sort | xargs cat | sha256sum | cut -d' ' -f1)
+            echo "hash=$HASH" >> $GITHUB_OUTPUT
+            echo "iOS fingerprint: $HASH"
+          else
+            # Android 관련 파일만 해싱
+            HASH=$(find android package.json app.json -type f 2>/dev/null | sort | xargs cat | sha256sum | cut -d' ' -f1)
+            echo "hash=$HASH" >> $GITHUB_OUTPUT
+            echo "Android fingerprint: $HASH"
+          fi
         
-      - name: 🔍 Get previous fingerprint from EAS
+      - name: 🔍 Get previous fingerprint from git
         id: previous-fingerprint
         run: |
           cd apps/conch
-          # EAS Build의 마지막 preview 빌드에서 fingerprint 가져오기
-          PREV_FINGERPRINT=$(eas build:list --platform all --profile preview --limit 1 --json --non-interactive 2>/dev/null | jq -r '.[0].runtimeVersion // "none"')
-          echo "Previous fingerprint: $PREV_FINGERPRINT"
-          echo "previous_hash=$PREV_FINGERPRINT" >> $GITHUB_OUTPUT
+          git fetch origin ${{ github.ref_name }} --depth=2
+          PREV_COMMIT=$(git rev-parse HEAD~1 2>/dev/null || echo "")
+          
+          if [ -n "$PREV_COMMIT" ]; then
+            # 이전 커밋으로 체크아웃
+            git checkout $PREV_COMMIT -- package.json ${{ matrix.platform }} app.json 2>/dev/null || true
+            
+            if [ "${{ matrix.platform }}" = "ios" ]; then
+              PREV_HASH=$(find ios package.json app.json -type f 2>/dev/null | sort | xargs cat | sha256sum | cut -d' ' -f1 || echo "none")
+            else
+              PREV_HASH=$(find android package.json app.json -type f 2>/dev/null | sort | xargs cat | sha256sum | cut -d' ' -f1 || echo "none")
+            fi
+            
+            echo "previous_hash=$PREV_HASH" >> $GITHUB_OUTPUT
+            echo "Previous ${{ matrix.platform }} fingerprint: $PREV_HASH"
+            
+            # 원래대로 복구
+            git checkout HEAD -- package.json ${{ matrix.platform }} app.json 2>/dev/null || true
+          else
+            echo "previous_hash=none" >> $GITHUB_OUTPUT
+          fi
         continue-on-error: true
 
       - name: 📊 Compare fingerprints
         id: compare
         run: |
-          CURRENT="${{ steps.fingerprint.outputs.fingerprint_hash }}"
+          CURRENT="${{ steps.fingerprint.outputs.hash }}"
           PREVIOUS="${{ steps.previous-fingerprint.outputs.previous_hash }}"
           
-          echo "Current fingerprint: $CURRENT"
-          echo "Previous fingerprint: $PREVIOUS"
+          echo "=== ${{ matrix.platform }} ==="
+          echo "Current: $CURRENT"
+          echo "Previous: $PREVIOUS"
           
-          if [ "$CURRENT" = "$PREVIOUS" ] && [ "$PREVIOUS" != "none" ]; then
-            echo "needs_build=false" >> $GITHUB_OUTPUT
-            echo "✅ No native changes detected - will use EAS Update"
-          else
+          # 빌드 필요 여부
+          if [ "$PREVIOUS" = "none" ] || [ "$CURRENT" != "$PREVIOUS" ]; then
             echo "needs_build=true" >> $GITHUB_OUTPUT
-            echo "🔨 Native changes detected - will build"
+            echo "🔨 ${{ matrix.platform }}: Native changes detected - will build"
+          else
+            echo "needs_build=false" >> $GITHUB_OUTPUT
+            echo "✅ ${{ matrix.platform }}: No native changes - will use EAS Update"
           fi
 
       - name: 🚀 EAS Update (JS only changes)
         if: steps.compare.outputs.needs_build == 'false'
         run: |
           cd apps/conch
-          eas update --channel stage --message "Auto update from stage-deploy [${{ github.sha }}]" --non-interactive
+          eas update --platform ${{ matrix.platform }} --channel stage --message "Auto update ${{ matrix.platform }} from ${{ github.ref_name }} [${{ github.sha }}]" --non-interactive
 
-      - name: 🔨 EAS Build (Native changes detected)
+      - name: 🔨 EAS Build & Submit (Native changes detected)
+        id: build
         if: steps.compare.outputs.needs_build == 'true'
         run: |
           cd apps/conch
-          eas build --platform all --profile preview --non-interactive --no-wait
-        
-      - name: ⏳ Wait for build completion
-        if: steps.compare.outputs.needs_build == 'true'
-        run: |
-          cd apps/conch
-          echo "Waiting for builds to complete..."
-          # Build ID는 이전 step에서 자동으로 추적됨
-          # EAS CLI가 자동으로 최신 빌드 상태를 확인
-          sleep 60
+          set -o pipefail
+          eas build --platform ${{ matrix.platform }} --profile preview --auto-submit --non-interactive 2>&1 | tee build-output-${{ matrix.platform }}.txt
           
-      - name: 📤 EAS Submit (After successful build)
-        if: steps.compare.outputs.needs_build == 'true'
-        run: |
-          cd apps/conch
-          # 가장 최근 완료된 preview 빌드를 제출
-          eas submit --platform ios --profile preview --latest --non-interactive || echo "iOS submit failed or no build ready"
-          eas submit --platform android --profile preview --latest --non-interactive || echo "Android submit failed or no build ready"
-        continue-on-error: true
+          BUILD_URL=$(grep -o 'https://expo.dev/accounts/.*/projects/.*/builds/[^"]*' build-output-${{ matrix.platform }}.txt | head -1 || echo "")
+          echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
 
-      - name: 📝 Deployment Summary
+      - name: 📝 Deployment Summary - ${{ matrix.platform }}
         if: always()
         run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          PLATFORM_EMOJI="${{ matrix.platform == 'ios' && '📱' || '🤖' }}"
+          PLATFORM_NAME="${{ matrix.platform == 'ios' && 'iOS' || 'Android' }}"
+          
+          echo "## $PLATFORM_EMOJI $PLATFORM_NAME Deployment" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Branch:** \`stage-deploy\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Fingerprint:** ${{ steps.fingerprint.outputs.fingerprint_hash }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** [\`${GITHUB_SHA:0:7}\`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY
+          echo "**Fingerprint:** \`${{ steps.fingerprint.outputs.hash }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ steps.compare.outputs.needs_build }}" = "true" ]; then
-            echo "🔨 **Action Taken:** Full Build + Submit" >> $GITHUB_STEP_SUMMARY
-            echo "- Platform: iOS & Android" >> $GITHUB_STEP_SUMMARY
-            echo "- Profile: preview" >> $GITHUB_STEP_SUMMARY
-            echo "- Destination: TestFlight & Play Store Alpha" >> $GITHUB_STEP_SUMMARY
+            echo "**Action:** 🔨 Build + Submit" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** ${{ steps.build.outcome == 'success' && '✅ Success' || (steps.build.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped') }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Profile:** preview" >> $GITHUB_STEP_SUMMARY
+            echo "**Destination:** ${{ matrix.platform == 'ios' && 'TestFlight' || 'Play Store Alpha' }}" >> $GITHUB_STEP_SUMMARY
+            
+            if [ -n "${{ steps.build.outputs.build_url }}" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Build URL:** [${{ steps.build.outputs.build_url }}](${{ steps.build.outputs.build_url }})" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [ "${{ steps.build.outcome }}" = "failure" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "⚠️ **Build or submission failed.** Check the logs for details." >> $GITHUB_STEP_SUMMARY
+            fi
           else
-            echo "🚀 **Action Taken:** EAS Update (OTA)" >> $GITHUB_STEP_SUMMARY
-            echo "- Channel: stage" >> $GITHUB_STEP_SUMMARY
-            echo "- No native changes detected" >> $GITHUB_STEP_SUMMARY
+            echo "**Action:** 🚀 EAS Update (OTA)" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
+            echo "**Channel:** stage" >> $GITHUB_STEP_SUMMARY
+            echo "**Reason:** No native changes detected" >> $GITHUB_STEP_SUMMARY
           fi
 
