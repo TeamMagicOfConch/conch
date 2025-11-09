@@ -41,14 +41,23 @@ jobs:
           npx @expo/fingerprint@latest > current-fingerprint.json
           echo "fingerprint_hash=$(cat current-fingerprint.json | jq -r '.hash')" >> $GITHUB_OUTPUT
         
-      - name: 🔍 Get previous fingerprint from EAS
+      - name: 🔍 Get previous fingerprint from git
         id: previous-fingerprint
         run: |
           cd apps/conch
-          # EAS Build의 마지막 preview 빌드에서 fingerprint 가져오기
-          PREV_FINGERPRINT=$(eas build:list --platform all --profile preview --limit 1 --json --non-interactive 2>/dev/null | jq -r '.[0].runtimeVersion // "none"')
-          echo "Previous fingerprint: $PREV_FINGERPRINT"
-          echo "previous_hash=$PREV_FINGERPRINT" >> $GITHUB_OUTPUT
+          # 이전 커밋의 fingerprint 계산
+          git fetch origin stage-deploy --depth=2
+          PREV_COMMIT=$(git rev-parse HEAD~1 2>/dev/null || echo "")
+          
+          if [ -n "$PREV_COMMIT" ]; then
+            git checkout $PREV_COMMIT -- package.json ios android 2>/dev/null || true
+            PREV_FINGERPRINT=$(npx @expo/fingerprint@latest 2>/dev/null | jq -r '.hash' || echo "none")
+            git checkout HEAD -- package.json ios android 2>/dev/null || true
+            echo "Previous fingerprint: $PREV_FINGERPRINT"
+            echo "previous_hash=$PREV_FINGERPRINT" >> $GITHUB_OUTPUT
+          else
+            echo "previous_hash=none" >> $GITHUB_OUTPUT
+          fi
         continue-on-error: true
 
       - name: 📊 Compare fingerprints
@@ -60,12 +69,13 @@ jobs:
           echo "Current fingerprint: $CURRENT"
           echo "Previous fingerprint: $PREVIOUS"
           
-          if [ "$CURRENT" = "$PREVIOUS" ] && [ "$PREVIOUS" != "none" ]; then
+          # 첫 빌드이거나 fingerprint가 다르면 빌드 필요
+          if [ "$PREVIOUS" = "none" ] || [ "$CURRENT" != "$PREVIOUS" ]; then
+            echo "needs_build=true" >> $GITHUB_OUTPUT
+            echo "🔨 Native changes detected or first build - will build"
+          else
             echo "needs_build=false" >> $GITHUB_OUTPUT
             echo "✅ No native changes detected - will use EAS Update"
-          else
-            echo "needs_build=true" >> $GITHUB_OUTPUT
-            echo "🔨 Native changes detected - will build"
           fi
 
       - name: 🚀 EAS Update (JS only changes)
