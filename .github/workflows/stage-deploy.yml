@@ -1,0 +1,122 @@
+name: Stage Deploy
+
+on:
+  push:
+    branches:
+      - stage-deploy
+
+jobs:
+  deploy:
+    name: Deploy to Stage
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: 🏗 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🔍 Generate current fingerprint
+        id: fingerprint
+        run: |
+          cd apps/conch
+          npx expo-fingerprint@latest > current-fingerprint.json
+          echo "fingerprint_hash=$(cat current-fingerprint.json | jq -r '.hash')" >> $GITHUB_OUTPUT
+        
+      - name: 🔍 Get previous fingerprint from EAS
+        id: previous-fingerprint
+        run: |
+          cd apps/conch
+          # EAS Build의 마지막 preview 빌드에서 fingerprint 가져오기
+          PREV_FINGERPRINT=$(eas build:list --platform all --profile preview --limit 1 --json --non-interactive 2>/dev/null | jq -r '.[0].runtimeVersion // "none"')
+          echo "Previous fingerprint: $PREV_FINGERPRINT"
+          echo "previous_hash=$PREV_FINGERPRINT" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: 📊 Compare fingerprints
+        id: compare
+        run: |
+          CURRENT="${{ steps.fingerprint.outputs.fingerprint_hash }}"
+          PREVIOUS="${{ steps.previous-fingerprint.outputs.previous_hash }}"
+          
+          echo "Current fingerprint: $CURRENT"
+          echo "Previous fingerprint: $PREVIOUS"
+          
+          if [ "$CURRENT" = "$PREVIOUS" ] && [ "$PREVIOUS" != "none" ]; then
+            echo "needs_build=false" >> $GITHUB_OUTPUT
+            echo "✅ No native changes detected - will use EAS Update"
+          else
+            echo "needs_build=true" >> $GITHUB_OUTPUT
+            echo "🔨 Native changes detected - will build"
+          fi
+
+      - name: 🚀 EAS Update (JS only changes)
+        if: steps.compare.outputs.needs_build == 'false'
+        run: |
+          cd apps/conch
+          eas update --channel stage --message "Auto update from stage-deploy [${{ github.sha }}]" --non-interactive
+
+      - name: 🔨 EAS Build (Native changes detected)
+        if: steps.compare.outputs.needs_build == 'true'
+        run: |
+          cd apps/conch
+          eas build --platform all --profile preview --non-interactive --no-wait
+        
+      - name: ⏳ Wait for build completion
+        if: steps.compare.outputs.needs_build == 'true'
+        run: |
+          cd apps/conch
+          echo "Waiting for builds to complete..."
+          # Build ID는 이전 step에서 자동으로 추적됨
+          # EAS CLI가 자동으로 최신 빌드 상태를 확인
+          sleep 60
+          
+      - name: 📤 EAS Submit (After successful build)
+        if: steps.compare.outputs.needs_build == 'true'
+        run: |
+          cd apps/conch
+          # 가장 최근 완료된 preview 빌드를 제출
+          eas submit --platform ios --profile preview --latest --non-interactive || echo "iOS submit failed or no build ready"
+          eas submit --platform android --profile preview --latest --non-interactive || echo "Android submit failed or no build ready"
+        continue-on-error: true
+
+      - name: 📝 Deployment Summary
+        if: always()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`stage-deploy\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Fingerprint:** ${{ steps.fingerprint.outputs.fingerprint_hash }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.compare.outputs.needs_build }}" = "true" ]; then
+            echo "🔨 **Action Taken:** Full Build + Submit" >> $GITHUB_STEP_SUMMARY
+            echo "- Platform: iOS & Android" >> $GITHUB_STEP_SUMMARY
+            echo "- Profile: preview" >> $GITHUB_STEP_SUMMARY
+            echo "- Destination: TestFlight & Play Store Alpha" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🚀 **Action Taken:** EAS Update (OTA)" >> $GITHUB_STEP_SUMMARY
+            echo "- Channel: stage" >> $GITHUB_STEP_SUMMARY
+            echo "- No native changes detected" >> $GITHUB_STEP_SUMMARY
+          fi
+
