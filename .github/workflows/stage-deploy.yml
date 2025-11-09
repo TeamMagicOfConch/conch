@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - stage-deploy
-      - github-action # TEST
 
 jobs:
   # iOS와 Android 병렬 실행을 위한 Matrix Strategy
