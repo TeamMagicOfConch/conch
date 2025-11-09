@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - stage-deploy
+      - github-action # TEST
 
 jobs:
   deploy:
@@ -73,29 +74,21 @@ jobs:
           cd apps/conch
           eas update --channel stage --message "Auto update from stage-deploy [${{ github.sha }}]" --non-interactive
 
-      - name: 🔨 EAS Build (Native changes detected)
+      - name: 🔨 EAS Build & Submit (Native changes detected)
+        id: build
         if: steps.compare.outputs.needs_build == 'true'
         run: |
           cd apps/conch
-          eas build --platform all --profile preview --non-interactive --no-wait
-        
-      - name: ⏳ Wait for build completion
-        if: steps.compare.outputs.needs_build == 'true'
-        run: |
-          cd apps/conch
-          echo "Waiting for builds to complete..."
-          # Build ID는 이전 step에서 자동으로 추적됨
-          # EAS CLI가 자동으로 최신 빌드 상태를 확인
-          sleep 60
+          # 빌드 완료 후 자동으로 제출
+          set -o pipefail
+          eas build --platform all --profile preview --auto-submit --non-interactive 2>&1 | tee build-output.txt
           
-      - name: 📤 EAS Submit (After successful build)
-        if: steps.compare.outputs.needs_build == 'true'
-        run: |
-          cd apps/conch
-          # 가장 최근 완료된 preview 빌드를 제출
-          eas submit --platform ios --profile preview --latest --non-interactive || echo "iOS submit failed or no build ready"
-          eas submit --platform android --profile preview --latest --non-interactive || echo "Android submit failed or no build ready"
-        continue-on-error: true
+          # 빌드 URL 추출 및 저장
+          IOS_URL=$(grep -o 'https://expo.dev/accounts/.*/projects/.*/builds/[^"]*' build-output.txt | grep ios | head -1 || echo "")
+          ANDROID_URL=$(grep -o 'https://expo.dev/accounts/.*/projects/.*/builds/[^"]*' build-output.txt | grep android | head -1 || echo "")
+          
+          echo "ios_build_url=$IOS_URL" >> $GITHUB_OUTPUT
+          echo "android_build_url=$ANDROID_URL" >> $GITHUB_OUTPUT
 
       - name: 📝 Deployment Summary
         if: always()
@@ -103,18 +96,37 @@ jobs:
           echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Branch:** \`stage-deploy\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Fingerprint:** ${{ steps.fingerprint.outputs.fingerprint_hash }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** [\`${GITHUB_SHA:0:7}\`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})" >> $GITHUB_STEP_SUMMARY
+          echo "**Fingerprint:** \`${{ steps.fingerprint.outputs.fingerprint_hash }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ steps.compare.outputs.needs_build }}" = "true" ]; then
-            echo "🔨 **Action Taken:** Full Build + Submit" >> $GITHUB_STEP_SUMMARY
-            echo "- Platform: iOS & Android" >> $GITHUB_STEP_SUMMARY
-            echo "- Profile: preview" >> $GITHUB_STEP_SUMMARY
-            echo "- Destination: TestFlight & Play Store Alpha" >> $GITHUB_STEP_SUMMARY
+            echo "### 🔨 Full Build + Submit" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** ${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Platform:** iOS & Android" >> $GITHUB_STEP_SUMMARY
+            echo "**Profile:** preview" >> $GITHUB_STEP_SUMMARY
+            echo "**Destination:** TestFlight & Play Store Alpha" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ -n "${{ steps.build.outputs.ios_build_url }}" ]; then
+              echo "**iOS Build:** [${{ steps.build.outputs.ios_build_url }}](${{ steps.build.outputs.ios_build_url }})" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [ -n "${{ steps.build.outputs.android_build_url }}" ]; then
+              echo "**Android Build:** [${{ steps.build.outputs.android_build_url }}](${{ steps.build.outputs.android_build_url }})" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [ "${{ steps.build.outcome }}" = "failure" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "⚠️ **Build or submission failed.** Check the logs above for details." >> $GITHUB_STEP_SUMMARY
+            fi
           else
-            echo "🚀 **Action Taken:** EAS Update (OTA)" >> $GITHUB_STEP_SUMMARY
-            echo "- Channel: stage" >> $GITHUB_STEP_SUMMARY
-            echo "- No native changes detected" >> $GITHUB_STEP_SUMMARY
+            echo "### 🚀 EAS Update (OTA)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
+            echo "**Channel:** stage" >> $GITHUB_STEP_SUMMARY
+            echo "**Reason:** No native changes detected" >> $GITHUB_STEP_SUMMARY
           fi
 
