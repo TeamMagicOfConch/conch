@@ -68,6 +68,7 @@ export function useCalendar({ reviews: _reviews, year, month }: { reviews: Revie
 
 export function useReviewDataAtMonth({ year, month }: { year: number; month: number }): { reviews: ReviewForCalendar[] } {
   const [reviews, setReviews] = useState<MonthlyReviews>({})
+  const reviewsRef = useRef<MonthlyReviews>({})
   const [date, setDate] = useState<number>(new Date().getDate())
 
   const fetchAndSetReviewData = useCallback(
@@ -78,7 +79,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
 
       const yearAndMonth: MonthlyReviewKey = `${targetYear}-${targetMonth + 1}`
 
-      if (!isThisMonth && !!reviews[yearAndMonth]) return
+      if (!isThisMonth && !!reviewsRef.current[yearAndMonth]) return
       if (isFuture) return
 
       const _reviewsData = await inquiryMonth({ year: targetYear, month: targetMonth + 1 })
@@ -87,12 +88,16 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
         ...review,
       })) || []
 
-      setReviews((prev) => ({
-        ...prev,
-        [yearAndMonth]: reviewsData,
-      }))
+      setReviews((prev) => {
+        const newReviews = {
+          ...prev,
+          [yearAndMonth]: reviewsData,
+        }
+        reviewsRef.current = newReviews
+        return newReviews
+      })
     },
-    [reviews],
+    [],
   )
 
   useEffect(() => {
