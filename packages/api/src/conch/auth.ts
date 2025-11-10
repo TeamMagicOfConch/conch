@@ -40,9 +40,9 @@ export type ConchAuthHelpers = {
 }
 
 const DEFAULT_KEYS = {
-  accessToken: 'CONCH_ACCESS_TOKEN',
-  refreshToken: 'CONCH_REFRESH_TOKEN',
-  username: 'CONCH_USERNAME',
+  accessToken: 'magicOfConchAccessToken',
+  refreshToken: 'magicOfConchRefreshToken',
+  username: 'magicOfConchUserName',
 }
 
 async function maybeAsync<T>(value: T | Promise<T>): Promise<T> {

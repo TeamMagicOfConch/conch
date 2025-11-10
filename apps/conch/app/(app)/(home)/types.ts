@@ -1,6 +1,7 @@
 export type MonthlyReviewKey = `${number}-${number}`
 
 export interface ReviewForCalendar {
+  month: number
   day: number
   feedbackType: 'FEELING' | 'THINKING'
 }

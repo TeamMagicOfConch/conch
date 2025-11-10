@@ -1,24 +1,22 @@
-import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { formatYearMonthDate } from '@conch/utils/string'
 import { Colors } from '@conch/assets/colors'
 import { NavigationArrowLeft, NavigationArrowRight } from '@conch/assets/icons'
 import { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { consts } from '@conch/utils'
-import { ReviewForCalendar } from '../types'
 
 interface Props {
   mode: 'calendar' | 'list'
-  reviews: ReviewForCalendar[]
+  reviewsCount: number
   calendarDate: { year: number; month: number }
   setCalendarDate: (date: { year: number; month: number }) => void
 }
 
-export default function DateNavigation({ mode, reviews, calendarDate, setCalendarDate }: Props) {
+export default function DateNavigation({ mode, reviewsCount, calendarDate, setCalendarDate }: Props) {
   const [username, setUsername] = useState<string | null>()
   const { year, month } = calendarDate
   const displayDate = formatYearMonthDate({ year, month: month + 1 })
-  const reviewsCount = reviews?.length ?? 0
 
   useEffect(() => {
     ;(async () => setUsername(await AsyncStorage.getItem(consts.asyncStorageKey.username)))()

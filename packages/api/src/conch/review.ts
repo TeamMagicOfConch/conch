@@ -37,7 +37,7 @@ async function getStored(storage: StorageLike | undefined, key: string): Promise
 export function createConchReviewHelpers(deps: ConchReviewDeps): ConchReviewHelpers {
   const axiosInstance = deps.swaggerClient.instance
   const baseURL = (axiosInstance.defaults.baseURL || '') as string
-  const accessTokenKey = deps.accessTokenKey || 'CONCH_ACCESS_TOKEN'
+  const accessTokenKey = deps.accessTokenKey || 'magicOfConchAccessToken'
 
   async function list(args?: { after?: string }): Promise<CursorBaseReviewRes | undefined> {
     const res = await deps.swaggerClient.reviewController.list(
