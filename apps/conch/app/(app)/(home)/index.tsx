@@ -32,12 +32,6 @@ export default function HomeScreen() {
       )
     })
 
-  const calendarTodayReview = todayReview
-    ? 'day' in todayReview
-      ? todayReview
-      : { day: todayDate, feedbackType: todayReview.feedbackType }
-    : undefined
-
   return (
     <>
       <DateNavigation
@@ -53,7 +47,7 @@ export default function HomeScreen() {
       ) : (
         <ListView />
       )}
-      <ReviewButton todayReview={calendarTodayReview} />
+      <ReviewButton todayReview={todayReview} />
       <ViewToggleButton
         viewMode={viewMode}
         onToggle={handleToggle} />

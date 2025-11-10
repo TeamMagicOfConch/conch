@@ -3,12 +3,12 @@ import { getToday } from '@conch/utils'
 import { PrimaryButton } from '@conch/components'
 import { useMemo } from 'react'
 import { View, StyleSheet, useWindowDimensions } from 'react-native'
-import { ReviewForCalendar } from '../types'
+import { ReviewForCalendar, ReviewForList } from '../types'
 
 const BUTTON_NOT_WRITTEN_TEXT = '오늘 있던 일 소라에게 들려주기'
 const BUTTON_WRITTEN_TEXT = '오늘 소라가 해준 말 다시 보기'
 
-export default function ReviewButton({ todayReview }: { todayReview?: ReviewForCalendar }) {
+export default function ReviewButton({ todayReview }: { todayReview?: ReviewForCalendar | ReviewForList }) {
   const router = useRouter()
   const { year, month, date: todayDate } = useMemo(() => getToday(), [])
   const isTodayReviewWritten = !!todayReview

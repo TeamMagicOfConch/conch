@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, Dispatch, SetStateAction, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { consts, getToday, inquiryMonth, list } from '@conch/utils'
 import { useRefresh } from '@conch/hooks/useRefresh'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
@@ -22,8 +22,9 @@ type CalendarCell = {
   isTReview: boolean
 }
 
-export function useCalendar({ reviews, year, month }: { reviews: ReviewForCalendar[]; year: number; month: number }): { calendar: CalendarCell[][] } {
+export function useCalendar({ reviews: _reviews, year, month }: { reviews: ReviewForCalendar[]; year: number; month: number }): { calendar: CalendarCell[][] } {
   const { reviewType } = consts
+  const reviews = _reviews.filter((review) => review.month === month + 1)
   const fReviewDates = reviews.filter((review) => review.feedbackType === reviewType.feeling).map((review) => review.day)
   const tReviewDates = reviews.filter((review) => review.feedbackType === reviewType.thinking).map((review) => review.day)
 
@@ -76,7 +77,11 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
       if (!isThisMonth && !!reviews[yearAndMonth]) return
       if (isFuture) return
 
-      const reviewsData = await inquiryMonth({ year, month: month + 1 })
+      const _reviewsData = await inquiryMonth({ year, month: month + 1 })
+      const reviewsData = _reviewsData?.map((review) => ({
+        month: month + 1,
+        ...review,
+      })) || []
 
       if (isThisMonth && reviewsData?.length === reviews[yearAndMonth]?.length) return
       setReviews((prev) => ({
@@ -103,7 +108,7 @@ export function useReviewDataAtMonth({ year, month }: { year: number; month: num
 
   const yearAndMonth = useMemo<MonthlyReviewKey>(() => `${year}-${month + 1}`, [year, month])
 
-  return { reviews: reviews[yearAndMonth] || [] }
+  return { reviews: Object.values(reviews).flat() || [] }
 }
 
 export function useTodayReviewWritten({ reviews, year, month, date }: { reviews: ReviewForCalendar[]; year: number; month: number; date: number }): boolean {
