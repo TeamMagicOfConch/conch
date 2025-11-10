@@ -57,7 +57,7 @@ export function useStartUp() {
     }
 
     prepare()
-  }, [needOnboard])
+  }, [])
 
   return { isAppReady, needOnboard, setNeedOnboard, error, initialOnboardStep }
 }
