@@ -18,7 +18,6 @@
     "preview": {
       "autoIncrement": true,
       "channel": "stage",
-      "distribution": "internal",
       "android": {
         "image": "latest"
       },
