@@ -12,13 +12,16 @@ export default function HomeScreen() {
   const { reviews } = useReviewDataAtMonth(date)
   const { reviews: listReviews } = useReviewList()
 
+  const isCalendarView = viewMode === 'calendar'
+  const reviewsCount = isCalendarView ? reviews?.length ?? 0 : listReviews?.length ?? 0
+
   const handleToggle = () => {
     setViewMode((prev) => (prev === 'calendar' ? 'list' : 'calendar'))
     setDate({ year, month })
   }
 
   // calendar 모드일 때는 해당 월의 리뷰, list 모드일 때는 전체 리뷰에서 todayReview 찾기
-  const todayReview = viewMode === 'calendar'
+  const todayReview = isCalendarView
     ? reviews.find((review) => review.day === todayDate)
     : listReviews.find((review) => {
       const reviewDate = new Date(review.reviewDate)
@@ -39,11 +42,11 @@ export default function HomeScreen() {
     <>
       <DateNavigation
         mode={viewMode}
-        reviews={reviews}
+        reviewsCount={reviewsCount}
         calendarDate={date}
         setCalendarDate={setDate}
       />
-      {viewMode === 'calendar' ? (
+      {isCalendarView ? (
         <CalendarView
           reviews={reviews}
           date={date} />
