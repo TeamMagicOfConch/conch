@@ -38,6 +38,7 @@ module.exports = {
     semi: ['error', 'never'],
     'no-await-in-loop': 'off',
     'global-require': 'off',
+    'max-classes-per-file': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/prefer-default-export': 'off',
     'consistent-return': 'warn',
