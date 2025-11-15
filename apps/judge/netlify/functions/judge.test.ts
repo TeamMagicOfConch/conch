@@ -31,22 +31,6 @@ const createMockEvent = (body: unknown, method = "POST"): HandlerEvent => ({
   multiValueHeaders: {},
   body: typeof body === "string" ? body : JSON.stringify(body),
   isBase64Encoded: false,
-  requestContext: {
-    requestId: "test-request-id",
-    identity: {
-      sourceIp: "127.0.0.1",
-    },
-    httpMethod: method,
-    requestTime: "01/Jan/2024:00:00:00 +0000",
-    requestTimeEpoch: 0,
-    path: "/judge",
-    accountId: "",
-    apiId: "",
-    protocol: "HTTP/1.1",
-    resourceId: "",
-    resourcePath: "/judge",
-    stage: "",
-  },
 })
 
 const createMockContext = (): HandlerContext => ({
