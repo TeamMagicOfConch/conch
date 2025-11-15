@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsup",
+    "build": "tsup netlify/functions/judge.ts",
     "dev": "netlify dev",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run",
