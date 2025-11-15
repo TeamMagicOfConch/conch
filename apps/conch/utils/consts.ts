@@ -1,14 +1,3 @@
-interface Consts {
-  reviewType: {
-    [key: string]: 'FEELING' | 'THINKING'
-  }
-  asyncStorageKey: {
-    [key: string]: string
-  }
-  tokenDuration: number
-  [key: string]: any
-}
-
 export const consts = {
   reviewType: {
     thinking: 'THINKING',
