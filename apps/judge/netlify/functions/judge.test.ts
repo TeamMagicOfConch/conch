@@ -23,8 +23,10 @@ afterEach(() => {
 const createMockEvent = (body: unknown, method = "POST"): HandlerEvent => ({
   httpMethod: method,
   path: "/judge",
-  pathParameters: null,
+  rawUrl: "/judge",
+  rawQuery: "",
   queryStringParameters: null,
+  multiValueQueryStringParameters: null,
   headers: {},
   multiValueHeaders: {},
   body: typeof body === "string" ? body : JSON.stringify(body),
