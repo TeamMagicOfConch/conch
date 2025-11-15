@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsup netlify/functions/judge.ts",
-    "dev": "echo 'Note: netlify dev is currently disabled due to ESM/CommonJS compatibility issues. Use pnpm build && pnpm test instead.'",
+    "dev": "tsx dev-server.ts",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run",
     "test:watch": "vitest",
