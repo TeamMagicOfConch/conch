@@ -11,11 +11,11 @@ interface EnvConfig {
 }
 
 function getEnvVar(name: string, required = true): string {
-  const value = process.env[name];
+  const value = process.env[name]
   if (required && !value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+    throw new Error(`Missing required environment variable: ${name}`)
   }
-  return value || "";
+  return value || ""
 }
 
 export function loadConfig(): EnvConfig {
@@ -29,15 +29,15 @@ export function loadConfig(): EnvConfig {
       secretKey: getEnvVar("LANGFUSE_SECRET_KEY"),
       host: getEnvVar("LANGFUSE_HOST", false) || "https://cloud.langfuse.com",
     },
-  };
+  }
 }
 
-let cachedConfig: EnvConfig | null = null;
+let cachedConfig: EnvConfig | null = null
 
 export function getConfig(): EnvConfig {
   if (!cachedConfig) {
-    cachedConfig = loadConfig();
+    cachedConfig = loadConfig()
   }
-  return cachedConfig;
+  return cachedConfig
 }
 

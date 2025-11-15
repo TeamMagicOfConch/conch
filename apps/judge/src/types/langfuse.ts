@@ -1,4 +1,4 @@
-import type { JudgeDecision } from "./judge";
+import type { JudgeDecision } from "./judge"
 
 export interface LangfuseScorePayload {
   traceId: string;

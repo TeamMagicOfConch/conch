@@ -1,4 +1,4 @@
-import { logger } from "./logger";
+import { logger } from "./logger"
 
 export interface ErrorResponse {
   statusCode: number;
@@ -15,12 +15,12 @@ export function createErrorResponse(
 ): ErrorResponse {
   const statusCode = error instanceof Error && "statusCode" in error
     ? (error.statusCode as number)
-    : defaultStatusCode;
+    : defaultStatusCode
 
-  const message = error instanceof Error ? error.message : String(error);
+  const message = error instanceof Error ? error.message : String(error)
 
   // 원문은 로그에 포함하지 않음
-  logger.error("Request failed", error, { statusCode });
+  logger.error("Request failed", error, { statusCode })
 
   return {
     statusCode,
@@ -32,18 +32,18 @@ export function createErrorResponse(
       error: message,
       statusCode,
     }),
-  };
+  }
 }
 
 /**
  * Validation 에러 생성
  */
 export class ValidationError extends Error {
-  statusCode = 400;
+  statusCode = 400
 
   constructor(message: string) {
-    super(message);
-    this.name = "ValidationError";
+    super(message)
+    this.name = "ValidationError"
   }
 }
 
@@ -51,11 +51,11 @@ export class ValidationError extends Error {
  * LLM 평가 실패 에러
  */
 export class LLMEvaluationError extends Error {
-  statusCode = 500;
+  statusCode = 500
 
   constructor(message: string) {
-    super(message);
-    this.name = "LLMEvaluationError";
+    super(message)
+    this.name = "LLMEvaluationError"
   }
 }
 
@@ -63,11 +63,11 @@ export class LLMEvaluationError extends Error {
  * Langfuse 업로드 실패 에러
  */
 export class LangfuseUploadError extends Error {
-  statusCode = 500;
+  statusCode = 500
 
   constructor(message: string) {
-    super(message);
-    this.name = "LangfuseUploadError";
+    super(message)
+    this.name = "LangfuseUploadError"
   }
 }
 

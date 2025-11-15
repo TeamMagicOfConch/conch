@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsup"
 
 export default defineConfig({
   format: ["cjs"],
@@ -11,5 +11,5 @@ export default defineConfig({
   platform: "node",
   target: "node20",
   bundle: true,
-});
+})
 
