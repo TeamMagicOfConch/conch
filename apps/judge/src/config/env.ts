@@ -32,5 +32,12 @@ export function loadConfig(): EnvConfig {
   };
 }
 
-export const config = loadConfig();
+let cachedConfig: EnvConfig | null = null;
+
+export function getConfig(): EnvConfig {
+  if (!cachedConfig) {
+    cachedConfig = loadConfig();
+  }
+  return cachedConfig;
+}
 

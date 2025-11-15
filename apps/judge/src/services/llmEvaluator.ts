@@ -1,12 +1,15 @@
 import OpenAI from "openai";
-import { config } from "../config/env";
+import { getConfig } from "../config/env";
 import { messagesToToon, parseJudgeOutput } from "../utils/toon";
 import type { JudgeMessages, RawJudgeModelOutput } from "../types/judge";
 
-const openai = new OpenAI({
-  apiKey: config.openai.apiKey,
-  ...(config.openai.baseUrl && { baseURL: config.openai.baseUrl }),
-});
+function getOpenAIClient() {
+  const config = getConfig();
+  return new OpenAI({
+    apiKey: config.openai.apiKey,
+    ...(config.openai.baseUrl && { baseURL: config.openai.baseUrl }),
+  });
+}
 
 const MAX_RETRIES = 1;
 
@@ -42,6 +45,8 @@ export async function evaluateWithLLM(
   const prompt = buildEvaluationPrompt(messages);
   
   let lastError: Error | null = null;
+  
+  const openai = getOpenAIClient();
   
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
