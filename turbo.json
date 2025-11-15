@@ -6,11 +6,13 @@
     },
     "test": {
       "dependsOn": [
-        "build"
+        "^build"
       ],
       "inputs": [
-        "**/*.{ts,tsx,js,jsx}"
-      ]
+        "**/*.{ts,tsx,js,jsx}",
+        "vitest.config.ts"
+      ],
+      "outputs": []
     },
     "build": {
       "dependsOn": [
