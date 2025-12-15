@@ -68,9 +68,7 @@ export default function TimePicker({
   selectedTime,
   selectedOption,
 }: TimePickerProps) {
-  // 기본 인덱스 계산
   const defaultIndices = getDefaultIndicesByOption(selectedOption ?? 0)
-
   const [periodIndex, setPeriodIndex] = useState(defaultIndices.period)
   const [hourIndex, setHourIndex] = useState(defaultIndices.hour)
   const [minuteIndex, setMinuteIndex] = useState(defaultIndices.minute)
