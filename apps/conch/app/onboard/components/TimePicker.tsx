@@ -148,7 +148,12 @@ export default function TimePicker({
                   itemHeight={48}
                   visibleItemCount={5}
                   itemTextStyle={styles.wheelItemText}
-                  overlayItemStyle={styles.selectedIndicator}
+                  overlayItemStyle={{
+                    borderTopLeftRadius: 12,
+                    borderBottomLeftRadius: 12,
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  }}
                 />
               </View>
 
@@ -161,7 +166,7 @@ export default function TimePicker({
                   itemHeight={48}
                   visibleItemCount={5}
                   itemTextStyle={styles.wheelItemText}
-                  overlayItemStyle={styles.selectedIndicator}
+                  overlayItemStyle={{ borderRadius: 0 }}
                 />
               </View>
 
@@ -174,7 +179,12 @@ export default function TimePicker({
                   itemHeight={48}
                   visibleItemCount={5}
                   itemTextStyle={styles.wheelItemText}
-                  overlayItemStyle={styles.selectedIndicator}
+                  overlayItemStyle={{
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                    borderTopRightRadius: 12,
+                    borderBottomRightRadius: 12,
+                  }}
                 />
               </View>
             </View>
@@ -267,12 +277,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   selectedIndicator: {
-    backgroundColor: Colors.onboardingTimeInputBg,
-    borderRadius: 12,
-    position: 'absolute',
-    width: '100%',
-    height: 48,
-    pointerEvents: 'none',
+    // backgroundColor: Colors.onboardingTimeInputBg,
+    // borderRadius: 12,
+    // marginHorizontal: 8,
   },
   confirmButton: {
     backgroundColor: Colors.onboardingPrimary,
