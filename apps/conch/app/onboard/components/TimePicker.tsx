@@ -3,15 +3,14 @@ import { Text, StyleSheet, View, TouchableOpacity, Modal } from 'react-native'
 import { BlurView } from 'expo-blur'
 import WheelPicker from '@quidone/react-native-wheel-picker'
 import { Colors } from '@conch/assets/colors'
+import { ViewWithBottomPadding } from '@conch/components/layout/view'
 import { TimePickerProps, WHEN_OPTIONS } from './types'
 
-// 휠 피커 옵션 데이터 타입
 type PickerOption = {
   value: number
   label: string
 }
 
-// 휠 피커 옵션 데이터
 const PERIOD_OPTIONS: PickerOption[] = [
   { value: 0, label: '오전' },
   { value: 1, label: '오후' }
@@ -25,7 +24,6 @@ const MINUTE_OPTIONS: PickerOption[] = Array.from({ length: 12 }, (_, i) => ({
   label: String(i * 5).padStart(2, '0')
 }))
 
-// 옵션에 따른 기본 시간을 휠 인덱스로 변환
 const getDefaultIndicesByOption = (option: number): { period: number; hour: number; minute: number } => {
   const defaultTime = WHEN_OPTIONS[option]
   const [hourStr, minuteStr] = defaultTime.value.split(':')
@@ -40,7 +38,6 @@ const getDefaultIndicesByOption = (option: number): { period: number; hour: numb
   return { period, hour: hourIndex, minute: minuteIndex }
 }
 
-// "HH:mm 오전/오후" 형식 문자열을 휠 인덱스로 파싱
 const parseTimeToIndices = (timeString: string): { period: number; hour: number; minute: number } | null => {
   const parts = timeString.split(' ')
   if (parts.length !== 2) return null
@@ -60,7 +57,6 @@ const parseTimeToIndices = (timeString: string): { period: number; hour: number;
   return { period, hour: hourIndex, minute: minuteIndex }
 }
 
-// 휠 피커 컴포넌트
 export default function TimePicker({
   visible,
   onClose,
@@ -119,7 +115,7 @@ export default function TimePicker({
         />
 
         {/* 컨텐츠 영역 */}
-        <View style={styles.contentContainer}>
+        <ViewWithBottomPadding style={styles.contentContainer}>
           <BlurView
             intensity={80}
             style={styles.modalBlur}>
@@ -193,7 +189,7 @@ export default function TimePicker({
               <Text style={styles.confirmButtonText}>확인</Text>
             </TouchableOpacity>
           </BlurView>
-        </View>
+        </ViewWithBottomPadding>
       </View>
     </Modal>
   )
@@ -205,6 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalOverlay: {
+    zIndex: 0,
     position: 'absolute',
     width: '100%',
     height: '100%',
