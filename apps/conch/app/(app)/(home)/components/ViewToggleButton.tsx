@@ -1,6 +1,7 @@
 import { StyleSheet, Pressable } from 'react-native'
 import { ListIcon, CalendarIcon } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type ViewMode = 'calendar' | 'list'
 
@@ -11,13 +12,11 @@ interface ViewToggleButtonProps {
 
 export default function ViewToggleButton({ viewMode, onToggle }: ViewToggleButtonProps) {
   const Icon = viewMode === 'calendar' ? ListIcon : CalendarIcon
+  const { bottom } = useSafeAreaInsets()
 
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.container,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.container, pressed && styles.pressed, { bottom: bottom + 104 }]}
       onPress={onToggle}
     >
       <Icon
@@ -44,4 +43,3 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
 })
-

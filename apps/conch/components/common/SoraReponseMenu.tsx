@@ -27,7 +27,7 @@ export default function SoraReponseMenu({ feedbackType, feedback: responseBody, 
   
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
-  const snapPoints = useMemo(() => [insets.bottom + HEADER_HEIGHT, '100%'], [insets.bottom])
+  const snapPoints = useMemo(() => [HEADER_HEIGHT, '100%'], [])
   const { pathname } = useRouteInfo()
   const isFeeling = feedbackType === consts.reviewType.feeling
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
