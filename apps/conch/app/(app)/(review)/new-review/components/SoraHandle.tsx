@@ -72,7 +72,7 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
         }}
         {...panResponder?.panHandlers}
       >
-        <View style={style.handle} />
+        <View style={{ ...style.handle, ...(!isReviewWritten && { opacity: 0 }) }} />
         <View style={{ width: Math.abs(x), ...style.handleBar }} />
       </Animated.View>
       <View
