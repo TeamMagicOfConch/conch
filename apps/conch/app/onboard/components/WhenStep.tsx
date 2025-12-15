@@ -47,10 +47,13 @@ function WhenStep({ data, onDataChange, onNext, onPrev }: OnboardStepComponentPr
     const option = WHEN_OPTIONS[optionId]
 
     setSelectedOptionIndex(optionId)
-    
+
+    // 선택된 옵션에 따라 시간 업데이트
+    setSelectedTime(from24hToKo(option.value))
+
     // 모든 옵션 선택 시 시간 선택 모달 표시
     setTimePickerVisible(true)
-    
+
     // 부모 컴포넌트에 데이터 업데이트
     onDataChange(option.value)
   }, [onDataChange])
