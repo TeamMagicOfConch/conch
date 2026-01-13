@@ -274,6 +274,12 @@ function JarOverlay({ width, height, geom }: { width: number; height: number; ge
   const outer = `M 0 0 H ${width} V ${height} H 0 Z`
   const evenOdd = `${outer} ${body}`
 
+  // 병 이미지 크기와 위치 계산 (실제 병 크기에 맞춤)
+  const jarWidth = geom.bodyRight - geom.bodyLeft
+  const jarHeight = geom.bodyBottom
+  const jarLeft = geom.bodyLeft
+  const jarTop = 0
+
   return (
     <View style={{ width, height }}>
       {/* 병 바깥 배경 채우기 (회색) */}
@@ -291,7 +297,13 @@ function JarOverlay({ width, height, geom }: { width: number; height: number; ge
       {/* 그 위에 병 이미지 오버레이 */}
       <Image
         source={jarImage}
-        style={StyleSheet.absoluteFillObject}
+        style={{
+          position: 'absolute',
+          left: jarLeft,
+          top: jarTop,
+          width: jarWidth,
+          height: jarHeight,
+        }}
         resizeMode="contain"
       />
     </View>
