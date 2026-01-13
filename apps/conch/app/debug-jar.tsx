@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'
-import { useRouter } from 'expo-router'
 import FallingSoraJar from '@conch/components/physics/FallingSoraJar'
 import { Colors } from '@conch/assets/colors'
 
 export default function DebugJarScreen() {
-  const router = useRouter()
   const [count, setCount] = useState(1)
   const { width } = Dimensions.get('window')
   const jarWidth = Math.min(width * 0.8, 340)

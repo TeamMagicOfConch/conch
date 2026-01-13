@@ -1,2 +1,2 @@
-export { default } from './FallingSoraJar'
+export { default as FallingSoraJar } from './FallingSoraJar'
 export type { FallingSoraJarProps } from './types'

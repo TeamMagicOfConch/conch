@@ -344,9 +344,3 @@ function roundedRectPath(x: number, y: number, w: number, h: number, r: number) 
 function rand(min: number, max: number) {
   return Math.random() * (max - min) + min
 }
-
-const styles = StyleSheet.create({
-  jarBg: {
-    ...StyleSheet.absoluteFillObject,
-  },
-})

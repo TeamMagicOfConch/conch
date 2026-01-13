@@ -1,4 +1,4 @@
-import { View, Pressable, StyleSheet } from 'react-native'
+import { Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { NavigationArrowLeft } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
