@@ -42,15 +42,13 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
   }, [width, height])
 
   useEffect(() => {
-    // Matter.js 엔진 초기화
     const engine = Matter.Engine.create({
       gravity: { x: 0, y: 1.3 },
-      positionIterations: 5, // 위치 제약 해소 반복
-      velocityIterations: 3, // 속도 제약 해소 반복
-      constraintIterations: 2, // 제약 반복
-      enableSleeping: true, // 슬리핑 활성화 (정지한 바디 계산 스킵)
+      positionIterations: 5,
+      velocityIterations: 3,
+      constraintIterations: 2,
+      enableSleeping: true,
     })
-    // 슬리핑 임계값 조정 (더 빨리 슬립)
     engine.timing.timeScale = 1
     if (engine.gravity) {
       engine.gravity.scale = 0.001
@@ -58,7 +56,6 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
     engineRef.current = engine
     worldRef.current = engine.world
 
-    // 벽 생성 (병 내부 경계)
     const wallThickness = 20
     const walls = [
       // 좌벽 (병 내부 왼쪽 경계)
@@ -112,7 +109,7 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
     const r = rand(radii.min, radii.max)
     // const r = 60
     const x = jarGeom.w / 2 + rand(-jarGeom.neckWidth * 0.25, jarGeom.neckWidth * 0.25)
-    const y = r + 6
+    const y = r
 
     // 소라 모양 근사: 여러 원 조합 (머리, 몸통, 꼬리, 입)
     // 반지름 10% 확대해서 보수적으로
@@ -128,13 +125,9 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
       sleepThreshold: 10, // 빠른 슬립 (30 → 15)
     }
     const parts = [
-      // red
       Matter.Bodies.circle(x - r * 0.7, y + r * 0.2, radiusList[0], physics),
-      // green
       Matter.Bodies.circle(x - r * 0.2, y + r * 0.55, radiusList[1], physics),
-      // blue
       Matter.Bodies.circle(x - r, y - r * 0.2, radiusList[2], physics),
-      // yellow
       Matter.Bodies.circle(x - r * 1.4, y - r * 0.65, radiusList[3], physics),
     ]
 
@@ -269,16 +262,14 @@ const Shell = React.memo(({ x, y, r, rotation }: { x: number; y: number; r: numb
 ))
 
 function JarOverlay({ width, height, geom }: { width: number; height: number; geom: any }) {
-  // 배경 마스크용 병 본체 path 생성
   const body = buildBodyPath(geom)
   const outer = `M 0 0 H ${width} V ${height} H 0 Z`
   const evenOdd = `${outer} ${body}`
 
-  // 병 이미지 크기와 위치 계산 (실제 병 크기에 맞춤)
   const jarWidth = geom.bodyRight - geom.bodyLeft
   const jarHeight = geom.bodyBottom
   const jarLeft = geom.bodyLeft
-  const jarTop = 0
+  const jarTop = height * 0.075 // 위에서 5% 아래로 이동
 
   return (
     <View style={{ width, height }}>
@@ -292,6 +283,13 @@ function JarOverlay({ width, height, geom }: { width: number; height: number; ge
           fill={Colors.bgGrey}
           fillRule="evenodd"
         />
+        {/* 물리적 병 경계 stroke (디버그용) */}
+        {/* <Path
+          d={body}
+          fill="none"
+          stroke="red"
+          strokeWidth={2}
+        /> */}
       </Svg>
 
       {/* 그 위에 병 이미지 오버레이 */}
