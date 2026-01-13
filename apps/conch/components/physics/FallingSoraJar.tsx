@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 import Matter, { type IBodyDefinition } from 'matter-js'
 import { Colors } from '@conch/assets/colors'
 import { Sora } from '@conch/assets/icons/sora'
 import type { FallingSoraJarProps } from './types'
 import { useDebug, type BodyState } from './hooks'
+
+const jarImage = require('@conch/assets/images/jar.png')
 
 const STOP_AFTER_SEC = 3
 
@@ -267,52 +269,32 @@ const Shell = React.memo(({ x, y, r, rotation }: { x: number; y: number; r: numb
 ))
 
 function JarOverlay({ width, height, geom }: { width: number; height: number; geom: any }) {
-  const stroke = '#2D2D2D'
-  const sw = Math.max(2, Math.round(width * 0.012))
-
+  // 배경 마스크용 병 본체 path 생성
   const body = buildBodyPath(geom)
   const outer = `M 0 0 H ${width} V ${height} H 0 Z`
   const evenOdd = `${outer} ${body}`
-  const lipW = Math.min(width * 0.74, geom.neckWidth + 32)
-  const lipH = Math.max(12, Math.round(height * 0.06))
-  const lipX = (width - lipW) / 2
-  const lipY = geom.bodyTop - lipH - 4
 
   return (
-    <Svg
-      width={width}
-      height={height}
-    >
-      <Path
-        d={evenOdd}
-        fill={Colors.bgGrey}
-        fillRule="evenodd"
+    <View style={{ width, height }}>
+      {/* 병 바깥 배경 채우기 (회색) */}
+      <Svg
+        width={width}
+        height={height}
+      >
+        <Path
+          d={evenOdd}
+          fill={Colors.bgGrey}
+          fillRule="evenodd"
+        />
+      </Svg>
+
+      {/* 그 위에 병 이미지 오버레이 */}
+      <Image
+        source={jarImage}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode="contain"
       />
-      <Path
-        d={body}
-        fill="none"
-        stroke={stroke}
-        strokeWidth={sw}
-      />
-      <Path
-        d={roundedRectPath(lipX, lipY, lipW, lipH, lipH / 2)}
-        fill="#ffffff"
-        stroke={stroke}
-        strokeWidth={sw}
-      />
-      <Path
-        d={roundedRectPath(lipX - 14, lipY + lipH * 0.4, 18, lipH * 0.5, 6)}
-        fill="#ffffff"
-        stroke={stroke}
-        strokeWidth={sw}
-      />
-      <Path
-        d={roundedRectPath(lipX + lipW - 4, lipY + lipH * 0.4, 18, lipH * 0.5, 6)}
-        fill="#ffffff"
-        stroke={stroke}
-        strokeWidth={sw}
-      />
-    </Svg>
+    </View>
   )
 }
 
