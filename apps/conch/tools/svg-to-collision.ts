@@ -1,9 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { parse } from 'svgson'
+import simplify from 'simplify-js'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { svgPathProperties } = require('svg-path-properties')
-import simplify from 'simplify-js'
 
 const projectRoot = path.resolve(__dirname, '..')
 const SRC = path.join(projectRoot, 'assets/icons/sora/sora.svg')
@@ -17,11 +17,11 @@ async function main() {
   const svg = fs.readFileSync(SRC, 'utf8')
   const json = await parse(svg)
   const paths = (json.children || []).flatMap((c: any) => (c.name === 'path' ? [c] : []))
-  if (!paths.length) throw new Error('No <path> found in ' + SRC)
+  if (!paths.length) throw new Error(`No <path> found in ${  SRC}`)
 
   // pick the longest path as outline
   const largest = paths.sort((a: any, b: any) => (a.attributes.d?.length ?? 0) - (b.attributes.d?.length ?? 0)).pop()!
-  const d: string = largest.attributes.d
+  const {d} = largest.attributes
   const props = new svgPathProperties(d)
   const len = props.getTotalLength()
 

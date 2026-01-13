@@ -21,7 +21,10 @@ export default function ReviewSuccessScreen() {
     <View style={styles.root}>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.header}>
-        <TouchableOpacity accessibilityLabel="닫기" onPress={() => router.back()} style={styles.closeBtn}>
+        <TouchableOpacity
+          accessibilityLabel="닫기"
+          onPress={() => router.back()}
+          style={styles.closeBtn}>
           <Text style={styles.closeText}>×</Text>
         </TouchableOpacity>
       </View>
@@ -42,7 +45,9 @@ export default function ReviewSuccessScreen() {
       </View>
 
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.cta}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.cta}>
           <Text style={styles.ctaText}>내일도 작성하기</Text>
         </TouchableOpacity>
       </View>

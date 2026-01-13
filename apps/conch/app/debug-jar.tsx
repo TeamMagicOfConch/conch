@@ -19,20 +19,32 @@ export default function DebugJarScreen() {
       </View>
 
       <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-        <FallingSoraJar width={jarWidth} height={jarHeight} count={count} spawnIntervalMs={120} />
+        <FallingSoraJar
+          width={jarWidth}
+          height={jarHeight}
+          count={count}
+          spawnIntervalMs={120} />
       </View>
 
       <View style={styles.buttons}>
-        <TouchableOpacity style={[styles.btn, styles.secondary]} onPress={() => setCount((c) => Math.max(0, c - 1))}>
+        <TouchableOpacity
+          style={[styles.btn, styles.secondary]}
+          onPress={() => setCount((c) => Math.max(0, c - 1))}>
           <Text style={styles.btnText}>-1</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btn} onPress={() => setCount((c) => c + 1)}>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => setCount((c) => c + 1)}>
           <Text style={styles.btnText}>+1</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, styles.secondary]} onPress={() => setCount((c) => c + 5)}>
+        <TouchableOpacity
+          style={[styles.btn, styles.secondary]}
+          onPress={() => setCount((c) => c + 5)}>
           <Text style={styles.btnText}>+5</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, styles.secondary]} onPress={() => setCount(0)}>
+        <TouchableOpacity
+          style={[styles.btn, styles.secondary]}
+          onPress={() => setCount(0)}>
           <Text style={styles.btnText}>reset</Text>
         </TouchableOpacity>
       </View>
