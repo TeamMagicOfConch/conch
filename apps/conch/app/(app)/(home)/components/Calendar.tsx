@@ -1,24 +1,16 @@
-import { StyleSheet, Text, View, useWindowDimensions, Pressable, Platform } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, Pressable } from 'react-native'
 import { useRouter } from 'expo-router'
-import { SoraBg } from '@conch/assets/icons'
 import { Colors } from '@conch/assets/colors'
 import { useCalendar } from '../hooks'
 import { ReviewForCalendar } from '../types'
+import DateIcon from './DateIcon'
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토']
 const getCalendarMaxWidth = (width: number) => {
-  console.log(width)
   if (width <= 375) return '90%' // iPhone SE
   if (width < 744) return '95%' // iPhone
   if (width <= 1032) return '80%' // iPad Portrait
   return 600 // iPad Landscape (fixed pixel value)
-}
-
-const getSoraBgTop = (width: number) => {
-  if (width <= 375) return '10%' // iPhone SE
-  if (width <= 744) return '15%' // iPhone
-  if (width <= 1032) return '27%' // iPad
-  return '23%' // iPhone
 }
 
 interface Props {
@@ -33,7 +25,7 @@ export default function Calendar({ reviews, date }: Props) {
   const router = useRouter()
   const maxWidth = getCalendarMaxWidth(width)
   const cellWidth = typeof maxWidth === 'string' 
-    ? Math.min(width * (parseInt(maxWidth) / 100)) / 7 
+    ? Math.min(width * (parseInt(maxWidth, 10) / 100)) / 7 
     : maxWidth / 7
 
   return (
@@ -59,6 +51,7 @@ export default function Calendar({ reviews, date }: Props) {
             const isReviewWritten = isFReview || isTReview
             const feedbackType = isFReview ? 'FEELING' : isTReview ? 'THINKING' : null
             const reviewDate = `${year}-${month}-${cellDate}`
+            const iconSize = cellWidth * 0.8
 
             return (
               <Pressable
@@ -73,13 +66,20 @@ export default function Calendar({ reviews, date }: Props) {
                   })
                 }
               >
-                {isReviewWritten && (
-                  <SoraBg
-                    color={isFReview ? Colors.fSora : Colors.tSora}
-                    style={[style.soraBg, { top: getSoraBgTop(width) }]}
+                {isReviewWritten && feedbackType ? (
+                  <DateIcon
+                    day={Number(cellDate)}
+                    type={feedbackType}
+                    size={iconSize}
                   />
+                ) : isToday ? (
+                  <DateIcon
+                    day={Number(cellDate)}
+                    type="EMPTY"
+                    size={iconSize} />
+                ) : (
+                  <Text style={style.calendarBodyText}>{cellDate}</Text>
                 )}
-                <Text style={{ ...style.calendarBodyText, ...(isReviewWritten && { fontWeight: 'bold' }) }}>{cellDate}</Text>
               </Pressable>
             )
           })}
@@ -100,16 +100,13 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  soraBg: {
-    position: 'absolute',
-    zIndex: 0,
-  },
   calendarHeaderText: {
-    color: Colors.lightGrey,
-    fontSize: 10,
+    color: '#AFAFAF',
+    fontSize: 14,
   },
   calendarBodyText: {
     color: Colors.writtenGrey,
     fontSize: 14,
   },
 })
+

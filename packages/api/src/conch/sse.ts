@@ -53,7 +53,7 @@ export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<voi
 
   const initialToken = await resolveInitialToken(opts)
   const headers: Record<string, string> = {
-    'Content-Type': 'text/event-stream',
+    'Content-Type': 'application/json',
   }
   if (initialToken) headers.Authorization = `Bearer ${initialToken}`
 
@@ -93,7 +93,7 @@ export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<voi
     while (reader) {
       const { done, value } = await reader.read()
       if (done) break
-      const chunk = decoder.decode(value)
+      const chunk = decoder.decode(value, { stream: !done })
       const matches = [...chunk.matchAll(CHUNK_REGEX)]
       matches.forEach((match) => {
         if (match && match[0]) {

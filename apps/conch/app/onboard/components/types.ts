@@ -56,4 +56,11 @@ export interface TimePickerProps {
   selectedTime: string
   setSelectedTime: (time: string) => void
   selectedOption?: number // 선택된 옵션 index
+}
+
+// 온보딩 기본값
+export const DEFAULT_ONBOARDING_DATA = {
+  reviewAt: WHEN_OPTIONS[0].value,      // '18:30'
+  writeLocation: WHERE_OPTIONS[0].value, // '침대에서'
+  aspiration: GOAL_OPTIONAS[0].value,   // '나 자신을 깊이 이해하는 사람'
 } 

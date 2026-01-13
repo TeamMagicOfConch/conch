@@ -11,10 +11,7 @@
  */
 
 export interface StreakReq {
-  /** 
-   * @minLength 1
-   * @deprecated
-   */
+  /** @minLength 1 */
   reviewTime: string;
   reviewAt: string;
   /** @minLength 1 */
@@ -70,9 +67,25 @@ export interface SaveReq {
   feedback?: string;
 }
 
-export interface SseEmitter {
-  /** @format int64 */
-  timeout?: number;
+export interface CursorBaseReviewRes {
+  items?: ReviewItemDto[];
+  hasNext?: boolean;
+  nextCursor?: string;
+}
+
+export interface ResponseCursorBaseReviewRes {
+  /** @format int32 */
+  status?: number;
+  code?: string;
+  message?: string;
+  data?: CursorBaseReviewRes;
+}
+
+export interface ReviewItemDto {
+  feedbackType?: "FEELING" | "THINKING";
+  body?: string;
+  /** @format date */
+  reviewDate?: string;
 }
 
 export interface Response {
@@ -219,6 +232,24 @@ export namespace AuthController {
 
 export namespace ReviewController {
   /**
+   * @description 사용자의 리뷰가 요청 날짜를 포함하여 오름차순(최신순)으로 10개 응답, 다음 데이터가 있다면 hasNext=true, nextCursor=YYYY-MM-DD
+   * @tags review-controller
+   * @name List
+   * @summary 사용자 리뷰 커서기반 최신순 조회
+   * @request GET:/auth/user/review
+   * @response `200` `ResponseCursorBaseReviewRes` OK
+   */
+  export namespace List {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      after?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ResponseCursorBaseReviewRes;
+  }
+
+  /**
    * No description
    * @tags review-controller
    * @name SaveReview
@@ -231,21 +262,6 @@ export namespace ReviewController {
     export type RequestBody = SaveReq;
     export type RequestHeaders = {};
     export type ResponseBody = object;
-  }
-
-  /**
-   * No description
-   * @tags review-controller
-   * @name SubmitReview
-   * @request POST:/auth/user/api/review/submit
-   * @response `200` `SseEmitter` OK
-   */
-  export namespace SubmitReview {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = string;
-    export type RequestHeaders = {};
-    export type ResponseBody = SseEmitter;
   }
 
   /**
@@ -589,6 +605,28 @@ export class Api<
   };
   reviewController = {
     /**
+     * @description 사용자의 리뷰가 요청 날짜를 포함하여 오름차순(최신순)으로 10개 응답, 다음 데이터가 있다면 hasNext=true, nextCursor=YYYY-MM-DD
+     *
+     * @tags review-controller
+     * @name List
+     * @summary 사용자 리뷰 커서기반 최신순 조회
+     * @request GET:/auth/user/review
+     * @response `200` `ResponseCursorBaseReviewRes` OK
+     */
+    list: (
+      query?: {
+        after?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ResponseCursorBaseReviewRes, any>({
+        path: `/auth/user/review`,
+        method: "GET",
+        query: query,
+        ...params,
+      }),
+
+    /**
      * No description
      *
      * @tags review-controller
@@ -602,23 +640,6 @@ export class Api<
         method: "POST",
         body: data,
         type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags review-controller
-     * @name SubmitReview
-     * @request POST:/auth/user/api/review/submit
-     * @response `200` `SseEmitter` OK
-     */
-    submitReview: (data: string, params: RequestParams = {}) =>
-      this.request<SseEmitter, any>({
-        path: `/auth/user/api/review/submit`,
-        method: "POST",
-        body: data,
-        type: ContentType.Text,
         ...params,
       }),
 

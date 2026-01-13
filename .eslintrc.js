@@ -27,7 +27,10 @@ module.exports = {
       node: {
         extensions: ['.ts', '.tsx', '.js'],
       },
-      typescript: {},
+      typescript: {
+        alwaysTryTypes: true,
+        project: './tsconfig.json',
+      },
     },
   },
   plugins: ['@typescript-eslint'],
