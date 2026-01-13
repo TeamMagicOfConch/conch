@@ -1,15 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 import Matter, { type IBodyDefinition } from 'matter-js'
 import { Colors } from '@conch/assets/colors'
 import { Sora } from '@conch/assets/icons/sora'
 import type { FallingSoraJarProps } from './types'
-import collisionShape from '@conch/assets/icons/sora/collision.json'
 import { useDebug, type BodyState } from './hooks'
 
 const STOP_AFTER_SEC = 3
-const DEBUG_COLLISION = process.env.EXPO_PUBLIC_DEBUG_JAR === '1' // 디버그 모니터링 활성화 조건
 
 export default function FallingSoraJar({ width, height, count, spawnIntervalMs = 120 }: FallingSoraJarProps) {
   const [bodies, setBodies] = useState<BodyState[]>([])
@@ -24,7 +22,7 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
   const frozenRef = useRef(false)
   const runningRef = useRef(false)
 
-  const { DebugCollisionOverlay, collectPartsInfo: collectPartsInfoForDebug, addDebugInfoToParts } = useDebug(false)
+  const { DebugCollisionOverlay, getPartsInfo: getPartsInfoForDebug, addDebugInfoToParts } = useDebug(false)
 
   const radii = useMemo(() => ({ min: Math.max(12, width * 0.05), max: Math.max(16, width * 0.08) }), [width])
 
@@ -67,7 +65,7 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
         (jarGeom.bodyTop + jarGeom.bodyBottom) / 2,
         wallThickness,
         jarGeom.bodyBottom - jarGeom.bodyTop,
-        { isStatic: true, friction: 0.5, restitution: 0.3 }
+        { isStatic: true, friction: 0.5, restitution: 0.3 },
       ),
       // 우벽 (병 내부 오른쪽 경계)
       Matter.Bodies.rectangle(
@@ -75,7 +73,7 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
         (jarGeom.bodyTop + jarGeom.bodyBottom) / 2,
         wallThickness,
         jarGeom.bodyBottom - jarGeom.bodyTop,
-        { isStatic: true, friction: 0.5, restitution: 0.3 }
+        { isStatic: true, friction: 0.5, restitution: 0.3 },
       ),
       // 바닥 (병 내부 하단)
       Matter.Bodies.rectangle(
@@ -83,7 +81,7 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
         jarGeom.bodyBottom + wallThickness / 2,
         jarGeom.bodyRight - jarGeom.bodyLeft + wallThickness * 2,
         wallThickness,
-        { isStatic: true, friction: 0.9, restitution: 0.2 }
+        { isStatic: true, friction: 0.9, restitution: 0.2 },
       ),
     ]
     Matter.World.add(engine.world, walls)
@@ -105,93 +103,28 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [width, height])
 
-  useEffect(() => {
-    spawnRef.current.target = count
-    if (spawnRef.current.spawned < spawnRef.current.target) {
-      frozenRef.current = false
-      elapsedRef.current = 0
-      if (!runningRef.current) {
-        lastTsRef.current = null
-        cancelAnimationFrame(animRef.current)
-        animRef.current = requestAnimationFrame(loop)
-        runningRef.current = true
-      }
-    }
-  }, [count])
-
-  const loop = (ts: number) => {
-    if (!engineRef.current || !worldRef.current) return
-    if (lastTsRef.current == null) lastTsRef.current = ts
-    const dt = Math.min(32, ts - lastTsRef.current)
-    lastTsRef.current = ts
-    elapsedRef.current += dt / 1000
-
-    if (!frozenRef.current && elapsedRef.current >= STOP_AFTER_SEC) {
-      frozenRef.current = true
-      spawnRef.current.target = spawnRef.current.spawned
-      // 모든 바디를 슬립 상태로
-      bodyMapRef.current.forEach((body) => {
-        Matter.Body.setStatic(body, true)
-      })
-      runningRef.current = false
-      return
-    }
-
-    if (spawnRef.current.spawned < spawnRef.current.target) {
-      if (ts - spawnRef.current.lastSpawn > spawnIntervalMs) {
-        spawnRef.current.lastSpawn = ts
-        spawnOne()
-      }
-    }
-
-    Matter.Engine.update(engineRef.current)
-
-    const updated: BodyState[] = []
-    bodyMapRef.current.forEach((body, id) => {
-      const state: BodyState = {
-        id,
-        x: body.position.x,
-        y: body.position.y,
-        angle: body.angle,
-        radius: (body as any).circleRadius || radii.min,
-      }
-      // 디버그 모드: 파츠 정보 수집
-      collectPartsInfoForDebug?.(body, state)
-
-      updated.push(state)
-    })
-    setBodies(updated)
-
-    animRef.current = requestAnimationFrame(loop)
-    runningRef.current = true
-  }
-
-  const spawnOne = () => {
+  const spawnOne = useCallback(() => {
     if (!worldRef.current) return
-    const id = idRef.current++
+    const id = idRef.current + 1
+    idRef.current += 1
     const r = rand(radii.min, radii.max)
     // const r = 60
     const x = jarGeom.w / 2 + rand(-jarGeom.neckWidth * 0.25, jarGeom.neckWidth * 0.25)
-    const y = -r - 6
+    const y = r + 6
 
     // 소라 모양 근사: 여러 원 조합 (머리, 몸통, 꼬리, 입)
     // 반지름 10% 확대해서 보수적으로
     const k = 1.28
-    const radiusList = [
-      r * 0.65 * k, 
-      r * 0.3 * k, 
-      r * 0.48 * k,
-      r * 0.2 * k,
-    ]
-      const physics: IBodyDefinition = {
-        restitution: 0.05, // 거의 안 튕김 (0.15 → 0.05)
-        friction: 1.5,
-        frictionStatic: 1.0, // 정지 마찰 추가 (쌓인 소라 안 밀림)
-        frictionAir: 0.025,
-        density: 0.001,
-        slop: 0.08,
-        sleepThreshold: 10, // 빠른 슬립 (30 → 15)
-      }
+    const radiusList = [r * 0.65 * k, r * 0.3 * k, r * 0.48 * k, r * 0.2 * k]
+    const physics: IBodyDefinition = {
+      restitution: 0.05, // 거의 안 튕김 (0.15 → 0.05)
+      friction: 1.5,
+      frictionStatic: 1.0, // 정지 마찰 추가 (쌓인 소라 안 밀림)
+      frictionAir: 0.025,
+      density: 0.001,
+      slop: 0.08,
+      sleepThreshold: 10, // 빠른 슬립 (30 → 15)
+    }
     const parts = [
       // red
       Matter.Bodies.circle(x - r * 0.7, y + r * 0.2, radiusList[0], physics),
@@ -215,33 +148,123 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
     Matter.World.add(worldRef.current, body)
     bodyMapRef.current.set(id, body)
     spawnRef.current.spawned += 1
-  }
+  }, [addDebugInfoToParts, jarGeom.neckWidth, jarGeom.w, radii.max, radii.min])
+
+  const loop = useCallback(
+    (ts: number) => {
+      if (!engineRef.current || !worldRef.current) return
+      if (lastTsRef.current === null) lastTsRef.current = ts
+      const dt = Math.min(32, ts - lastTsRef.current)
+      lastTsRef.current = ts
+      elapsedRef.current += dt / 1000
+
+      if (!frozenRef.current && elapsedRef.current >= STOP_AFTER_SEC) {
+        frozenRef.current = true
+        spawnRef.current.target = spawnRef.current.spawned
+        // 모든 바디를 슬립 상태로
+        bodyMapRef.current.forEach((body) => {
+          Matter.Body.setStatic(body, true)
+        })
+        runningRef.current = false
+        return
+      }
+
+      if (spawnRef.current.spawned < spawnRef.current.target) {
+        if (ts - spawnRef.current.lastSpawn > spawnIntervalMs) {
+          spawnRef.current.lastSpawn = ts
+          spawnOne()
+        }
+      }
+
+      Matter.Engine.update(engineRef.current)
+
+      const updated: BodyState[] = []
+      bodyMapRef.current.forEach((body, id) => {
+        const state: BodyState = {
+          id,
+          x: body.position.x,
+          y: body.position.y,
+          angle: body.angle,
+          radius: (body as any).circleRadius || radii.min,
+        }
+        // 디버그 모드: 파츠 정보 수집
+        if (getPartsInfoForDebug) {
+          state.parts = getPartsInfoForDebug(body)
+        }
+
+        updated.push(state)
+      })
+      setBodies(updated)
+
+      animRef.current = requestAnimationFrame(loop)
+      runningRef.current = true
+    },
+    [getPartsInfoForDebug, radii.min, spawnIntervalMs, spawnOne],
+  )
+
+  useEffect(() => {
+    spawnRef.current.target = count
+    if (spawnRef.current.spawned < spawnRef.current.target) {
+      frozenRef.current = false
+      elapsedRef.current = 0
+      if (!runningRef.current) {
+        lastTsRef.current = null
+        cancelAnimationFrame(animRef.current)
+        animRef.current = requestAnimationFrame(loop)
+        runningRef.current = true
+      }
+    }
+  }, [count, loop])
 
   return (
     <View style={{ width, height }}>
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <View
+        style={StyleSheet.absoluteFill}
+        pointerEvents="none"
+      >
         {bodies.map((b) => (
-          <Shell key={b.id} x={b.x} y={b.y} r={b.radius} rotation={b.angle} />
+          <Shell
+            key={b.id}
+            x={b.x}
+            y={b.y}
+            r={b.radius}
+            rotation={b.angle}
+          />
         ))}
       </View>
 
       {/* 디버그: 충돌 원 윤곽선 */}
-      {DebugCollisionOverlay && <DebugCollisionOverlay width={width} height={height} bodies={bodies} />}
+      {DebugCollisionOverlay && (
+        <DebugCollisionOverlay
+          width={width}
+          height={height}
+          bodies={bodies}
+        />
+      )}
 
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <JarOverlay width={width} height={height} geom={jarGeom} />
+      <View
+        style={StyleSheet.absoluteFill}
+        pointerEvents="none"
+      >
+        <JarOverlay
+          width={width}
+          height={height}
+          geom={jarGeom}
+        />
       </View>
     </View>
   )
 }
 
-const Shell = React.memo(({ x, y, r, rotation }: { x: number; y: number; r: number; rotation: number }) => {
-  return (
-    <View style={{ position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, transform: [{ rotate: `${rotation}rad` }] }}>
-      <Sora width={r * 2} height={r * 2} color={Colors.tSora} />
-    </View>
-  )
-})
+const Shell = React.memo(({ x, y, r, rotation }: { x: number; y: number; r: number; rotation: number }) => (
+  <View style={{ position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, transform: [{ rotate: `${rotation}rad` }] }}>
+    <Sora
+      width={r * 2}
+      height={r * 2}
+      color={Colors.tSora}
+    />
+  </View>
+))
 
 function JarOverlay({ width, height, geom }: { width: number; height: number; geom: any }) {
   const stroke = '#2D2D2D'
@@ -256,12 +279,39 @@ function JarOverlay({ width, height, geom }: { width: number; height: number; ge
   const lipY = geom.bodyTop - lipH - 4
 
   return (
-    <Svg width={width} height={height}>
-      <Path d={evenOdd} fill={Colors.bgGrey} fillRule="evenodd" />
-      <Path d={body} fill="none" stroke={stroke} strokeWidth={sw} />
-      <Path d={roundedRectPath(lipX, lipY, lipW, lipH, lipH / 2)} fill="#ffffff" stroke={stroke} strokeWidth={sw} />
-      <Path d={roundedRectPath(lipX - 14, lipY + lipH * 0.4, 18, lipH * 0.5, 6)} fill="#ffffff" stroke={stroke} strokeWidth={sw} />
-      <Path d={roundedRectPath(lipX + lipW - 4, lipY + lipH * 0.4, 18, lipH * 0.5, 6)} fill="#ffffff" stroke={stroke} strokeWidth={sw} />
+    <Svg
+      width={width}
+      height={height}
+    >
+      <Path
+        d={evenOdd}
+        fill={Colors.bgGrey}
+        fillRule="evenodd"
+      />
+      <Path
+        d={body}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={sw}
+      />
+      <Path
+        d={roundedRectPath(lipX, lipY, lipW, lipH, lipH / 2)}
+        fill="#ffffff"
+        stroke={stroke}
+        strokeWidth={sw}
+      />
+      <Path
+        d={roundedRectPath(lipX - 14, lipY + lipH * 0.4, 18, lipH * 0.5, 6)}
+        fill="#ffffff"
+        stroke={stroke}
+        strokeWidth={sw}
+      />
+      <Path
+        d={roundedRectPath(lipX + lipW - 4, lipY + lipH * 0.4, 18, lipH * 0.5, 6)}
+        fill="#ffffff"
+        stroke={stroke}
+        strokeWidth={sw}
+      />
     </Svg>
   )
 }

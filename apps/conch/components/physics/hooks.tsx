@@ -34,16 +34,21 @@ interface DebugCollisionOverlayProps {
 }
 
 function DebugCollisionOverlay({ width, height, bodies }: DebugCollisionOverlayProps) {
-  console.log('DebugCollisionOverlay', bodies)
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Svg width={width} height={height}>
+    <View
+      style={StyleSheet.absoluteFill}
+      pointerEvents="none"
+    >
+      <Svg
+        width={width}
+        height={height}
+      >
         {bodies.map((b) =>
           b.parts ? (
             <React.Fragment key={`debug-${b.id}`}>
               {b.parts.map((part, i) => (
                 <Circle
-                  key={`${b.id}-${i}`}
+                  key={`${b.id}-${part.x}`}
                   cx={part.x}
                   cy={part.y}
                   r={part.radius}
@@ -53,7 +58,7 @@ function DebugCollisionOverlay({ width, height, bodies }: DebugCollisionOverlayP
                 />
               ))}
             </React.Fragment>
-          ) : null
+          ) : null,
         )}
       </Svg>
     </View>
@@ -65,17 +70,17 @@ export function useDebug(debug: boolean) {
 
   return {
     DebugCollisionOverlay: memo(DebugCollisionOverlay),
-    collectPartsInfo: (body: MatterBody, state: BodyState) => {
-      state.parts = body.parts.slice(1).map((part) => ({
+    getPartsInfo: (body: MatterBody) =>
+      body.parts.slice(1).map((part) => ({
         x: part.position.x,
         y: part.position.y,
         radius: (part as any).circleRadius || 0,
-      }))
-    },
+      })),
     addDebugInfoToParts: (parts: any[], radiusList: number[]) => {
-      parts.forEach((part, i) => {
-        ; (part as any).circleRadius = radiusList[i]
-      })
+      for (let i = 0; i < parts.length; i += 1) {
+        // eslint-disable-next-line no-param-reassign
+        parts[i].circleRadius = radiusList[i]
+      }
     },
   }
 }
