@@ -10,7 +10,7 @@ import { useDebug, type BodyState } from './hooks'
 
 const STOP_AFTER_SEC = 3
 
-export default function FallingSoraJar({ width, height, count, spawnIntervalMs = 120 }: FallingSoraJarProps) {
+export default function FallingSoraJar({ width, height, count, initialCount = 0, spawnIntervalMs = 120, onReady }: FallingSoraJarProps) {
   const [bodies, setBodies] = useState<BodyState[]>([])
   const engineRef = useRef<Matter.Engine | null>(null)
   const worldRef = useRef<Matter.World | null>(null)
@@ -86,63 +86,141 @@ export default function FallingSoraJar({ width, height, count, spawnIntervalMs =
 
     setBodies([])
     bodyMapRef.current.clear()
-    spawnRef.current = { spawned: 0, lastSpawn: 0, target: count }
+    idRef.current = 0
+
+    const spawnOneInternal = (x: number, y: number): Matter.Body => {
+      const id = idRef.current + 1
+      idRef.current += 1
+      const r = rand(radii.min, radii.max)
+      const k = 1.28
+      const radiusList = [r * 0.65 * k, r * 0.3 * k, r * 0.48 * k, r * 0.2 * k]
+      const physics: IBodyDefinition = {
+        restitution: 0.05,
+        friction: 1.5,
+        frictionStatic: 1.0,
+        frictionAir: 0.025,
+        density: 0.001,
+        slop: 0.08,
+        sleepThreshold: 10,
+      }
+      const parts = [
+        Matter.Bodies.circle(x - r * 0.7, y + r * 0.2, radiusList[0], physics),
+        Matter.Bodies.circle(x - r * 0.2, y + r * 0.55, radiusList[1], physics),
+        Matter.Bodies.circle(x - r, y - r * 0.2, radiusList[2], physics),
+        Matter.Bodies.circle(x - r * 1.4, y - r * 0.65, radiusList[3], physics),
+      ]
+      const body = Matter.Body.create({ parts, ...physics })
+      Matter.Body.setPosition(body, { x, y })
+      ;(body as any).circleRadius = r
+      Matter.World.add(engine.world, body)
+      bodyMapRef.current.set(id, body)
+      return body
+    }
+
+    if (initialCount > 0) {
+      const spawnAreaLeft = jarGeom.bodyLeft + radii.max
+      const spawnAreaRight = jarGeom.bodyRight - radii.max
+      const spawnAreaTop = jarGeom.bodyTop + radii.max * 2
+      const spawnAreaBottom = jarGeom.bodyBottom - radii.max
+
+      for (let i = 0; i < initialCount; i += 1) {
+        const x = rand(spawnAreaLeft, spawnAreaRight)
+        const y = rand(spawnAreaTop, spawnAreaBottom)
+        spawnOneInternal(x, y)
+      }
+
+      // Pre-run physics simulation to settle bodies before first render
+      const SETTLE_ITERATIONS = 400
+      for (let i = 0; i < SETTLE_ITERATIONS; i += 1) {
+        Matter.Engine.update(engine, 16.67)
+      }
+
+      bodyMapRef.current.forEach((body) => {
+        Matter.Body.setStatic(body, true)
+      })
+
+      const initialStates: BodyState[] = []
+      bodyMapRef.current.forEach((body, id) => {
+        initialStates.push({
+          id,
+          x: body.position.x,
+          y: body.position.y,
+          angle: body.angle,
+          radius: (body as any).circleRadius || radii.min,
+        })
+      })
+      setBodies(initialStates)
+      onReady?.()
+    }
+
+    spawnRef.current = { spawned: initialCount, lastSpawn: 0, target: count }
     lastTsRef.current = null
     elapsedRef.current = 0
-    frozenRef.current = false
-    runningRef.current = true
-    cancelAnimationFrame(animRef.current)
-    animRef.current = requestAnimationFrame(loop)
+
+    if (count > initialCount) {
+      frozenRef.current = false
+      runningRef.current = true
+      cancelAnimationFrame(animRef.current)
+      animRef.current = requestAnimationFrame(loop)
+    } else {
+      frozenRef.current = true
+      runningRef.current = false
+    }
 
     return () => {
       cancelAnimationFrame(animRef.current)
       Matter.Engine.clear(engine)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [width, height])
+  }, [width, height, initialCount])
+
+  const spawnOneAt = useCallback(
+    (x: number, y: number): Matter.Body | null => {
+      if (!worldRef.current) return null
+      const id = idRef.current + 1
+      idRef.current += 1
+      const r = rand(radii.min, radii.max)
+
+      // 소라 모양 근사: 여러 원 조합 (머리, 몸통, 꼬리, 입)
+      // 반지름 10% 확대해서 보수적으로
+      const k = 1.28
+      const radiusList = [r * 0.65 * k, r * 0.3 * k, r * 0.48 * k, r * 0.2 * k]
+      const physics: IBodyDefinition = {
+        restitution: 0.05,
+        friction: 1.5,
+        frictionStatic: 1.0,
+        frictionAir: 0.025,
+        density: 0.001,
+        slop: 0.08,
+        sleepThreshold: 10,
+      }
+      const parts = [
+        Matter.Bodies.circle(x - r * 0.7, y + r * 0.2, radiusList[0], physics),
+        Matter.Bodies.circle(x - r * 0.2, y + r * 0.55, radiusList[1], physics),
+        Matter.Bodies.circle(x - r, y - r * 0.2, radiusList[2], physics),
+        Matter.Bodies.circle(x - r * 1.4, y - r * 0.65, radiusList[3], physics),
+      ]
+
+      const body = Matter.Body.create({
+        parts,
+        ...physics,
+      })
+      Matter.Body.setPosition(body, { x, y })
+      ;(body as any).circleRadius = r
+      addDebugInfoToParts?.(body.parts.slice(1), radiusList)
+      Matter.World.add(worldRef.current, body)
+      bodyMapRef.current.set(id, body)
+      spawnRef.current.spawned += 1
+      return body
+    },
+    [addDebugInfoToParts, radii.max, radii.min],
+  )
 
   const spawnOne = useCallback(() => {
-    if (!worldRef.current) return
-    const id = idRef.current + 1
-    idRef.current += 1
-    const r = rand(radii.min, radii.max)
-    // const r = 60
     const x = jarGeom.w / 2 + rand(-jarGeom.neckWidth * 0.25, jarGeom.neckWidth * 0.25)
-    const y = r
-
-    // 소라 모양 근사: 여러 원 조합 (머리, 몸통, 꼬리, 입)
-    // 반지름 10% 확대해서 보수적으로
-    const k = 1.28
-    const radiusList = [r * 0.65 * k, r * 0.3 * k, r * 0.48 * k, r * 0.2 * k]
-    const physics: IBodyDefinition = {
-      restitution: 0.05, // 거의 안 튕김 (0.15 → 0.05)
-      friction: 1.5,
-      frictionStatic: 1.0, // 정지 마찰 추가 (쌓인 소라 안 밀림)
-      frictionAir: 0.025,
-      density: 0.001,
-      slop: 0.08,
-      sleepThreshold: 10, // 빠른 슬립 (30 → 15)
-    }
-    const parts = [
-      Matter.Bodies.circle(x - r * 0.7, y + r * 0.2, radiusList[0], physics),
-      Matter.Bodies.circle(x - r * 0.2, y + r * 0.55, radiusList[1], physics),
-      Matter.Bodies.circle(x - r, y - r * 0.2, radiusList[2], physics),
-      Matter.Bodies.circle(x - r * 1.4, y - r * 0.65, radiusList[3], physics),
-    ]
-
-    // 여러 원을 하나의 컴포지트 바디로 합성
-    const body = Matter.Body.create({
-      parts,
-      ...physics,
-    })
-    Matter.Body.setPosition(body, { x, y })
-    ;(body as any).circleRadius = r
-    // 디버그용: 각 파츠에 반지름 정보 저장
-    addDebugInfoToParts?.(body.parts.slice(1), radiusList)
-    Matter.World.add(worldRef.current, body)
-    bodyMapRef.current.set(id, body)
-    spawnRef.current.spawned += 1
-  }, [addDebugInfoToParts, jarGeom.neckWidth, jarGeom.w, radii.max, radii.min])
+    const y = radii.max + 100
+    return spawnOneAt(x, y)
+  }, [spawnOneAt, jarGeom.neckWidth, jarGeom.w, radii.max])
 
   const loop = useCallback(
     (ts: number) => {
