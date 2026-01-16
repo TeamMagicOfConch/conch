@@ -4,10 +4,9 @@ import Svg, { Path } from 'react-native-svg'
 import Matter, { type IBodyDefinition } from 'matter-js'
 import { Colors } from '@conch/assets/colors'
 import { Sora } from '@conch/assets/icons/sora'
+import jarImage from '@conch/assets/images/jar.png'
 import type { FallingSoraJarProps } from './types'
 import { useDebug, type BodyState } from './hooks'
-
-const jarImage = require('@conch/assets/images/jar.png')
 
 const STOP_AFTER_SEC = 3
 
