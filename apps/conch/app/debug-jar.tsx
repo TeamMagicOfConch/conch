@@ -7,10 +7,12 @@ import { Colors } from '@conch/assets/colors'
 
 export default function DebugJarScreen() {
   const router = useRouter()
-  const [count, setCount] = useState(1)
+  const [refreshKey, setRefreshKey] = useState(0)
   const { width } = Dimensions.get('window')
   const jarWidth = Math.min(width * 0.8, 340)
   const jarHeight = jarWidth * 1.25
+  const jarCount = 21
+  const jarInitialCount = 20
 
   return (
     <SafeAreaView style={styles.root}>
@@ -23,45 +25,23 @@ export default function DebugJarScreen() {
         </TouchableOpacity>
         <View style={{ alignItems: 'center', flex: 1 }}>
           <Text style={styles.title}>FallingSoraJar Debug</Text>
-          <Text style={styles.sub}>count: {count}</Text>
         </View>
-        <View style={{ width: 60 }} />
+        <TouchableOpacity
+          style={styles.refreshBtn}
+          onPress={() => setRefreshKey((value) => value + 1)}
+        >
+          <Text style={styles.refreshBtnText}>새로고침</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
         <FallingSoraJar
+          key={`jar-${refreshKey}`}
           width={jarWidth}
           height={jarHeight}
-          count={21}
-          initialCount={20}
+          count={jarCount}
+          initialCount={jarInitialCount}
         />
-      </View>
-
-      <View style={styles.buttons}>
-        <TouchableOpacity
-          style={[styles.btn, styles.secondary]}
-          onPress={() => setCount((c) => Math.max(0, c - 1))}
-        >
-          <Text style={styles.btnText}>-1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => setCount((c) => c + 1)}
-        >
-          <Text style={styles.btnText}>+1</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.btn, styles.secondary]}
-          onPress={() => setCount((c) => c + 5)}
-        >
-          <Text style={styles.btnText}>+5</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.btn, styles.secondary]}
-          onPress={() => setCount(0)}
-        >
-          <Text style={styles.btnText}>reset</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )
@@ -73,19 +53,6 @@ const styles = StyleSheet.create({
   backBtn: { width: 60, paddingVertical: 8 },
   backBtnText: { fontSize: 16, color: Colors.black, fontWeight: '600' },
   title: { fontSize: 18, fontWeight: '700', color: Colors.black },
-  sub: { marginTop: 6, color: Colors.lightGrey },
-  buttons: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 20, paddingBottom: 16 },
-  btn: { backgroundColor: Colors.black, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 10 },
-  secondary: { backgroundColor: '#555' },
-  btnText: { color: '#fff', fontWeight: '600' },
-  footerBtn: {
-    marginHorizontal: 20,
-    marginBottom: 28,
-    backgroundColor: Colors.black,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  footerText: { color: '#fff', fontWeight: '700' },
+  refreshBtn: { minWidth: 72, paddingVertical: 8, alignItems: 'flex-end' },
+  refreshBtnText: { fontSize: 16, color: Colors.black, fontWeight: '600' },
 })
