@@ -33,12 +33,7 @@ async function resolveInitialToken(opts: SubmitReviewSSEOptions): Promise<string
   return null
 }
 
-async function tryRefetchWith(
-  fetchFn: FetchLike,
-  url: string,
-  option: any,
-  getToken: (() => Promise<string | null>) | undefined,
-) {
+async function tryRefetchWith(fetchFn: FetchLike, url: string, option: any, getToken: (() => Promise<string | null>) | undefined) {
   if (!getToken) return null
   const nextToken = await getToken()
   if (!nextToken) return null
@@ -48,7 +43,7 @@ async function tryRefetchWith(
 
 export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<void> {
   const fetchFn: FetchLike = opts.fetchImpl ?? (globalThis.fetch as any)
-  const path = opts.path ?? '/stream/review'
+  const path = opts.path ?? '/stream/review/dify'
   const url = `${opts.baseURL}${path}`
 
   const initialToken = await resolveInitialToken(opts)
@@ -74,16 +69,10 @@ export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<voi
     const first = await fetchFn(url, option)
 
     // 401 → refreshToken 재시도
-    const second =
-      first.status === 401
-        ? await tryRefetchWith(fetchFn, url, option, opts.refreshToken)
-        : first
+    const second = first.status === 401 ? await tryRefetchWith(fetchFn, url, option, opts.refreshToken) : first
 
     // 401 → login 재시도
-    const finalRes =
-      (second && second.status === 401)
-        ? await tryRefetchWith(fetchFn, url, option, opts.login)
-        : second
+    const finalRes = second && second.status === 401 ? await tryRefetchWith(fetchFn, url, option, opts.login) : second
 
     const res = finalRes ?? first
 
@@ -115,5 +104,3 @@ export async function submitReviewSSE(opts: SubmitReviewSSEOptions): Promise<voi
     throw e
   }
 }
-
-
