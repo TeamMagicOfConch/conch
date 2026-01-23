@@ -22,7 +22,12 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
 
   const { DebugCollisionOverlay, getPartsInfo: getPartsInfoForDebug, addDebugInfoToParts } = useDebug(false)
 
-  const radii = useMemo(() => ({ min: Math.max(12, width * 0.045), max: Math.max(16, width * 0.072) }), [width])
+  const radii = useMemo(() => {
+    const min = Math.max(12, width * 0.045)
+    const max = Math.max(16, width * 0.072)
+    const fixed = (min + max) / 2
+    return { min, max, fixed }
+  }, [width])
 
   const jarGeom = useMemo(() => {
     const w = width
@@ -39,7 +44,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
 
   useEffect(() => {
     const engine = Matter.Engine.create({
-      gravity: { x: 0, y: 1.3 },
+      gravity: { x: 0, y: 0.7 },
       positionIterations: 5,
       velocityIterations: 3,
       constraintIterations: 2,
@@ -86,7 +91,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
     const spawnOneInternal = (x: number, y: number): Matter.Body => {
       const id = idRef.current + 1
       idRef.current += 1
-      const r = rand(radii.min, radii.max)
+      const r = radii.fixed
       const k = 1.28
       const radiusList = [r * 0.65 * k, r * 0.3 * k, r * 0.48 * k, r * 0.2 * k]
       const physics: IBodyDefinition = {
@@ -113,10 +118,10 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
     }
 
     if (initialCount > 0) {
-      const spawnAreaLeft = jarGeom.bodyLeft + radii.max + wallPadding
-      const spawnAreaRight = jarGeom.bodyRight - radii.max - wallPadding
-      const spawnAreaTop = jarGeom.bodyTop + radii.max * 2
-      const spawnAreaBottom = jarGeom.bodyBottom - radii.max - wallPadding
+      const spawnAreaLeft = jarGeom.bodyLeft + radii.fixed + wallPadding
+      const spawnAreaRight = jarGeom.bodyRight - radii.fixed - wallPadding
+      const spawnAreaTop = jarGeom.bodyTop + radii.fixed * 2
+      const spawnAreaBottom = jarGeom.bodyBottom - radii.fixed - wallPadding
       const spawnAreaWidth = spawnAreaRight - spawnAreaLeft
       const spawnAreaHeight = spawnAreaBottom - spawnAreaTop
 
@@ -124,7 +129,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       const rows = Math.max(1, Math.ceil(initialCount / cols))
       const cellWidth = spawnAreaWidth / cols
       const cellHeight = spawnAreaHeight / rows
-      const jitter = radii.min * 0.3
+      const jitter = radii.fixed * 0.3
 
       for (let i = 0; i < initialCount; i += 1) {
         const col = i % cols
@@ -151,7 +156,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
           x: body.position.x,
           y: body.position.y,
           angle: body.angle,
-          radius: (body as any).circleRadius || radii.min,
+          radius: (body as any).circleRadius || radii.fixed,
         })
       })
       setBodies(initialStates)
@@ -183,7 +188,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       if (!worldRef.current) return null
       const id = idRef.current + 1
       idRef.current += 1
-      const r = rand(radii.min, radii.max)
+      const r = radii.fixed
 
       // 소라 모양 근사: 여러 원 조합 (머리, 몸통, 꼬리, 입)
       // 반지름 10% 확대해서 보수적으로
@@ -217,14 +222,14 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       spawnRef.current.spawned += 1
       return body
     },
-    [addDebugInfoToParts, radii.max, radii.min],
+    [addDebugInfoToParts, radii.fixed],
   )
 
   const spawnOne = useCallback(() => {
     const x = jarGeom.w / 2 + rand(-jarGeom.neckWidth * 0.125, jarGeom.neckWidth * 0.125)
-    const y = radii.max + 100
+    const y = radii.fixed + 100
     return spawnOneAt(x, y)
-  }, [spawnOneAt, jarGeom.neckWidth, jarGeom.w, radii.max])
+  }, [spawnOneAt, jarGeom.neckWidth, jarGeom.w, radii.fixed])
 
   const loop = useCallback(
     (ts: number) => {
@@ -249,7 +254,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
           x: body.position.x,
           y: body.position.y,
           angle: body.angle,
-          radius: (body as any).circleRadius || radii.min,
+          radius: (body as any).circleRadius || radii.fixed,
         }
         // 디버그 모드: 파츠 정보 수집
         if (getPartsInfoForDebug) {
@@ -263,7 +268,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       animRef.current = requestAnimationFrame(loop)
       runningRef.current = true
     },
-    [getPartsInfoForDebug, radii.min, spawnIntervalMs, spawnOne],
+    [getPartsInfoForDebug, radii.fixed, spawnIntervalMs, spawnOne],
   )
 
   useEffect(() => {
