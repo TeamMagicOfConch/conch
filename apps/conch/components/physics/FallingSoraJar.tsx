@@ -8,7 +8,7 @@ import jarImage from '@conch/assets/images/jar.png'
 import type { FallingSoraJarProps } from './types'
 import { useDebug, type BodyState } from './hooks'
 
-export default function FallingSoraJar({ width, height, count, initialCount = 0, spawnIntervalMs = 120, onReady }: FallingSoraJarProps) {
+export default function FallingSoraJar({ width, height, count, initialCount = 0, spawnIntervalMs = 250, onReady }: FallingSoraJarProps) {
   const [bodies, setBodies] = useState<BodyState[]>([])
   const engineRef = useRef<Matter.Engine | null>(null)
   const worldRef = useRef<Matter.World | null>(null)
@@ -22,7 +22,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
 
   const { DebugCollisionOverlay, getPartsInfo: getPartsInfoForDebug, addDebugInfoToParts } = useDebug(false)
 
-  const radii = useMemo(() => ({ min: Math.max(12, width * 0.05), max: Math.max(16, width * 0.08) }), [width])
+  const radii = useMemo(() => ({ min: Math.max(12, width * 0.045), max: Math.max(16, width * 0.072) }), [width])
 
   const jarGeom = useMemo(() => {
     const w = width
@@ -53,28 +53,26 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
     worldRef.current = engine.world
 
     const wallThickness = 20
+    const wallPadding = radii.max * 0.4
     const walls = [
-      // 좌벽 (병 내부 왼쪽 경계)
       Matter.Bodies.rectangle(
-        jarGeom.bodyLeft - wallThickness / 2,
+        jarGeom.bodyLeft + wallPadding - wallThickness / 2,
         (jarGeom.bodyTop + jarGeom.bodyBottom) / 2,
         wallThickness,
         jarGeom.bodyBottom - jarGeom.bodyTop,
         { isStatic: true, friction: 0.5, restitution: 0.3 },
       ),
-      // 우벽 (병 내부 오른쪽 경계)
       Matter.Bodies.rectangle(
-        jarGeom.bodyRight + wallThickness / 2,
+        jarGeom.bodyRight - wallPadding + wallThickness / 2,
         (jarGeom.bodyTop + jarGeom.bodyBottom) / 2,
         wallThickness,
         jarGeom.bodyBottom - jarGeom.bodyTop,
         { isStatic: true, friction: 0.5, restitution: 0.3 },
       ),
-      // 바닥 (병 내부 하단)
       Matter.Bodies.rectangle(
         (jarGeom.bodyLeft + jarGeom.bodyRight) / 2,
-        jarGeom.bodyBottom + wallThickness / 2,
-        jarGeom.bodyRight - jarGeom.bodyLeft + wallThickness * 2,
+        jarGeom.bodyBottom - wallPadding + wallThickness / 2,
+        jarGeom.bodyRight - jarGeom.bodyLeft - wallPadding * 2 + wallThickness * 2,
         wallThickness,
         { isStatic: true, friction: 0.9, restitution: 0.2 },
       ),
@@ -115,14 +113,24 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
     }
 
     if (initialCount > 0) {
-      const spawnAreaLeft = jarGeom.bodyLeft + radii.max
-      const spawnAreaRight = jarGeom.bodyRight - radii.max
+      const spawnAreaLeft = jarGeom.bodyLeft + radii.max + wallPadding
+      const spawnAreaRight = jarGeom.bodyRight - radii.max - wallPadding
       const spawnAreaTop = jarGeom.bodyTop + radii.max * 2
-      const spawnAreaBottom = jarGeom.bodyBottom - radii.max
+      const spawnAreaBottom = jarGeom.bodyBottom - radii.max - wallPadding
+      const spawnAreaWidth = spawnAreaRight - spawnAreaLeft
+      const spawnAreaHeight = spawnAreaBottom - spawnAreaTop
+
+      const cols = Math.max(1, Math.ceil(Math.sqrt(initialCount * (spawnAreaWidth / spawnAreaHeight))))
+      const rows = Math.max(1, Math.ceil(initialCount / cols))
+      const cellWidth = spawnAreaWidth / cols
+      const cellHeight = spawnAreaHeight / rows
+      const jitter = radii.min * 0.3
 
       for (let i = 0; i < initialCount; i += 1) {
-        const x = rand(spawnAreaLeft, spawnAreaRight)
-        const y = rand(spawnAreaTop, spawnAreaBottom)
+        const col = i % cols
+        const row = Math.floor(i / cols)
+        const x = spawnAreaLeft + (col + 0.5) * cellWidth + rand(-jitter, jitter)
+        const y = spawnAreaTop + (row + 0.5) * cellHeight + rand(-jitter, jitter)
         spawnOneInternal(x, y)
       }
 
@@ -213,7 +221,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
   )
 
   const spawnOne = useCallback(() => {
-    const x = jarGeom.w / 2 + rand(-jarGeom.neckWidth * 0.25, jarGeom.neckWidth * 0.25)
+    const x = jarGeom.w / 2 + rand(-jarGeom.neckWidth * 0.125, jarGeom.neckWidth * 0.125)
     const y = radii.max + 100
     return spawnOneAt(x, y)
   }, [spawnOneAt, jarGeom.neckWidth, jarGeom.w, radii.max])
@@ -277,6 +285,17 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
       >
+        <JarOverlay
+          width={width}
+          height={height}
+          geom={jarGeom}
+        />
+      </View>
+
+      <View
+        style={StyleSheet.absoluteFill}
+        pointerEvents="none"
+      >
         {bodies.map((b) => (
           <Shell
             key={b.id}
@@ -284,11 +303,11 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
             y={b.y}
             r={b.radius}
             rotation={b.angle}
+            opacity={0.7}
           />
         ))}
       </View>
 
-      {/* 디버그: 충돌 원 윤곽선 */}
       {DebugCollisionOverlay && (
         <DebugCollisionOverlay
           width={width}
@@ -296,23 +315,12 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
           bodies={bodies}
         />
       )}
-
-      <View
-        style={StyleSheet.absoluteFill}
-        pointerEvents="none"
-      >
-        <JarOverlay
-          width={width}
-          height={height}
-          geom={jarGeom}
-        />
-      </View>
     </View>
   )
 }
 
-const Shell = React.memo(({ x, y, r, rotation }: { x: number; y: number; r: number; rotation: number }) => (
-  <View style={{ position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, transform: [{ rotate: `${rotation}rad` }] }}>
+const Shell = React.memo(({ x, y, r, rotation, opacity = 1 }: { x: number; y: number; r: number; rotation: number; opacity?: number }) => (
+  <View style={{ position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, transform: [{ rotate: `${rotation}rad` }], opacity }}>
     <Sora
       width={r * 2}
       height={r * 2}
