@@ -8,8 +8,6 @@ import jarImage from '@conch/assets/images/jar.png'
 import type { FallingSoraJarProps } from './types'
 import { useDebug, type BodyState } from './hooks'
 
-const STOP_AFTER_SEC = 3
-
 export default function FallingSoraJar({ width, height, count, initialCount = 0, spawnIntervalMs = 120, onReady }: FallingSoraJarProps) {
   const [bodies, setBodies] = useState<BodyState[]>([])
   const engineRef = useRef<Matter.Engine | null>(null)
@@ -19,7 +17,6 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
   const animRef = useRef<number>(0)
   const lastTsRef = useRef<number | null>(null)
   const spawnRef = useRef({ spawned: 0, lastSpawn: 0, target: count })
-  const elapsedRef = useRef(0)
   const frozenRef = useRef(false)
   const runningRef = useRef(false)
 
@@ -155,7 +152,6 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
 
     spawnRef.current = { spawned: initialCount, lastSpawn: 0, target: count }
     lastTsRef.current = null
-    elapsedRef.current = 0
 
     if (count > initialCount) {
       frozenRef.current = false
@@ -228,18 +224,6 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       if (lastTsRef.current === null) lastTsRef.current = ts
       const dt = Math.min(32, ts - lastTsRef.current)
       lastTsRef.current = ts
-      elapsedRef.current += dt / 1000
-
-      if (!frozenRef.current && elapsedRef.current >= STOP_AFTER_SEC) {
-        frozenRef.current = true
-        spawnRef.current.target = spawnRef.current.spawned
-        // 모든 바디를 슬립 상태로
-        bodyMapRef.current.forEach((body) => {
-          Matter.Body.setStatic(body, true)
-        })
-        runningRef.current = false
-        return
-      }
 
       if (spawnRef.current.spawned < spawnRef.current.target) {
         if (ts - spawnRef.current.lastSpawn > spawnIntervalMs) {
@@ -278,7 +262,6 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
     spawnRef.current.target = count
     if (spawnRef.current.spawned < spawnRef.current.target) {
       frozenRef.current = false
-      elapsedRef.current = 0
       if (!runningRef.current) {
         lastTsRef.current = null
         cancelAnimationFrame(animRef.current)
