@@ -48,7 +48,7 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       positionIterations: 5,
       velocityIterations: 3,
       constraintIterations: 2,
-      enableSleeping: true,
+      enableSleeping: false,
     })
     engine.timing.timeScale = 1
     if (engine.gravity) {
@@ -96,9 +96,9 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       const radiusList = [r * 0.65 * k, r * 0.3 * k, r * 0.48 * k, r * 0.2 * k]
       const physics: IBodyDefinition = {
         restitution: 0.05,
-        friction: 1.5,
-        frictionStatic: 1.0,
-        frictionAir: 0.025,
+        friction: 0.48,
+        frictionStatic: 0.3,
+        frictionAir: 0.014,
         density: 0.001,
         slop: 0.08,
         sleepThreshold: 10,
@@ -196,9 +196,9 @@ export default function FallingSoraJar({ width, height, count, initialCount = 0,
       const radiusList = [r * 0.65 * k, r * 0.3 * k, r * 0.48 * k, r * 0.2 * k]
       const physics: IBodyDefinition = {
         restitution: 0.05,
-        friction: 1.5,
-        frictionStatic: 1.0,
-        frictionAir: 0.025,
+        friction: 0.48,
+        frictionStatic: 0.3,
+        frictionAir: 0.014,
         density: 0.001,
         slop: 0.08,
         sleepThreshold: 10,
