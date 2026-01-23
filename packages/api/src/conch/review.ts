@@ -40,9 +40,7 @@ export function createConchReviewHelpers(deps: ConchReviewDeps): ConchReviewHelp
   const accessTokenKey = deps.accessTokenKey || 'magicOfConchAccessToken'
 
   async function list(args?: { after?: string }): Promise<CursorBaseReviewRes | undefined> {
-    const res = await deps.swaggerClient.reviewController.list(
-      args?.after ? { after: args.after } : undefined,
-    )
+    const res = await deps.swaggerClient.reviewController.list(args?.after ? { after: args.after } : undefined)
     return res.data.data
   }
 
@@ -90,16 +88,20 @@ export function createConchReviewHelpers(deps: ConchReviewDeps): ConchReviewHelp
       fetchImpl: opts.fetchImpl,
       getAccessToken: resolveAccessToken,
       // auth 연동(선택)
-      refreshToken: deps.refreshToken ? async () => {
-        const fn = deps.refreshToken!
-        const res = await fn()
-        return (res as any)?.data?.accessToken ?? null
-      } : undefined,
-      login: deps.login ? async () => {
-        const fn = deps.login!
-        const res = await fn()
-        return (res as any)?.data?.accessToken ?? null
-      } : undefined,
+      refreshToken: deps.refreshToken
+        ? async () => {
+          const fn = deps.refreshToken!
+          const res = await fn()
+          return (res as any)?.data?.accessToken ?? null
+        }
+        : undefined,
+      login: deps.login
+        ? async () => {
+          const fn = deps.login!
+          const res = await fn()
+          return (res as any)?.data?.accessToken ?? null
+        }
+        : undefined,
     })
   }
 
@@ -112,5 +114,3 @@ export function createConchReviewHelpers(deps: ConchReviewDeps): ConchReviewHelp
     submitStreaming,
   }
 }
-
-

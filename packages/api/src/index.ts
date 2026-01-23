@@ -1,8 +1,8 @@
-// 공통 클라이언트 내보내기
+// Export common client directly
 export * from './common/client'
 
-// Admin API 내보내기
-export * from './admin'
+// Export admin with namespace
+export * as admin from './admin'
 
-// Conch API 내보내기
-export * from './conch'
+// Export conch with namespace
+export * as conch from './conch'

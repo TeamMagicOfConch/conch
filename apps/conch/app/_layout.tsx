@@ -6,7 +6,7 @@ import { useRefresh } from '@conch/hooks/useRefresh'
 import OnboardScreen from './onboard/index'
 import { useStartUp } from './useStartUp'
 
-SplashScreen.preventAutoHideAsync()
+// SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
   useRefresh()

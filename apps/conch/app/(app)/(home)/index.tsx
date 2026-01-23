@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { getToday } from '@conch/utils'
-import { CalendarView, ListView, ViewToggleButton, DateNavigation, ReviewButton } from './components'
+import { CalendarView, ListView, ViewToggleButton, DateNavigation, ReviewButton, DebugButton } from './components'
 import { useReviewDataAtMonth, useReviewList } from './hooks'
 
 type ViewMode = 'calendar' | 'list'
@@ -13,7 +13,7 @@ export default function HomeScreen() {
   const { reviews: listReviews } = useReviewList()
 
   const isCalendarView = viewMode === 'calendar'
-  const reviewsCount = isCalendarView ? reviews?.length ?? 0 : listReviews?.length ?? 0
+  const reviewsCount = isCalendarView ? (reviews?.length ?? 0) : (listReviews?.length ?? 0)
 
   const handleToggle = () => {
     setViewMode((prev) => (prev === 'calendar' ? 'list' : 'calendar'))
@@ -25,11 +25,7 @@ export default function HomeScreen() {
     ? reviews.find((review) => review.day === todayDate)
     : listReviews.find((review) => {
       const reviewDate = new Date(review.reviewDate)
-      return (
-        reviewDate.getFullYear() === year &&
-          reviewDate.getMonth() === month &&
-          reviewDate.getDate() === todayDate
-      )
+      return reviewDate.getFullYear() === year && reviewDate.getMonth() === month && reviewDate.getDate() === todayDate
     })
 
   return (
@@ -43,14 +39,17 @@ export default function HomeScreen() {
       {isCalendarView ? (
         <CalendarView
           reviews={reviews}
-          date={date} />
+          date={date}
+        />
       ) : (
         <ListView />
       )}
       <ReviewButton todayReview={todayReview} />
+      <DebugButton />
       <ViewToggleButton
         viewMode={viewMode}
-        onToggle={handleToggle} />
+        onToggle={handleToggle}
+      />
     </>
   )
 }

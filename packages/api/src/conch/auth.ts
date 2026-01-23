@@ -5,7 +5,7 @@ import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE }
 
 export { UNREGISTERED_CODE, REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
-const OS_ID_DEBUG = null
+const OS_ID_DEBUG = '260116-test-1'
 
 export type StorageLike = {
   getItem(key: string): string | null | Promise<string | null>
@@ -57,9 +57,7 @@ async function setStored(storage: StorageLike, key: string, value: string): Prom
   return maybeAsync(storage.setItem(key, value))
 }
 
-export function createConchAuthHelpers(
-  deps: ConchAuthDeps,
-): ConchAuthHelpers {
+export function createConchAuthHelpers(deps: ConchAuthDeps): ConchAuthHelpers {
   const accessTokenKey = deps.accessTokenKey || DEFAULT_KEYS.accessToken
   const refreshTokenKey = deps.refreshTokenKey || DEFAULT_KEYS.refreshToken
   const usernameKey = deps.usernameKey || DEFAULT_KEYS.username
