@@ -16,24 +16,47 @@ pnpm install @conch/api
 
 ## 사용법
 
-### Admin API 클라이언트 사용
+### Admin API 클라이언트 (Swagger)
 
-```typescript
-import { adminApiClient, setAuthToken } from '@conch/api';
+```ts
+import { createAdminSwaggerClient, setAuthToken as setAdminAuthToken } from '@conch/api'
 
-// 인증 토큰 설정
-setAuthToken('your-auth-token');
+const admin = createAdminSwaggerClient('https://admin.magicofconch.site')
+setAdminAuthToken(
+  /* rest */ null as any,
+  /* swagger */ admin as any,
+  'your-auth-token',
+)
 
-// API 호출
-async function fetchUsers() {
-  try {
-    const users = await adminApiClient.get('/users');
-    return users;
-  } catch (error) {
-    console.error('Failed to fetch users:', error);
-    throw error;
-  }
-}
+await admin.adminLoginController.login({ osId: 'device-id' })
+```
+
+### Conch API 클라이언트 (Swagger)
+
+```ts
+import { createConchSwaggerClient } from '@conch/api'
+
+const conch = createConchSwaggerClient('https://test.magicofconch.site')
+const res = await conch.authController.login({ osId: 'device-id' })
+console.log(res.data)
+```
+
+### React Native SSE 헬퍼 (Expo 호환)
+
+```ts
+import { submitReviewSSE } from '@conch/api'
+
+await submitReviewSSE({
+  baseURL: 'https://test.magicofconch.site',
+  // 기본 경로는 '/stream/review'
+  review: { body: '오늘은 좋았다', type: 'FEELING' },
+  token: 'access-token',
+  refreshToken: async () => 'new-access-token',
+  login: async () => 'login-access-token',
+  onChunk: (text) => console.log(text),
+  onError: (err) => console.error(err.message),
+  onDone: () => console.log('done'),
+})
 ```
 
 ### 타입 생성
@@ -43,6 +66,7 @@ Swagger 문서에서 TypeScript 타입을 생성하려면 다음 명령어를 �
 ```bash
 # API URL 환경 변수 설정 (선택 사항)
 export ADMIN_SWAGGER_URL=https://api.example.com/admin/api-docs/swagger.json
+export CONCH_SWAGGER_URL=https://test.magicofconch.site/api-docs
 
 # 타입 생성
 pnpm generate-types

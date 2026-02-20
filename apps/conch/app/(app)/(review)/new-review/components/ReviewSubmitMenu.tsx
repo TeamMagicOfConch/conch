@@ -14,7 +14,7 @@ export default function ReviewSubmitMenu() {
   const { bottom } = useSafeAreaInsets()
 
   const { width } = Dimensions.get('window')
-  const isReviewWritten = review ? review.body.length > 0 : false
+  const isReviewWritten = review?.body ? review.body.length > 0 : false
   // -50 ~ 50
   const handlePositionPercent = (handlePosition / width) * 100
   const leftOpacity = Math.max(0, Math.min(0.5, -handlePositionPercent / HANDLE_ACTIVE_PERCENT))
@@ -24,12 +24,13 @@ export default function ReviewSubmitMenu() {
     <View style={{ ...style.root, ...(!isReviewWritten && { opacity: 0.25 }), bottom }}>
       <View style={style.endPoint}>
         <BlurView
+          experimentalBlurMethod='dimezisBlurView'
           intensity={20}
           style={{ right: 0, ...style.blurView }}
         />
         <View
           style={{
-            left: 6,
+            left: 16,
             backgroundColor: `rgba(56, 96, 255, ${leftOpacity})`,
             ...style.circle,
           }}
@@ -71,6 +72,7 @@ export default function ReviewSubmitMenu() {
       </View>
       <View style={style.endPoint}>
         <BlurView
+          experimentalBlurMethod='dimezisBlurView'
           intensity={20}
           style={{ left: 0, ...style.blurView }}
         />
@@ -80,7 +82,7 @@ export default function ReviewSubmitMenu() {
         <View
           style={{
             ...style.circle,
-            right: 6,
+            right: 16,
             backgroundColor: `rgba(255, 65, 119, ${rightOpacity})`,
           }}
         />
@@ -103,6 +105,7 @@ const style = StyleSheet.create({
   endPoint: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 10,
   },
   textView: {
     padding: 5,

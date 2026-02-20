@@ -1,30 +1,40 @@
 import { useRef, useMemo, useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import BottomSheet, { BottomSheetScrollView, type BottomSheetScrollViewMethods } from '@gorhom/bottom-sheet'
 
 import { Colors } from '@conch/assets/colors'
 import { Sora } from '@conch/assets/icons'
-import type { Review } from '@conch/utils/api/review/types'
 import { consts } from '@conch/utils'
 import { useRouteInfo } from 'expo-router/build/hooks'
+import type { ReviewResponse } from '@conch/app/(app)/(review)/review/hooks'
 
-type Props = Pick<Review, 'feedbackType' | 'feedback'> & {
+type Props = Pick<ReviewResponse, 'feedbackType' | 'feedback'> & {
   loading?: boolean
   error?: string | null
 }
 
-export default function SoraReponseMenu({ feedbackType, feedback: responseBody, loading = false, error }: Props) {
+// 헤더 높이 관련 상수들
+const SORA_ICON_HEIGHT = 40
+const HEADER_PADDING_BOTTOM = 10
+const TEXT_FONT_SIZE = 13
+const HEADER_GAP = 10
+const HEADER_HEIGHT = SORA_ICON_HEIGHT + HEADER_PADDING_BOTTOM + TEXT_FONT_SIZE + HEADER_GAP
+
+export default function SoraReponseMenu({ feedbackType, feedback: responseBody, loading = false, error: _error }: Props) {
+  const insets = useSafeAreaInsets()
+  
   const bottomSheetRef = useRef<BottomSheet>(null)
   const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null)
-  const snapPoints = useMemo(() => ['10%', '100%'], [])
+  const snapPoints = useMemo(() => [HEADER_HEIGHT, '100%'], [])
   const { pathname } = useRouteInfo()
   const isFeeling = feedbackType === consts.reviewType.feeling
   const backgroundColor = isFeeling ? Colors.fSoraBg : Colors.tSoraBg
   const conchName = isFeeling ? 'F소라' : 'T소라'
 
   useEffect(() => {
-    if (pathname !== '/review' && responseBody?.length > 0) {
+    if (pathname !== '/review' && responseBody?.length && responseBody.length > 0) {
       bottomSheetRef.current?.expand()
       if (scrollViewRef.current) scrollViewRef.current.scrollToEnd({ animated: true })
     }
@@ -32,6 +42,7 @@ export default function SoraReponseMenu({ feedbackType, feedback: responseBody, 
 
   return (
     <BottomSheet
+      enableDynamicSizing
       ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
@@ -40,7 +51,6 @@ export default function SoraReponseMenu({ feedbackType, feedback: responseBody, 
       style={style.bottomSheet}
     >
       <View style={{ backgroundColor, ...style.header }}>
-        {/** TODO: letter-shape background */}
         <Sora
           color={isFeeling ? Colors.fSora : Colors.tSora}
           width={40}
@@ -51,6 +61,7 @@ export default function SoraReponseMenu({ feedbackType, feedback: responseBody, 
       <BottomSheetScrollView
         ref={scrollViewRef}
         style={{ backgroundColor, ...style.scrollView }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + TEXT_FONT_SIZE }}
       >
         <Text style={{ ...style.text, ...style.body }}>{responseBody}</Text>
       </BottomSheetScrollView>

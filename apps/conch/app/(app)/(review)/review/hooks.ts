@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useLocalSearchParams } from 'expo-router'
-import { reviewGet } from '@conch/utils'
-import type { FeedbackType, RawReview, Review } from '@conch/utils/api/review/types'
+import { inquiryDate } from '@conch/utils'
+import { InquiryDayRes } from '@api/conch/types/conchApi'
+
+export type ReviewResponse = InquiryDayRes & { feedbackType?: string | string[] }
 
 export function useReviewData() {
-  const [review, setReview] = useState<Review>({ body: '', feedback: '' })
+  const [review, setReview] = useState<ReviewResponse>({ body: '', feedback: '' })
   const { date, feedbackType } = useLocalSearchParams()
 
   useEffect(() => {
@@ -15,16 +17,12 @@ export function useReviewData() {
       .split('-')
       .map((str) => parseInt(str, 10))
     async function fetchAndSetReviewData() {
-      const {
-        data: { data: reviewsData },
-      } = await reviewGet<RawReview>('/day', { year, month: month + 1, day })
-
-      const { body, feedback } = reviewsData
+      const { body, feedback } = (await inquiryDate({ year, month: month + 1, day })) || {}
 
       setReview({
         body,
         feedback,
-        feedbackType: feedbackType as FeedbackType,
+        feedbackType,
       })
     }
     fetchAndSetReviewData()

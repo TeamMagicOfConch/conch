@@ -7,6 +7,12 @@
       "@/*": [
         "./*"
       ],
+      "@api": [
+        "./packages/api/dist/index.d.ts"
+      ],
+      "@api/*": [
+        "./packages/api/src/*"
+      ],
       "@conch/*": [
         "./apps/conch/*"
       ],

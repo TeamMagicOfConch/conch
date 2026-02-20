@@ -4,8 +4,7 @@ import SoraReponseMenu from '@conch/components/common/SoraReponseMenu'
 import { Colors } from '@conch/assets/colors'
 import { useOpenAIStream } from '@conch/hooks'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { Review } from '@conch/utils/api/review/types'
-import { useReviewContext } from './context'
+import { useReviewContext, type Review } from './context'
 
 const PLACEHOLDER =
   '오늘은 어떤 일이 있었나요?\n무슨 느낌이나 생각이 들었나요?\n(1000자 이내)\n\n*하루에 한 번, 손잡이를 원하는 방향으로 잡아당겨 소라의 답변을 들을 수 있어요.'
@@ -34,7 +33,7 @@ export default function WriteReviewScreen() {
   if (!reviewContext) return null
 
   const { review, setReview } = reviewContext
-  const reviewSubmitted = !!review.feedbackType
+  const reviewSubmitted = !!review.type
   function setReviewBody(reviewBody: string) {
     setReview((prev: Review) => ({
       ...prev,
@@ -58,7 +57,7 @@ export default function WriteReviewScreen() {
       </ScrollView>
       {reviewSubmitted && (
         <SoraReponseMenu
-          feedbackType={review.feedbackType}
+          feedbackType={review.type}
           feedback={response}
           loading={loading}
           error={error}

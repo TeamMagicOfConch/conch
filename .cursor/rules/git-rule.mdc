@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+dotfile은 커밋 대상에서 제외하세요.

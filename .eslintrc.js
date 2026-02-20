@@ -27,7 +27,10 @@ module.exports = {
       node: {
         extensions: ['.ts', '.tsx', '.js'],
       },
-      typescript: {},
+      typescript: {
+        alwaysTryTypes: true,
+        project: './tsconfig.json',
+      },
     },
   },
   plugins: ['@typescript-eslint'],
@@ -119,5 +122,10 @@ module.exports = {
       },
     ],
   },
-  ignorePatterns: ['packges/lodable-ts-transformer/*'],
+  ignorePatterns: [
+    'packages/lodable-ts-transformer/*',  // Fixed typo
+    '**/dist/*',                          // Ignore build outputs
+    '**/build/*',
+    'apps/conch/tools/**',                // Ignore build tools
+  ],
 }

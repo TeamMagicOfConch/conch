@@ -7,7 +7,7 @@ import ReviewSubmitMenu from './ReviewSubmitMenu'
 export default function NewReviewFooter() {
   const { bottom: paddingBottom } = useSafeAreaInsets()
   const { review } = useReviewContext() || {}
-  if (review?.feedbackType) return null
+  if (review?.type) return null
 
   return (
     <GestureHandlerRootView style={{ flex: 15, backgroundColor: Colors.bgGrey, paddingBottom }}>

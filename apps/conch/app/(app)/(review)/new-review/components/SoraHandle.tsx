@@ -53,7 +53,7 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
           const activated = (fActivated || tActivated) && isReviewWritten
 
           if (activated) {
-            setReview((prev) => ({ ...prev, feedbackType: tActivated ? consts.reviewType.thinking : consts.reviewType.feeling }))
+            setReview((prev) => ({ ...prev, type: tActivated ? consts.reviewType.thinking : consts.reviewType.feeling }))
           }
 
           Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false, speed: 6, bounciness: 0 }).start()
@@ -72,7 +72,7 @@ export default function SoraHandle({ x, setX, isReviewWritten }: Props) {
         }}
         {...panResponder?.panHandlers}
       >
-        <View style={style.handle} />
+        <View style={{ ...style.handle, ...(!isReviewWritten && { opacity: 0 }) }} />
         <View style={{ width: Math.abs(x), ...style.handleBar }} />
       </Animated.View>
       <View

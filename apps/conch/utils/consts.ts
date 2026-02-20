@@ -1,17 +1,4 @@
-import { FeedbackType } from '@conch/utils/api/review/types'
-
-interface Consts {
-  reviewType: {
-    [key: string]: FeedbackType
-  }
-  asyncStorageKey: {
-    [key: string]: string
-  }
-  tokenDuration: number
-  [key: string]: any
-}
-
-export const consts: Consts = {
+export const consts = {
   reviewType: {
     thinking: 'THINKING',
     feeling: 'FEELING',
@@ -23,4 +10,4 @@ export const consts: Consts = {
     username: 'magicOfConchUserName',
   },
   tokenDuration: 1000 * 60 * 5, // 5분
-}
+} as const
