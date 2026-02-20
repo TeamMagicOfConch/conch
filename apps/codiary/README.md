@@ -4,6 +4,6 @@ This is a code bundle for 교환 일기 웹 서비스. The original project is a
 
 ## Running the code
 
-Run `pnpm install` to install dependencies from workspace root.
+Run `npm i` to install the dependencies.
 
-Run `pnpm --filter @conch/codiary dev` to start the development server.
+Run `npm run dev` to start the development server.
