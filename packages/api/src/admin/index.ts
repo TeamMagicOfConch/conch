@@ -20,15 +20,17 @@ export function createAdminApiClient(config: ApiClientConfig) {
 export function createAdminSwaggerClient(baseURL: string) {
   console.log('Admin API URL:', baseURL)
   return new Api({
-    baseURL,
-    withCredentials: true,
+    baseUrl: baseURL,
+    baseApiParams: {
+      credentials: 'include',
+      format: 'json',
+    },
   })
 }
 
 // 인증 헤더 추가 함수 (클라이언트 인스턴스를 받아서 처리)
 export function setAuthToken(apiClient: any, swaggerClient: any, token: string) {
-  // eslint-disable-next-line no-param-reassign
-  apiClient.getAxiosInstance().defaults.headers.common.Authorization = `Bearer ${token}`
+  apiClient.setAuthToken(token)
 
   // Swagger 클라이언트에도 토큰 설정
   swaggerClient.setSecurityData(token)
@@ -36,8 +38,7 @@ export function setAuthToken(apiClient: any, swaggerClient: any, token: string) 
 
 // 인증 헤더 제거 함수 (클라이언트 인스턴스를 받아서 처리)
 export function clearAuthToken(apiClient: any, swaggerClient: any) {
-  // eslint-disable-next-line no-param-reassign
-  delete apiClient.getAxiosInstance().defaults.headers.common.Authorization
+  apiClient.clearAuthToken()
   swaggerClient.setSecurityData(null)
 }
 

@@ -11,35 +11,29 @@ export function createConchApiClient(config: ApiClientConfig): ApiClient {
 
 export function createConchSwaggerClient(baseURL: string) {
   return new ConchApi({
-    baseURL,
-    withCredentials: true,
+    baseUrl: baseURL,
+    baseApiParams: {
+      credentials: 'include',
+      format: 'json',
+    },
   })
 }
 
-export function setConchAuthToken(
-  apiClient: ApiClient | null | undefined,
-  swaggerClient: InstanceType<typeof ConchApi> | null | undefined,
-  token: string,
-) {
+export function setConchAuthToken(apiClient: ApiClient | null | undefined, swaggerClient: InstanceType<typeof ConchApi> | null | undefined, token: string) {
   if (apiClient) {
-    // eslint-disable-next-line no-param-reassign
-    apiClient.getAxiosInstance().defaults.headers.common.Authorization = `Bearer ${token}`
+    apiClient.setAuthToken(token)
   }
-  if (swaggerClient && typeof (swaggerClient as any).setSecurityData === 'function') {
-    ;(swaggerClient as any).setSecurityData(token)
+  if (swaggerClient) {
+    swaggerClient.setSecurityData(token)
   }
 }
 
-export function clearConchAuthToken(
-  apiClient: ApiClient | null | undefined,
-  swaggerClient: InstanceType<typeof ConchApi> | null | undefined,
-) {
+export function clearConchAuthToken(apiClient: ApiClient | null | undefined, swaggerClient: InstanceType<typeof ConchApi> | null | undefined) {
   if (apiClient) {
-    // eslint-disable-next-line no-param-reassign
-    delete apiClient.getAxiosInstance().defaults.headers.common.Authorization
+    apiClient.clearAuthToken()
   }
-  if (swaggerClient && typeof (swaggerClient as any).setSecurityData === 'function') {
-    ;(swaggerClient as any).setSecurityData(null)
+  if (swaggerClient) {
+    swaggerClient.setSecurityData(null)
   }
 }
 
