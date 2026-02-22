@@ -96,7 +96,7 @@ function Carousel({ orientation = 'horizontal', opts, setApi, plugins, className
     <CarouselContext.Provider
       value={{
         carouselRef,
-        api: api,
+        api,
         opts,
         orientation: orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
         scrollPrev,
