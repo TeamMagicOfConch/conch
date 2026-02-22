@@ -267,18 +267,6 @@ importers:
         specifier: 6.3.5
         version: 6.3.5(@types/node@20.19.24)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
 
-  apps/codiary-e2e:
-    devDependencies:
-      '@playwright/test':
-        specifier: 1.55.0
-        version: 1.55.0
-      '@types/node':
-        specifier: ^22.13.10
-        version: 22.19.11
-      typescript:
-        specifier: ~5.3.3
-        version: 5.3.3
-
   apps/conch:
     dependencies:
       '@conch/api':
@@ -438,6 +426,12 @@ importers:
       typescript:
         specifier: ^5.3.2
         version: 5.3.3
+
+  packages/codiary-e2e:
+    devDependencies:
+      '@playwright/test':
+        specifier: 1.55.0
+        version: 1.55.0
 
 packages:
 
@@ -3145,9 +3139,6 @@ packages:
 
   '@types/node@20.19.24':
     resolution: {integrity: sha512-FE5u0ezmi6y9OZEzlJfg37mqqf6ZDSF2V/NLjUyGrR9uTZ7Sb9F7bLNZ03S4XVUNRWGA7Ck4c1kK+YnuWjl+DA==}
-
-  '@types/node@22.19.11':
-    resolution: {integrity: sha512-BH7YwL6rA93ReqeQS1c4bsPpcfOmJasG+Fkr6Y59q83f9M1WcBRHR2vM+P9eOisYRcN3ujQoiZY8uk5W+1WL8w==}
 
   '@types/phoenix@1.6.7':
     resolution: {integrity: sha512-oN9ive//QSBkf19rfDv45M7eZPi0eEXylht2OLEXicu5b4KoQ1OzXIw+xDSGWxSxe1JmepRR/ZH283vsu518/Q==}
@@ -11568,10 +11559,6 @@ snapshots:
   '@types/matter-js@0.20.2': {}
 
   '@types/node@20.19.24':
-    dependencies:
-      undici-types: 6.21.0
-
-  '@types/node@22.19.11':
     dependencies:
       undici-types: 6.21.0
 
