@@ -38,37 +38,35 @@ console.log(`ADMIN_SWAGGER_URL: ${process.env.ADMIN_SWAGGER_URL || '(not set)'}`
 console.log(`CONCH_SWAGGER_URL: ${process.env.CONCH_SWAGGER_URL || process.env.VITE_CONCH_SWAGGER_URL || '(not set)'}`)
 
 async function generateTypes() {
-  endpoints.forEach((endpoint) => {
-    console.log(`Generating types for ${endpoint.name} API...`)
+  await Promise.all(
+    endpoints.map(async (endpoint) => {
+      console.log(`Generating types for ${endpoint.name} API...`)
 
-    // 출력 디렉토리 확인 및 생성
-    if (!fs.existsSync(endpoint.outputPath)) {
-      fs.mkdirSync(endpoint.outputPath, { recursive: true })
-    }
+      if (!fs.existsSync(endpoint.outputPath)) {
+        fs.mkdirSync(endpoint.outputPath, { recursive: true })
+      }
 
-    try {
-      const result = await generateApi({
-        fileName: `${endpoint.name}Api.ts`,
-        output: endpoint.outputPath,
-        url: endpoint.url,
-        httpClientType: 'axios',
-        moduleNameFirstTag: true,
-        generateRouteTypes: true,
-        generateResponses: true,
-        enumNamesAsValues: true,
-        extraTemplates: [],
-        // 필요한 경우 사용자 정의 템플릿 추가
-        // templates: path.resolve(__dirname, 'templates'),
-      })
+      try {
+        await generateApi({
+          fileName: `${endpoint.name}Api.ts`,
+          output: endpoint.outputPath,
+          url: endpoint.url,
+          httpClientType: 'fetch',
+          moduleNameFirstTag: true,
+          generateRouteTypes: true,
+          generateResponses: true,
+          enumNamesAsValues: true,
+          extraTemplates: [],
+        })
 
-      console.log(`✅ ${endpoint.name} API types generated successfully!`)
-    } catch (error) {
-      console.error(`❌ Error generating ${endpoint.name} API types:`, error)
-    }
-  })
+        console.log(`✅ ${endpoint.name} API types generated successfully!`)
+      } catch (error) {
+        console.error(`❌ Error generating ${endpoint.name} API types:`, error)
+      }
+    }),
+  )
 }
 
 generateTypes()
   .then(() => console.log('✨ All API types generated successfully!'))
   .catch((error) => console.error('❌ Error generating API types:', error))
-
