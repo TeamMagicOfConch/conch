@@ -20,7 +20,10 @@ interface AdminWaitingRoomProps {
 
 export function AdminWaitingRoom({ participants, onStartSession, onOpenMatching, onResetSession, onViewUserHistory, onLogout }: AdminWaitingRoomProps) {
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col p-8">
+    <div
+      className="min-h-screen bg-[#fafafa] flex flex-col p-8"
+      data-testid="admin-waiting-room"
+    >
       <div className="flex-1 max-w-6xl mx-auto w-full space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -37,6 +40,7 @@ export function AdminWaitingRoom({ participants, onStartSession, onOpenMatching,
           </div>
           <div className="flex gap-3">
             <Button
+              data-testid="admin-reset-session-button"
               onClick={onResetSession}
               variant="outline"
               className="gap-2 border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600"
@@ -45,6 +49,7 @@ export function AdminWaitingRoom({ participants, onStartSession, onOpenMatching,
               세션 초기화
             </Button>
             <Button
+              data-testid="admin-history-button"
               onClick={onViewUserHistory}
               variant="outline"
               className="gap-2 border-gray-200"
@@ -53,6 +58,7 @@ export function AdminWaitingRoom({ participants, onStartSession, onOpenMatching,
               히스토리
             </Button>
             <Button
+              data-testid="admin-matching-button"
               onClick={onOpenMatching}
               variant="outline"
               className="gap-2 border-gray-200"
@@ -61,6 +67,7 @@ export function AdminWaitingRoom({ participants, onStartSession, onOpenMatching,
               매칭 설정
             </Button>
             <Button
+              data-testid="admin-start-session-button"
               onClick={onStartSession}
               className="bg-black hover:bg-gray-800 text-white gap-2"
               disabled={participants.length === 0}
@@ -76,6 +83,7 @@ export function AdminWaitingRoom({ participants, onStartSession, onOpenMatching,
           {participants.map((participant) => (
             <Card
               key={participant.userId}
+              data-testid={`admin-participant-${participant.userId}`}
               className="p-4 hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => onViewUserHistory()}
             >
@@ -97,6 +105,7 @@ export function AdminWaitingRoom({ participants, onStartSession, onOpenMatching,
       {/* 종료 버튼 - 중앙 하단 */}
       <div className="w-full flex justify-center pb-4">
         <Button
+          data-testid="admin-logout-button"
           onClick={onLogout}
           variant="outline"
           className="px-12 py-6 text-lg border-gray-300 text-gray-600 hover:bg-gray-100"

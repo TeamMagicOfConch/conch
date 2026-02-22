@@ -186,7 +186,10 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
   const canSubmit = highlights.length > 0 && comment.trim().length > 0
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div
+      className="min-h-screen bg-[#fafafa]"
+      data-testid="review-editor"
+    >
       {/* Sticky Header with timer */}
       <div className="sticky top-0 z-10 bg-[#fafafa] border-b border-gray-200 px-4 md:px-8 py-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -195,11 +198,15 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
           </div>
           <div className="flex items-center gap-3">
             <Clock className="w-5 h-5 text-gray-500" />
-            <div className="text-2xl font-light font-mono text-gray-900">
+            <div
+              className="text-2xl font-light font-mono text-gray-900"
+              data-testid="review-timer"
+            >
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
             {clientTime === 0 && !hasRequestedTime && (
               <button
+                data-testid="review-request-time-button"
                 onClick={onRequestTime}
                 className="text-sm px-3 py-1 bg-amber-400 hover:bg-amber-500 text-amber-900 rounded-full animate-pulse transition-colors flex items-center gap-1"
               >
@@ -221,6 +228,7 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
             <div className="space-y-4">
               <h2 className="text-lg font-normal text-gray-900">내가 작성한 일기</h2>
               <div
+                data-testid="review-my-diary"
                 className="p-6 md:p-8 bg-[#ffeaa7] shadow-md min-h-[45vw] md:min-h-[240px]"
                 style={{
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)',
@@ -242,6 +250,7 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
               >
                 <div
                   id="response-content"
+                  data-testid="review-response-content"
                   className="prose prose-sm max-w-none cursor-text select-text"
                   onMouseUp={handleMouseUp}
                 >
@@ -251,6 +260,7 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
                 {/* Mobile: floating highlight button near selection */}
                 {pendingSelection && buttonPos && (
                   <button
+                    data-testid="review-highlight-button"
                     onClick={applyHighlight}
                     className="absolute z-20 -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium active:bg-gray-800 md:hidden whitespace-nowrap"
                     style={{ top: Math.max(0, buttonPos.top), left: buttonPos.left }}
@@ -275,6 +285,7 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
             <h2 className="text-lg font-normal text-gray-900">리뷰 코멘트</h2>
             <p className="text-sm text-gray-500">상대가 달아준 답변이 어땠는지, 왜 그 부분을 하이라이트했는지 자유롭게 작성해주세요</p>
             <textarea
+              data-testid="review-comment-textarea"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder=""
@@ -285,6 +296,7 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
           {/* Submit button */}
           <div className="flex justify-center pt-6 pb-8">
             <Button
+              data-testid="review-submit-button"
               onClick={handleSubmit}
               disabled={!canSubmit || isSubmitting}
               className="bg-black hover:bg-gray-800 active:bg-gray-900 text-white w-full md:w-auto px-12 py-6 text-lg disabled:bg-gray-300 disabled:cursor-not-allowed touch-manipulation"

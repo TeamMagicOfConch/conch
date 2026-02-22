@@ -101,7 +101,10 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
 
   if (validUsers.length === 0) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex flex-col">
+      <div
+        className="min-h-screen bg-[#fafafa] flex flex-col"
+        data-testid="matching-config"
+      >
         {/* Header */}
         <div className="border-b border-gray-200 bg-white">
           <div className="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
@@ -111,6 +114,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
             </div>
             <div className="flex items-center space-x-2">
               <Button
+                data-testid="matching-close-button"
                 onClick={onClose}
                 variant="ghost"
                 size="icon"
@@ -119,6 +123,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
                 <X className="w-5 h-5" />
               </Button>
               <Button
+                data-testid="matching-logout-button"
                 onClick={onLogout}
                 variant="ghost"
                 size="icon"
@@ -138,7 +143,10 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col">
+    <div
+      className="min-h-screen bg-[#fafafa] flex flex-col"
+      data-testid="matching-config"
+    >
       {/* Header */}
       <div className="border-b border-gray-200 bg-white">
         <div className="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
@@ -148,6 +156,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
           </div>
           <div className="flex items-center space-x-2">
             <Button
+              data-testid="matching-close-button"
               onClick={onClose}
               variant="ghost"
               size="icon"
@@ -156,6 +165,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
               <X className="w-5 h-5" />
             </Button>
             <Button
+              data-testid="matching-logout-button"
               onClick={onLogout}
               variant="ghost"
               size="icon"
@@ -246,6 +256,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
                 style={{ left: x, top: y }}
               >
                 <button
+                  data-testid={`matching-user-${user.userId}`}
                   onClick={() => toggleUser(user.userId)}
                   disabled={isDeleting}
                   className={`transition-all ${isSelected ? 'bg-black text-white' : 'bg-white text-gray-900 hover:bg-gray-100'} border-2 ${
@@ -258,6 +269,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
 
                 {/* Delete button - visible on hover only */}
                 <button
+                  data-testid={`matching-delete-${user.userId}`}
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDeleteUser(user.userId, user.name)
@@ -280,6 +292,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
 
         <div className="mt-8">
           <Button
+            data-testid="matching-save-button"
             onClick={handleSave}
             className="bg-black hover:bg-gray-800 text-white px-8 relative z-10 cursor-pointer"
             disabled={isSaving}
