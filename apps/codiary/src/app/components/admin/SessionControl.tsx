@@ -37,11 +37,8 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
   // Check auth token on mount
   useEffect(() => {
     const token = localStorage.getItem('auth_token')
-    console.log('=== SessionControl: Auth Check ===')
-    console.log('Auth token exists:', !!token)
 
     if (!token) {
-      console.error('⚠️ WARNING: No auth token found! Admin needs to re-login.')
       alert('인증 토큰이 만료되었습니다. 다시 로그인해주세요.')
       onLogout()
     }
@@ -75,30 +72,19 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
 
     setIsAdjustingTimer(true)
 
-    console.log('=== Adjusting timer ===')
-    console.log('Current client time:', clientTime)
-    console.log('Current server time:', session.timeRemaining)
-    console.log('Delta:', delta)
-
     try {
       // Calculate new time based on current client display
       const newTime = Math.max(0, clientTime + delta)
 
-      console.log('New time to set:', newTime)
-
       // Update server
       await api.updateSessionTimer(newTime)
-      console.log('Timer updated successfully on server')
 
       // Immediately update local state
       setClientTime(newTime)
-      console.log('Client time updated to:', newTime)
 
       // Refresh session data in background
       await onRefresh()
-      console.log('Session refreshed')
     } catch (error) {
-      console.error('Failed to update timer:', error)
     } finally {
       setIsAdjustingTimer(false)
     }
@@ -123,15 +109,10 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
   const handleNextPhase = async () => {
     if (isAdvancing) return
 
-    console.log('=== Next Phase Button Clicked ===')
-    console.log('Current session status:', session.status)
-    console.log('Can advance:', canAdvance)
-
     setIsAdvancing(true)
     try {
       await onNextPhase()
     } catch (error) {
-      console.error('Next phase error in SessionControl:', error)
     } finally {
       setIsAdvancing(false)
     }

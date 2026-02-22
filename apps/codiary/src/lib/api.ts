@@ -16,17 +16,11 @@ export const setAccessToken = (token: string | null) => {
 const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
   const token = localStorage.getItem('auth_token')
 
-  console.log('=== fetchAPI called ===')
-  console.log('Endpoint:', endpoint)
-  console.log('Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'NULL/MISSING')
-
   // Only warn for endpoints that require authentication (exclude public endpoints)
   const publicEndpoints = ['/session/current', '/auth/signin', '/auth/signup']
   const isPublicEndpoint = publicEndpoints.some((pubEndpoint) => endpoint.includes(pubEndpoint))
 
   if (!token && !isPublicEndpoint) {
-    console.error('⚠️ WARNING: No auth token found in localStorage!')
-    console.error('⚠️ You need to sign in again. localStorage key "auth_token" is empty.')
   }
 
   const headers: HeadersInit = {
@@ -36,10 +30,7 @@ const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
     ...options.headers,
   }
 
-  console.log('Headers being sent:', { ...headers, 'X-User-Token': token ? 'present' : 'MISSING' })
-
   const url = `${API_BASE}${endpoint}`
-  console.log('Full URL:', url)
 
   try {
     const response = await fetch(url, {
@@ -47,40 +38,29 @@ const fetchAPI = async (endpoint: string, options: RequestInit = {}) => {
       headers,
     })
 
-    console.log(`API Response [${endpoint}]:`, response.status, response.statusText)
-
     if (!response.ok) {
       let errorMessage = 'API request failed'
       try {
         const error = await response.json()
         errorMessage = error.error || errorMessage
-        console.error(`API Error [${endpoint}]:`, error)
       } catch (e) {
         // If JSON parsing fails, try to get text
         try {
           const text = await response.text()
-          console.error(`API Error Text [${endpoint}]:`, text)
           errorMessage = text || errorMessage
-        } catch (textError) {
-          console.error(`Failed to parse error response [${endpoint}]:`, e)
-        }
+        } catch (textError) {}
       }
       throw new Error(errorMessage)
     }
 
     return response.json()
-  } catch (error: any) {
-    console.error(`❌ Fetch error [${endpoint}]:`, error)
-    console.error('Error type:', error.constructor.name)
-    console.error('Error message:', error.message)
-    console.error('Full error:', error)
-
+  } catch (error: unknown) {
     // Network errors
     if (error instanceof TypeError && error.message.includes('fetch')) {
       throw new Error(`네트워크 연결 오류: ${endpoint} 엔드포인트에 접근할 수 없습니다. 서버가 실행 중인지 확인해주세요.`)
     }
 
-    if (error.message) {
+    if (error instanceof Error && error.message) {
       throw error
     }
     throw new Error('서버에 연결할 수 없습니다. 네트워크를 확인해주세요.')
@@ -120,13 +100,10 @@ export const getSession = async () => {
 }
 
 export const getUserData = async () => {
-  console.log('Fetching user data with token:', accessToken ? 'present' : 'missing')
   try {
     const result = await fetchAPI('/auth/session')
-    console.log('User data fetched:', result)
     return result
   } catch (error) {
-    console.error('Get user data error:', error)
     throw error
   }
 }

@@ -26,8 +26,6 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
 
   // Update excludedPairs when initialExcludedPairs changes (on reload)
   useEffect(() => {
-    console.log('=== MatchingConfig: initialExcludedPairs changed ===')
-    console.log('New initialExcludedPairs:', initialExcludedPairs)
     setExcludedPairs(new Set(initialExcludedPairs.map((pair) => pair.sort().join('|'))))
   }, [initialExcludedPairs])
 
@@ -65,18 +63,10 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      console.log('=== Saving matching config ===')
-      console.log('Current excludedPairs Set:', excludedPairs)
-
       const pairs = Array.from(excludedPairs).map((pairKey) => pairKey.split('|'))
-      console.log('Converted pairs array:', pairs)
-      console.log('Pairs count:', pairs.length)
 
       await onSave(pairs)
-
-      console.log('✓ Matching config saved successfully')
     } catch (error) {
-      console.error('❌ Failed to save matching config:', error)
       throw error
     } finally {
       setIsSaving(false)

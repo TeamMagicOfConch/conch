@@ -83,36 +83,29 @@ export function UITestPage() {
 
   const mockHandlers = {
     onSignIn: async (email: string) => {
-      console.log('Sign in:', email)
       await new Promise((resolve) => setTimeout(resolve, 500))
     },
     onSubmit: async (content: string) => {
-      console.log('Submit:', content)
       await new Promise((resolve) => setTimeout(resolve, 500))
     },
     onSubmitReview: async (highlights: Array<{ text: string; startIdx: number; endIdx: number }>, comment: string) => {
-      console.log('Submit review:', { highlights, comment })
       await new Promise((resolve) => setTimeout(resolve, 500))
     },
     onViewCalendar: () => setScreen('calendar'),
-    onLogout: () => console.log('Logout'),
+    onLogout: () => {},
     onStartSession: async () => {
-      console.log('Start session')
       await new Promise((resolve) => setTimeout(resolve, 500))
     },
     onOpenMatching: () => setScreen('admin-matching'),
-    onViewUserHistory: (userId: string) => console.log('View user history:', userId),
+    onViewUserHistory: (userId: string) => {},
     onSave: async (excludedPairs: string[][]) => {
-      console.log('Save excluded pairs:', excludedPairs)
       await new Promise((resolve) => setTimeout(resolve, 500))
     },
     onClose: () => setScreen('menu'),
     onNextPhase: async () => {
-      console.log('Next phase')
       await new Promise((resolve) => setTimeout(resolve, 500))
     },
     onRefresh: async () => {
-      console.log('Refresh')
       await new Promise((resolve) => setTimeout(resolve, 500))
     },
   }
