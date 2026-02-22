@@ -1,0 +1,14 @@
+{
+  "name": "@conch/codiary-e2e",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@playwright/test": "1.55.0",
+    "typescript": "~5.3.3"
+  }
+}
