@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/app/components/ui/button'
-import { Card } from '@/app/components/ui/card'
 import { Clock, Bell } from 'lucide-react'
 
 interface ReviewWritingProps {
@@ -179,7 +178,6 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
     try {
       await onSubmit(highlights, comment)
     } catch (error) {
-      console.error('Failed to submit review:', error)
     } finally {
       setIsSubmitting(false)
     }

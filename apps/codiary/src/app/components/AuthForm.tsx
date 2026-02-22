@@ -26,8 +26,8 @@ export function AuthForm({ onSignIn }: AuthFormProps) {
 
     try {
       await onSignIn(email.trim())
-    } catch (err: any) {
-      setError(err.message || '오류가 발생했습니다')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '오류가 발생했습니다')
     } finally {
       setLoading(false)
     }

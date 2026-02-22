@@ -24,10 +24,8 @@ export function SoraSubmit({ onSubmit, disabled, isSubmitted }: SoraSubmitProps)
   // Keep ref in sync for animation callbacks
   pullRef.current = pull
 
-  useEffect(() => {
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    }
+  useEffect(() => () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
   }, [])
 
   const animateRetract = useCallback((from: number, duration: number, onComplete: () => void) => {
@@ -79,7 +77,7 @@ export function SoraSubmit({ onSubmit, disabled, isSubmitted }: SoraSubmitProps)
   const handlePointerUp = useCallback(() => {
     if (phase !== 'pulling') return
 
-    const current = pullRef.current
+    const {current} = pullRef
 
     if (current >= THRESHOLD) {
       setPhase('retracting')

@@ -67,7 +67,6 @@ export function ReviewEditor({ diary, response, onSubmit, onLogout, defaultTime 
     try {
       await onSubmit(highlights, comment)
     } catch (error) {
-      console.error('Failed to submit review:', error)
     } finally {
       setLoading(false)
     }

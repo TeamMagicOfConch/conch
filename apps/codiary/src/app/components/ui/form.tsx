@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 import { Slot } from '@radix-ui/react-slot'
@@ -16,9 +14,9 @@ type FormFieldContextValue<TFieldValues extends FieldValues = FieldValues, TName
 
 const FormFieldContext = React.createContext<FormFieldContextValue>({} as FormFieldContextValue)
 
-const FormField = <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>({
+function FormField<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>({
   ...props
-}: ControllerProps<TFieldValues, TName>) => {
+}: ControllerProps<TFieldValues, TName>) {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
       <Controller {...props} />

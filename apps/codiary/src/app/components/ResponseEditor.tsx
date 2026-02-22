@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/app/components/ui/button'
 import { Textarea } from '@/app/components/ui/textarea'
 import { LogOut, Bell } from 'lucide-react'
@@ -57,7 +57,6 @@ export function ResponseEditor({ diary, onSubmit, onLogout, defaultTime = 300, h
       setIsSubmitted(true)
       setSubmittedContent(content)
     } catch (error) {
-      console.error('Failed to submit response:', error)
     } finally {
       setLoading(false)
     }

@@ -1,6 +1,6 @@
 import { Toaster as Sonner, ToasterProps } from 'sonner'
 
-const Toaster = ({ ...props }: ToasterProps) => {
+function Toaster({ ...props }: ToasterProps) {
   return (
     <Sonner
       theme="light"
