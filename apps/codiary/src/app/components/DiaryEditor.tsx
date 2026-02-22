@@ -73,7 +73,6 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
       setSubmittedContent(content)
       toast('소라고동에게 내 일기에 대한 답변을 요청했어요.')
     } catch (error) {
-      console.error('Failed to submit diary:', error)
     } finally {
       setLoading(false)
     }

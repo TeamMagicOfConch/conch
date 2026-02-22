@@ -179,7 +179,6 @@ export function ReviewWriting({ myDiary, response, timeRemaining, onSubmit, hasR
     try {
       await onSubmit(highlights, comment)
     } catch (error) {
-      console.error('Failed to submit review:', error)
     } finally {
       setIsSubmitting(false)
     }
