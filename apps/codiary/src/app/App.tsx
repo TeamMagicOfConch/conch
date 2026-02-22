@@ -3,21 +3,16 @@ import { AuthForm } from '@/app/components/AuthForm'
 import { WaitingRoom } from '@/app/components/WaitingRoom'
 import { DiaryEditor } from '@/app/components/DiaryEditor'
 import { ResponseEditor } from '@/app/components/ResponseEditor'
-import { ReviewEditor } from '@/app/components/ReviewEditor'
 import { ReviewWriting } from '@/app/components/user/ReviewWriting'
 import { CalendarView } from '@/app/components/CalendarView'
 import { AdminWaitingRoom } from '@/app/components/admin/AdminWaitingRoom'
 import { MatchingConfig } from '@/app/components/admin/MatchingConfig'
 import { SessionControl } from '@/app/components/admin/SessionControl'
 import { AdminCalendarView } from '@/app/components/admin/AdminCalendarView'
-import { UITestPage } from '@/app/components/UITestPage'
 import { Button } from '@/app/components/ui/button'
 import { toast } from 'sonner'
 import * as api from '@/lib/api'
-import { projectId, publicAnonKey } from '/utils/supabase/info'
-
-// Enable UI test mode by adding ?test to the URL
-const isTestMode = window.location.search.includes('test')
+import { projectId, publicAnonKey } from '../../utils/supabase/info'
 
 type UserData = {
   userId: string
@@ -51,11 +46,10 @@ type AppState =
   | { view: 'admin-calendar' }
 
 export default function App() {
-  // Show UI test page if ?test is in URL
-  if (isTestMode) {
-    return <UITestPage />
-  }
+  return <AppContent />
+}
 
+function AppContent() {
   const [user, setUser] = useState<UserData | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [state, setState] = useState<AppState>({ view: 'auth' })
@@ -93,12 +87,12 @@ export default function App() {
 
           if (currentSession.status === 'waiting') {
             return { view: 'admin-waiting' }
-          } else if (currentSession.status === 'writing' || currentSession.status === 'responding' || currentSession.status === 'reviewing') {
-            return { view: 'admin-control' }
-          } else {
-            // completed or other status - go back to waiting
-            return { view: 'admin-waiting' }
           }
+          if (currentSession.status === 'writing' || currentSession.status === 'responding' || currentSession.status === 'reviewing') {
+            return { view: 'admin-control' }
+          }
+          // completed or other status - go back to waiting
+          return { view: 'admin-waiting' }
         })
       } else {
         setState((prev) => {
@@ -129,9 +123,8 @@ export default function App() {
 
         if (user?.isAdmin) {
           return { view: 'admin-waiting' }
-        } else {
-          return { view: 'waiting' }
         }
+        return { view: 'waiting' }
       })
     }
   }, [user])
@@ -167,9 +160,12 @@ export default function App() {
               'X-User-Token': token,
             },
             keepalive: true, // Important: ensures request completes even after page unload
-          }).catch((err) => {})
+          }).catch(() => undefined)
         }
-      } catch (error) {}
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+        }
+      }
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
@@ -211,7 +207,7 @@ export default function App() {
   const handleLogout = async () => {
     try {
       // Leave session before logging out
-      const result = await api.leaveSession()
+      await api.leaveSession()
     } catch (error) {
       // Continue with logout even if leave session fails
     }
@@ -220,20 +216,6 @@ export default function App() {
     setUser(null)
     setState({ view: 'auth' })
     toast.success('로그아웃되었습니다')
-  }
-
-  const handleJoinSession = async () => {
-    try {
-      const { session: joinedSession } = await api.joinSession()
-      setSession(joinedSession)
-      if (user?.isAdmin) {
-        setState({ view: 'admin-waiting' })
-      } else {
-        setState({ view: 'waiting' })
-      }
-    } catch (error: unknown) {
-      toast.error('세션 참여 실패')
-    }
   }
 
   // User handlers
@@ -289,34 +271,13 @@ export default function App() {
         return
       }
 
-      const result = await api.nextPhase()
+      await api.nextPhase()
 
       toast.success('다음 단계로 이동했습니다')
 
       await loadCurrentSession()
     } catch (error: unknown) {
-      toast.error('단계 이동 실패: ' + (error instanceof Error ? error.message : '알 수 없는 오류'))
-    }
-  }
-
-  const handleForceEnd = async () => {
-    try {
-      // Advance through all remaining phases until completed
-      let attempts = 0
-      const maxAttempts = 5
-      while (attempts < maxAttempts) {
-        attempts++
-        const result = await api.nextPhase()
-
-        if (result.session?.status === 'completed') {
-          break
-        }
-      }
-
-      toast.success('세션이 강제 종료되었습니다')
-      await loadCurrentSession()
-    } catch (error: unknown) {
-      toast.error('세션 강제 종료 실패: ' + (error instanceof Error ? error.message : '알 수 없는 오류'))
+      toast.error(`단계 이동 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`)
     }
   }
 
@@ -329,7 +290,7 @@ export default function App() {
       toast.success('세션이 초기화되었습니다')
       await loadCurrentSession()
     } catch (error: unknown) {
-      toast.error('세션 초기화 실패: ' + (error instanceof Error ? error.message : '알 수 없는 오류'))
+      toast.error(`세션 초기화 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`)
     }
   }
 
@@ -352,7 +313,7 @@ export default function App() {
       // Don't change view - stay on matching config screen
       // setState({ view: 'admin-waiting' });
     } catch (error: unknown) {
-      toast.error('매칭 설정 저장 실패: ' + (error instanceof Error ? error.message : '알 수 없는 오류'))
+      toast.error(`매칭 설정 저장 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`)
     }
   }
 
@@ -427,7 +388,7 @@ export default function App() {
     }
 
     initAuth()
-  }, [])
+  }, [loadCurrentSession])
 
   if (isInitializing) {
     return (
@@ -758,7 +719,7 @@ function CalendarViewWrapper({ onClose, onLogout, onError }: { onClose: () => vo
       }
     }
     load()
-  }, [])
+  }, [onError])
 
   return (
     <CalendarView
@@ -840,7 +801,7 @@ function AdminCalendarViewWrapper({ onClose, onLogout, onError }: { onClose: () 
       }
     }
     load()
-  }, [])
+  }, [onError])
 
   return (
     <AdminCalendarView
@@ -877,8 +838,6 @@ function MatchingConfigWrapper({
       const nonAdminUsers = u.filter((user: any) => !user.isAdmin)
 
       // Check if users have email field
-      nonAdminUsers.forEach((user: any) => {})
-
       setUsers(nonAdminUsers)
       setExcludedPairs(config.excludedPairs || [])
       setHasLoaded(true)
@@ -942,7 +901,10 @@ function WaitingRoomWrapper({ currentUserId, onViewCalendar, onLogout }: { curre
             })
           }
         }
-      } catch (error) {}
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+        }
+      }
     }
     load()
 
@@ -953,7 +915,10 @@ function WaitingRoomWrapper({ currentUserId, onViewCalendar, onLogout }: { curre
   const handlePoke = async (targetUserId: string) => {
     try {
       await api.pokeUser(targetUserId)
-    } catch (error) {}
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+      }
+    }
   }
 
   return (

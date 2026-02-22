@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/app/components/ui/button'
-import { Card } from '@/app/components/ui/card'
 import { Clock, Bell } from 'lucide-react'
 
 interface ReviewWritingProps {

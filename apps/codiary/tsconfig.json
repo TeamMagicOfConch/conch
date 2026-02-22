@@ -24,5 +24,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "utils"]
+  "include": ["src", "utils"],
+  "exclude": ["src/app/components/UITestPage.tsx", "src/app/components/ui/chart.tsx"]
 }

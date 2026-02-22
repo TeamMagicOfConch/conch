@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Button } from '@/app/components/ui/button'
 import { ScrollArea } from '@/app/components/ui/scroll-area'
 import { Card } from '@/app/components/ui/card'
@@ -113,9 +113,7 @@ export function AdminCalendarView({ history, loading = false, onClose, onLogout 
   const weekdays = ['일', '월', '화', '수', '목', '금', '토']
 
   // Get all sessions for a date
-  const getSessionsForDate = (dk: string): SessionHistory[] => {
-    return sessionsByDate.get(dk) || []
-  }
+  const getSessionsForDate = useCallback((dk: string): SessionHistory[] => sessionsByDate.get(dk) || [], [sessionsByDate])
 
   // Get unique participants count for a date
   const getParticipantCount = (dk: string): number => {
@@ -131,7 +129,7 @@ export function AdminCalendarView({ history, loading = false, onClose, onLogout 
     const session = sessions.find((s) => s.sessionId === selectedSessionId)
     if (!session) return null
     return session.entries.find((e) => e.userId === selectedUserId) || null
-  }, [selectedDate, selectedSessionId, selectedUserId, sessionsByDate])
+  }, [getSessionsForDate, selectedDate, selectedSessionId, selectedUserId])
 
   const formatDate = (dk: string) => {
     const [y, m, d] = dk.split('-')

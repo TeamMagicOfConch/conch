@@ -16,11 +16,9 @@ interface DiaryEditorProps {
 export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchingWarning = false, hasRequestedTime, onRequestTime }: DiaryEditorProps) {
   const [content, setContent] = useState('')
   const [time, setTime] = useState(defaultTime)
-  const [isTyping, setIsTyping] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [submittedContent, setSubmittedContent] = useState('')
-  const typingTimeoutRef = useRef<NodeJS.Timeout>()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Sync with defaultTime prop when it changes
@@ -40,7 +38,6 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value)
-    setIsTyping(true)
 
     // Auto-grow textarea
     const textarea = textareaRef.current
@@ -53,14 +50,6 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
     if (isSubmitted && e.target.value !== submittedContent) {
       setIsSubmitted(false)
     }
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current)
-    }
-
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false)
-    }, 1000)
   }
 
   const handleSubmit = async () => {
@@ -125,7 +114,7 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
       <div className="flex-1 flex items-start justify-center p-4 md:p-8 pt-4 md:pt-12 overflow-auto">
         <div className="max-w-3xl w-full">
           <div
-            className={`bg-white rounded-lg transition-colors duration-300`}
+            className="bg-white rounded-lg transition-colors duration-300"
             style={{
               minHeight: '300px',
             }}

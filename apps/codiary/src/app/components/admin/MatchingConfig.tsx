@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/app/components/ui/button'
-import { Card } from '@/app/components/ui/card'
 import { X, LogOut, Trash2 } from 'lucide-react'
 
 interface User {
@@ -30,7 +29,7 @@ export function MatchingConfig({ users, excludedPairs: initialExcludedPairs, onS
   }, [initialExcludedPairs])
 
   // Filter out any null/undefined users
-  const validUsers = users.filter((user): user is User => user != null && user.userId != null)
+  const validUsers = users.filter((user): user is User => user !== null && user !== undefined && user.userId !== null && user.userId !== undefined)
 
   const toggleUser = (userId: string) => {
     setSelectedUsers((prev) => {
