@@ -1,7 +1,7 @@
-import type { AxiosResponse, InternalAxiosRequestConfig, AxiosError } from 'axios'
+import type { HttpResponse } from './types/conchApi'
 import { Api as ConchApi, RegisterReq, ResponseAuthRes, StreakReq } from './types/conchApi'
 import { decodeJwtPayload } from './util'
-import { REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
+import { SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
 export { UNREGISTERED_CODE, REFRESH_TOKEN_EXPIRED_CODE, SEMI_USER_ROLE, NEED_MORE_ONBOARDING_CODE } from './consts'
 
@@ -29,6 +29,12 @@ export type ConchAuthDeps = {
   accessTokenKey?: string
   refreshTokenKey?: string
   usernameKey?: string
+}
+
+type ApiHttpError = Partial<HttpResponse<unknown, unknown>> & {
+  status?: number
+  error?: unknown
+  data?: unknown
 }
 
 export type ConchAuthHelpers = {
@@ -62,7 +68,30 @@ export function createConchAuthHelpers(deps: ConchAuthDeps): ConchAuthHelpers {
   const refreshTokenKey = deps.refreshTokenKey || DEFAULT_KEYS.refreshToken
   const usernameKey = deps.usernameKey || DEFAULT_KEYS.username
 
-  const axiosInstance = deps.swaggerClient.instance
+  function extractPayload<T>(response: HttpResponse<T>): T {
+    return response.data
+  }
+
+  function getErrorStatus(error: unknown): number | undefined {
+    if (!error || typeof error !== 'object') return undefined
+    const e = error as ApiHttpError
+    return typeof e.status === 'number' ? e.status : undefined
+  }
+
+  function getErrorPayload<T>(error: unknown): T | null {
+    if (!error || typeof error !== 'object') return null
+    const e = error as ApiHttpError
+
+    if (e.error && typeof e.error === 'object') {
+      return e.error as T
+    }
+
+    if (e.data && typeof e.data === 'object') {
+      return e.data as T
+    }
+
+    return null
+  }
 
   async function setTokens(tokens: TokenBundle): Promise<boolean> {
     const tasks: Array<Promise<void>> = []
@@ -80,9 +109,9 @@ export function createConchAuthHelpers(deps: ConchAuthDeps): ConchAuthHelpers {
     const osId = OS_ID_DEBUG || (await (deps.getDeviceId ? deps.getDeviceId() : Promise.resolve('unknown-device')))
     try {
       const res = await deps.swaggerClient.authController.login({ osId })
-      const payload = res.data
-      const { accessToken, refreshToken, username } = (payload?.data ?? {}) as TokenBundle
-      const setTokensResult = await setTokens({ accessToken: accessToken ?? null, refreshToken: refreshToken ?? null, username })
+      const payload = extractPayload<ResponseAuthRes>(res)
+      const { accessToken, refreshToken: nextRefreshToken, username } = (payload?.data ?? {}) as TokenBundle
+      const setTokensResult = await setTokens({ accessToken: accessToken ?? null, refreshToken: nextRefreshToken ?? null, username })
       if (!setTokensResult) {
         return Promise.reject(new Error('Failed to set tokens'))
       }
@@ -93,13 +122,13 @@ export function createConchAuthHelpers(deps: ConchAuthDeps): ConchAuthHelpers {
       }
       return payload
     } catch (e: unknown) {
-      const error = e as AxiosError
       // 로그인에서 400 | 404은 "유저 미등록" 정상 흐름이므로 reject하지 않고 payload를 그대로 반환
-      if (error?.response?.status === 400 || error?.response?.status === 404) {
-        const payload = error.response.data
-        return payload as ResponseAuthRes
+      const status = getErrorStatus(e)
+      if (status === 400 || status === 404) {
+        const payload = getErrorPayload<ResponseAuthRes>(e)
+        if (payload) return payload
       }
-      return Promise.reject(error)
+      return Promise.reject(e)
     }
   }
 
@@ -111,14 +140,14 @@ export function createConchAuthHelpers(deps: ConchAuthDeps): ConchAuthHelpers {
       osType,
       ...args,
     })
-    const payload = res.data
+    const payload = extractPayload<ResponseAuthRes>(res)
     const { accessToken, refreshToken: newRefresh, username } = (payload?.data ?? {}) as TokenBundle
     return setTokens({ accessToken: accessToken ?? null, refreshToken: newRefresh ?? null, username })
   }
 
   async function registerOnboarding(args: StreakReq) {
     const res = await deps.swaggerClient.semiUserController.registerStreak(args)
-    const payload = res.data
+    const payload = extractPayload<ResponseAuthRes>(res)
     const { accessToken, refreshToken: newRefresh } = (payload?.data ?? {}) as TokenBundle
     return setTokens({ accessToken: accessToken ?? null, refreshToken: newRefresh ?? null })
   }
@@ -129,79 +158,10 @@ export function createConchAuthHelpers(deps: ConchAuthDeps): ConchAuthHelpers {
     const res = await deps.swaggerClient.authController.reissue({
       headers: { 'Refresh-Token': storedRefresh },
     })
-    const payload = res.data
+    const payload = extractPayload<ResponseAuthRes>(res)
     const { accessToken, refreshToken: newRefresh, username } = (payload?.data ?? {}) as TokenBundle
     await setTokens({ accessToken: accessToken ?? null, refreshToken: newRefresh ?? null, username })
     return payload
-  }
-
-  async function onRequest(_config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> {
-    const config = { ..._config }
-    const token = await getStored(deps.storage, accessTokenKey)
-    const url = config.url || ''
-    const isAuthentication = url.includes('login') || url.includes('register')
-    if (token && !isAuthentication) {
-      // eslint-disable-next-line no-param-reassign
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    // eslint-disable-next-line no-param-reassign
-    config.headers['Content-Type'] = 'application/json'
-    return config
-  }
-
-  async function onRequestError(error: any): Promise<never> {
-    return Promise.reject(error)
-  }
-
-  async function onResponse<T = any>(response: AxiosResponse<T>): Promise<AxiosResponse<T>> {
-    const anyRes: any = response
-    const code: string | undefined = anyRes?.data?.code
-    if (code === REFRESH_TOKEN_EXPIRED_CODE) {
-      await login()
-      return response
-    }
-    return response
-  }
-
-  async function onResponseError(error: any): Promise<any> {
-    const originalRequest = error.config || {}
-
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      // eslint-disable-next-line no-param-reassign
-      originalRequest._retry = true
-      try {
-        const res = await refreshToken()
-        const newAccess = res?.data?.accessToken ?? null
-        if (newAccess) {
-          // eslint-disable-next-line no-param-reassign
-          originalRequest.headers = originalRequest.headers || {}
-          // eslint-disable-next-line no-param-reassign
-          originalRequest.headers.Authorization = `Bearer ${newAccess}`
-        }
-        return axiosInstance(originalRequest)
-      } catch {
-        const res = await login()
-        const newAccess = res?.data?.accessToken ?? null
-        if (newAccess) {
-          // eslint-disable-next-line no-param-reassign
-          originalRequest.headers = originalRequest.headers || {}
-          // eslint-disable-next-line no-param-reassign
-          originalRequest.headers.Authorization = `Bearer ${newAccess}`
-        }
-        return axiosInstance(originalRequest)
-      }
-    }
-
-    return Promise.reject(error)
-  }
-
-  // 중복 등록 방지
-  const flag = '__conchAuthInterceptors__'
-  const hasInterceptors = (axiosInstance as any)[flag]
-  if (!hasInterceptors) {
-    axiosInstance.interceptors.response.use(onResponse, onResponseError)
-    axiosInstance.interceptors.request.use(onRequest, onRequestError)
-    ;(axiosInstance as any)[flag] = true
   }
 
   return {

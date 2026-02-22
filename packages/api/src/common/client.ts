@@ -1,76 +1,127 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-
 export interface ApiClientConfig {
-  baseURL: string;
-  headers?: Record<string, string>;
-  timeout?: number;
+  baseURL: string
+  headers?: Record<string, string>
+  timeout?: number
+  fetchImpl?: typeof fetch
+}
+
+type RequestConfig = RequestInit & {
+  timeout?: number
 }
 
 export class ApiClient {
-  private client: AxiosInstance
+  private baseURL: string
+
+  private defaultHeaders: Record<string, string>
+
+  private timeout: number
+
+  private fetchImpl: typeof fetch
+
+  private authToken: string | null = null
 
   constructor(config: ApiClientConfig) {
-    this.client = axios.create({
-      baseURL: config.baseURL,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(config.headers || {}),
-      },
-      timeout: config.timeout || 30000,
-      withCredentials: true,
+    this.baseURL = config.baseURL
+    this.defaultHeaders = {
+      'Content-Type': 'application/json',
+      ...(config.headers || {}),
+    }
+    this.timeout = config.timeout || 30000
+    this.fetchImpl = config.fetchImpl || globalThis.fetch
+  }
+
+  setAuthToken(token: string) {
+    this.authToken = token
+  }
+
+  clearAuthToken() {
+    this.authToken = null
+  }
+
+  private buildHeaders(input?: HeadersInit): Headers {
+    const headers = new Headers(this.defaultHeaders)
+    if (this.authToken) {
+      headers.set('Authorization', `Bearer ${this.authToken}`)
+    }
+
+    if (input instanceof Headers) {
+      input.forEach((value, key) => headers.set(key, value))
+      return headers
+    }
+
+    if (Array.isArray(input)) {
+      input.forEach(([key, value]) => headers.set(key, value))
+      return headers
+    }
+
+    Object.entries(input || {}).forEach(([key, value]) => {
+      if (typeof value !== 'undefined') {
+        headers.set(key, String(value))
+      }
     })
 
-    // 요청 인터셉터 설정
-    this.client.interceptors.request.use(
-      (config) => 
-        // 필요한 경우 토큰 추가 등의 작업 수행
-        config
-      ,
-      (error) => Promise.reject(error)
-    )
-
-    // 응답 인터셉터 설정
-    this.client.interceptors.response.use(
-      (response) => response,
-      (error) => 
-        // 에러 처리 로직
-        Promise.reject(error)
-      
-    )
+    return headers
   }
 
-  // HTTP 메서드 래퍼
-  async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.get<T>(url, config)
-    return response.data
+  private async request<T>(url: string, config: RequestConfig = {}): Promise<T> {
+    const timeout = typeof config.timeout === 'number' ? config.timeout : this.timeout
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), timeout)
+
+    try {
+      const response = await this.fetchImpl(`${this.baseURL}${url}`, {
+        ...config,
+        credentials: 'include',
+        headers: this.buildHeaders(config.headers),
+        signal: config.signal || controller.signal,
+      })
+
+      const contentType = response.headers.get('content-type') || ''
+      const parsedBody = contentType.includes('application/json') ? await response.json() : await response.text()
+
+      if (!response.ok) {
+        throw new Error(typeof parsedBody === 'string' ? parsedBody : JSON.stringify(parsedBody))
+      }
+
+      return parsedBody as T
+    } finally {
+      clearTimeout(timer)
+    }
   }
 
-  async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.post<T>(url, data, config)
-    return response.data
+  async get<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
+    return this.request<T>(url, { ...(config || {}), method: 'GET' })
   }
 
-  async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.put<T>(url, data, config)
-    return response.data
+  async post<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
+    return this.request<T>(url, {
+      ...(config || {}),
+      method: 'POST',
+      body: typeof data === 'undefined' ? undefined : JSON.stringify(data),
+    })
   }
 
-  async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.delete<T>(url, config)
-    return response.data
+  async put<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
+    return this.request<T>(url, {
+      ...(config || {}),
+      method: 'PUT',
+      body: typeof data === 'undefined' ? undefined : JSON.stringify(data),
+    })
   }
 
-  async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.patch<T>(url, data, config)
-    return response.data
+  async delete<T = unknown>(url: string, config?: RequestConfig): Promise<T> {
+    return this.request<T>(url, { ...(config || {}), method: 'DELETE' })
   }
 
-  // Axios 인스턴스 직접 접근 메서드
-  getAxiosInstance(): AxiosInstance {
-    return this.client
+  async patch<T = unknown>(url: string, data?: unknown, config?: RequestConfig): Promise<T> {
+    return this.request<T>(url, {
+      ...(config || {}),
+      method: 'PATCH',
+      body: typeof data === 'undefined' ? undefined : JSON.stringify(data),
+    })
   }
 }
 
 export function createApiClient(config: ApiClientConfig): ApiClient {
   return new ApiClient(config)
-} 
+}

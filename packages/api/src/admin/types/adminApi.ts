@@ -11,14 +11,14 @@
  */
 
 export interface AdminSignUpForm {
-  adminName?: string;
-  password?: string;
-  email?: string;
+  adminName?: string
+  password?: string
+  email?: string
 }
 
 export interface LoginRequest {
-  adminName?: string;
-  password?: string;
+  adminName?: string
+  password?: string
 }
 
 export namespace ReviewAnalyzeController {
@@ -30,11 +30,11 @@ export namespace ReviewAnalyzeController {
    * @response `200` `string` OK
    */
   export namespace Decrypt {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = Record<string, string>;
-    export type RequestHeaders = {};
-    export type ResponseBody = string;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = Record<string, string>
+    export type RequestHeaders = {}
+    export type ResponseBody = string
   }
 
   /**
@@ -49,22 +49,22 @@ export namespace ReviewAnalyzeController {
    * @response `500` `void` 서버 오류
    */
   export namespace ExportReviewCsv {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 조회 시작일 (yyyy-MM-dd)
        * @format date
        */
-      startDate: string;
+      startDate: string
       /**
        * 조회 종료일 (yyyy-MM-dd)
        * @format date
        */
-      endDate: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = void;
+      endDate: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = void
   }
 }
 
@@ -77,11 +77,11 @@ export namespace AdminSignupController {
    * @response `200` `object` OK
    */
   export namespace Signup {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AdminSignUpForm;
-    export type RequestHeaders = {};
-    export type ResponseBody = object;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AdminSignUpForm
+    export type RequestHeaders = {}
+    export type ResponseBody = object
   }
 }
 
@@ -94,189 +94,216 @@ export namespace AdminLoginController {
    * @response `200` `object` OK
    */
   export namespace Login {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = LoginRequest;
-    export type RequestHeaders = {};
-    export type ResponseBody = object;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = LoginRequest
+    export type RequestHeaders = {}
+    export type ResponseBody = object
   }
 }
 
-import type {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  HeadersDefaults,
-  ResponseType,
-} from "axios";
-import axios from "axios";
+export type QueryParamsType = Record<string | number, any>
+export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>
 
-export type QueryParamsType = Record<string | number, any>;
-
-export interface FullRequestParams
-  extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
+export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   /** set parameter to `true` for call `securityWorker` for this request */
-  secure?: boolean;
+  secure?: boolean
   /** request path */
-  path: string;
+  path: string
   /** content type of request body */
-  type?: ContentType;
+  type?: ContentType
   /** query params */
-  query?: QueryParamsType;
+  query?: QueryParamsType
   /** format of response (i.e. response.json() -> format: "json") */
-  format?: ResponseType;
+  format?: ResponseFormat
   /** request body */
-  body?: unknown;
+  body?: unknown
+  /** base url */
+  baseUrl?: string
+  /** request cancellation token */
+  cancelToken?: CancelToken
 }
 
-export type RequestParams = Omit<
-  FullRequestParams,
-  "body" | "method" | "query" | "path"
->;
+export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>
 
-export interface ApiConfig<SecurityDataType = unknown>
-  extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
-  securityWorker?: (
-    securityData: SecurityDataType | null,
-  ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
-  secure?: boolean;
-  format?: ResponseType;
+export interface ApiConfig<SecurityDataType = unknown> {
+  baseUrl?: string
+  baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>
+  securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void
+  customFetch?: typeof fetch
 }
+
+export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
+  data: D
+  error: E
+}
+
+type CancelToken = Symbol | string | number
 
 export enum ContentType {
-  Json = "application/json",
-  FormData = "multipart/form-data",
-  UrlEncoded = "application/x-www-form-urlencoded",
-  Text = "text/plain",
+  Json = 'application/json',
+  JsonApi = 'application/vnd.api+json',
+  FormData = 'multipart/form-data',
+  UrlEncoded = 'application/x-www-form-urlencoded',
+  Text = 'text/plain',
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public instance: AxiosInstance;
-  private securityData: SecurityDataType | null = null;
-  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
-  private secure?: boolean;
-  private format?: ResponseType;
+  public baseUrl: string = 'http://admin.magicofconch.site'
+  private securityData: SecurityDataType | null = null
+  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker']
+  private abortControllers = new Map<CancelToken, AbortController>()
+  private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams)
+  private baseApiParams: RequestParams = {
+    credentials: 'same-origin',
+    headers: {},
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+  }
 
-  constructor({
-    securityWorker,
-    secure,
-    format,
-    ...axiosConfig
-  }: ApiConfig<SecurityDataType> = {}) {
-    if (!axiosConfig.baseURL) {
-      throw new Error('baseURL is required');
-    }
-    this.instance = axios.create({
-      ...axiosConfig,
-      baseURL: axiosConfig.baseURL,
-    });
-    this.secure = secure;
-    this.format = format;
-    this.securityWorker = securityWorker;
+  constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
+    Object.assign(this, apiConfig)
   }
 
   public setSecurityData = (data: SecurityDataType | null) => {
-    this.securityData = data;
-  };
+    this.securityData = data
+  }
 
-  protected mergeRequestParams(
-    params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig,
-  ): AxiosRequestConfig {
-    const method = params1.method || (params2 && params2.method);
+  protected encodeQueryParam(key: string, value: any) {
+    const encodedKey = encodeURIComponent(key)
+    return `${encodedKey}=${encodeURIComponent(typeof value === 'number' ? value : `${value}`)}`
+  }
 
+  protected addQueryParam(query: QueryParamsType, key: string) {
+    return this.encodeQueryParam(key, query[key])
+  }
+
+  protected addArrayQueryParam(query: QueryParamsType, key: string) {
+    const value = query[key]
+    return value.map((v: any) => this.encodeQueryParam(key, v)).join('&')
+  }
+
+  protected toQueryString(rawQuery?: QueryParamsType): string {
+    const query = rawQuery || {}
+    const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key])
+    return keys.map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key))).join('&')
+  }
+
+  protected addQueryParams(rawQuery?: QueryParamsType): string {
+    const queryString = this.toQueryString(rawQuery)
+    return queryString ? `?${queryString}` : ''
+  }
+
+  private contentFormatters: Record<ContentType, (input: any) => any> = {
+    [ContentType.Json]: (input: any) => (input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input),
+    [ContentType.JsonApi]: (input: any) => (input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input),
+    [ContentType.Text]: (input: any) => (input !== null && typeof input !== 'string' ? JSON.stringify(input) : input),
+    [ContentType.FormData]: (input: any) => {
+      if (input instanceof FormData) {
+        return input
+      }
+
+      return Object.keys(input || {}).reduce((formData, key) => {
+        const property = input[key]
+        formData.append(key, property instanceof Blob ? property : typeof property === 'object' && property !== null ? JSON.stringify(property) : `${property}`)
+        return formData
+      }, new FormData())
+    },
+    [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
+  }
+
+  protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
     return {
-      ...this.instance.defaults,
+      ...this.baseApiParams,
       ...params1,
       ...(params2 || {}),
       headers: {
-        ...((method &&
-          this.instance.defaults.headers[
-            method.toLowerCase() as keyof HeadersDefaults
-          ]) ||
-          {}),
+        ...(this.baseApiParams.headers || {}),
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
-    };
-  }
-
-  protected stringifyFormItem(formItem: unknown) {
-    if (typeof formItem === "object" && formItem !== null) {
-      return JSON.stringify(formItem);
-    } else {
-      return `${formItem}`;
     }
   }
 
-  protected createFormData(input: Record<string, unknown>): FormData {
-    if (input instanceof FormData) {
-      return input;
-    }
-    return Object.keys(input || {}).reduce((formData, key) => {
-      const property = input[key];
-      const propertyContent: any[] =
-        property instanceof Array ? property : [property];
-
-      for (const formItem of propertyContent) {
-        const isFileType = formItem instanceof Blob || formItem instanceof File;
-        formData.append(
-          key,
-          isFileType ? formItem : this.stringifyFormItem(formItem),
-        );
+  protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
+    if (this.abortControllers.has(cancelToken)) {
+      const abortController = this.abortControllers.get(cancelToken)
+      if (abortController) {
+        return abortController.signal
       }
+      return void 0
+    }
 
-      return formData;
-    }, new FormData());
+    const abortController = new AbortController()
+    this.abortControllers.set(cancelToken, abortController)
+    return abortController.signal
   }
 
-  public request = async <T = any, _E = any>({
+  public abortRequest = (cancelToken: CancelToken) => {
+    const abortController = this.abortControllers.get(cancelToken)
+
+    if (abortController) {
+      abortController.abort()
+      this.abortControllers.delete(cancelToken)
+    }
+  }
+
+  public request = async <T = any, E = any>({
+    body,
     secure,
     path,
     type,
     query,
     format,
-    body,
+    baseUrl,
+    cancelToken,
     ...params
-  }: FullRequestParams): Promise<AxiosResponse<T>> => {
+  }: FullRequestParams): Promise<HttpResponse<T, E>> => {
     const secureParams =
-      ((typeof secure === "boolean" ? secure : this.secure) &&
-        this.securityWorker &&
-        (await this.securityWorker(this.securityData))) ||
-      {};
-    const requestParams = this.mergeRequestParams(params, secureParams);
-    const responseFormat = format || this.format || undefined;
+      ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) && this.securityWorker && (await this.securityWorker(this.securityData))) || {}
+    const requestParams = this.mergeRequestParams(params, secureParams)
+    const queryString = query && this.toQueryString(query)
+    const payloadFormatter = this.contentFormatters[type || ContentType.Json]
+    const responseFormat = format || requestParams.format
 
-    if (
-      type === ContentType.FormData &&
-      body &&
-      body !== null &&
-      typeof body === "object"
-    ) {
-      body = this.createFormData(body as Record<string, unknown>);
-    }
-
-    if (
-      type === ContentType.Text &&
-      body &&
-      body !== null &&
-      typeof body !== "string"
-    ) {
-      body = JSON.stringify(body);
-    }
-
-    return this.instance.request({
+    return this.customFetch(`${baseUrl || this.baseUrl || ''}${path}${queryString ? `?${queryString}` : ''}`, {
       ...requestParams,
       headers: {
         ...(requestParams.headers || {}),
-        ...(type ? { "Content-Type": type } : {}),
+        ...(type && type !== ContentType.FormData ? { 'Content-Type': type } : {}),
       },
-      params: query,
-      responseType: responseFormat,
-      data: body,
-      url: path,
-    });
-  };
+      signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
+      body: typeof body === 'undefined' || body === null ? null : payloadFormatter(body),
+    }).then(async (response) => {
+      const r = response as HttpResponse<T, E>
+      r.data = null as unknown as T
+      r.error = null as unknown as E
+
+      const responseToParse = responseFormat ? response.clone() : response
+      const data = !responseFormat
+        ? r
+        : await responseToParse[responseFormat]()
+            .then((data) => {
+              if (r.ok) {
+                r.data = data
+              } else {
+                r.error = data
+              }
+              return r
+            })
+            .catch((e) => {
+              r.error = e
+              return r
+            })
+
+      if (cancelToken) {
+        this.abortControllers.delete(cancelToken)
+      }
+
+      if (!response.ok) throw data
+      return data
+    })
+  }
 }
 
 /**
@@ -286,9 +313,7 @@ export class HttpClient<SecurityDataType = unknown> {
  *
  * 소라 어드민에서 사용하는 API 문서입니다.
  */
-export class Api<
-  SecurityDataType extends unknown,
-> extends HttpClient<SecurityDataType> {
+export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   reviewAnalyzeController = {
     /**
      * No description
@@ -301,7 +326,7 @@ export class Api<
     decrypt: (data: Record<string, string>, params: RequestParams = {}) =>
       this.request<string, any>({
         path: `/admin/review/decrypt`,
-        method: "POST",
+        method: 'POST',
         body: data,
         type: ContentType.Json,
         ...params,
@@ -325,22 +350,22 @@ export class Api<
          * 조회 시작일 (yyyy-MM-dd)
          * @format date
          */
-        startDate: string;
+        startDate: string
         /**
          * 조회 종료일 (yyyy-MM-dd)
          * @format date
          */
-        endDate: string;
+        endDate: string
       },
       params: RequestParams = {},
     ) =>
       this.request<void, void>({
         path: `/admin/review/export`,
-        method: "GET",
+        method: 'GET',
         query: query,
         ...params,
       }),
-  };
+  }
   adminSignupController = {
     /**
      * No description
@@ -353,12 +378,12 @@ export class Api<
     signup: (data: AdminSignUpForm, params: RequestParams = {}) =>
       this.request<object, any>({
         path: `/admin/api/signup`,
-        method: "POST",
+        method: 'POST',
         body: data,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
   adminLoginController = {
     /**
      * No description
@@ -371,10 +396,10 @@ export class Api<
     login: (data: LoginRequest, params: RequestParams = {}) =>
       this.request<object, any>({
         path: `/admin/api/login`,
-        method: "POST",
+        method: 'POST',
         body: data,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
 }

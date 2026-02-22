@@ -407,10 +407,6 @@ importers:
         version: 18.2.0(react@19.1.0)
 
   packages/api:
-    dependencies:
-      axios:
-        specifier: ^1.6.2
-        version: 1.13.2
     devDependencies:
       '@types/node':
         specifier: ^20.10.0
