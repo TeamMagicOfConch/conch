@@ -119,7 +119,10 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] p-8">
+    <div
+      className="min-h-screen bg-[#fafafa] p-8"
+      data-testid="admin-session-control"
+    >
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header with logout */}
         <div className="flex items-center justify-between">
@@ -129,6 +132,7 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
           </div>
           <div className="flex items-center gap-3">
             <Button
+              data-testid="control-next-phase-button"
               onClick={handleNextPhase}
               disabled={!canAdvance || isAdvancing}
               className="bg-black hover:bg-gray-800 text-white gap-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -137,6 +141,7 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
               <ChevronRight className="w-4 h-4" />
             </Button>
             <Button
+              data-testid="control-reset-session-button"
               onClick={onResetSession}
               variant="outline"
               className="gap-2 border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600"
@@ -145,6 +150,7 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
               세션 초기화
             </Button>
             <button
+              data-testid="control-logout-button"
               onClick={onLogout}
               className="text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-2 text-sm px-3 py-2"
             >
@@ -159,12 +165,16 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Clock className="w-5 h-5 text-gray-500" />
-              <div className="text-3xl font-light font-mono text-gray-900">
+              <div
+                className="text-3xl font-light font-mono text-gray-900"
+                data-testid="control-timer-display"
+              >
                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
               </div>
             </div>
             <div className="flex gap-2">
               <Button
+                data-testid="control-time-decrease"
                 onClick={() => adjustTime(-30)}
                 variant="outline"
                 size="icon"
@@ -174,6 +184,7 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
                 <Minus className="w-4 h-4" />
               </Button>
               <Button
+                data-testid="control-time-increase"
                 onClick={() => adjustTime(30)}
                 variant="outline"
                 size="icon"
@@ -216,6 +227,7 @@ export function SessionControl({ session, statuses, onNextPhase, onResetSession,
           {statuses.map((status) => (
             <Card
               key={status.userId}
+              data-testid={`control-participant-${status.userId}`}
               className={`p-4 transition-all duration-200 ${
                 status.completed
                   ? 'bg-black text-white border-black'

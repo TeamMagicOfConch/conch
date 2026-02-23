@@ -12,6 +12,13 @@ export default defineConfig({
   workers: 1,
   reporter: [['list']],
   use: {
+    baseURL: process.env.CODIARY_BASE_URL ?? 'http://127.0.0.1:4173',
     trace: 'retain-on-failure',
+  },
+  webServer: {
+    command: 'pnpm --dir ../.. --filter @conch/codiary dev --host 127.0.0.1 --port 4173',
+    url: process.env.CODIARY_BASE_URL ?? 'http://127.0.0.1:4173',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
   },
 })

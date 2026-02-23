@@ -66,16 +66,23 @@ export function ResponseEditor({ diary, onSubmit, onLogout, defaultTime = 300, h
   const seconds = time % 60
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div
+      className="min-h-screen bg-white flex flex-col"
+      data-testid="response-editor"
+    >
       {/* Header with timer */}
       <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
         <div className="max-w-6xl mx-auto px-8 py-4 flex justify-center relative">
           <div className="flex items-center gap-3">
-            <div className="text-2xl font-light tracking-wider text-gray-900 font-mono">
+            <div
+              className="text-2xl font-light tracking-wider text-gray-900 font-mono"
+              data-testid="response-timer"
+            >
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
             {time === 0 && !hasRequestedTime && (
               <button
+                data-testid="response-request-time-button"
                 onClick={onRequestTime}
                 className="text-sm px-3 py-1 bg-amber-400 hover:bg-amber-500 text-amber-900 rounded-full animate-pulse transition-colors flex items-center gap-1"
               >
@@ -86,6 +93,7 @@ export function ResponseEditor({ diary, onSubmit, onLogout, defaultTime = 300, h
             {time === 0 && hasRequestedTime && <span className="text-sm px-3 py-1 bg-gray-200 text-gray-500 rounded-full">요청 완료</span>}
           </div>
           <button
+            data-testid="response-logout-button"
             onClick={onLogout}
             className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-2 text-sm"
           >
@@ -107,7 +115,12 @@ export function ResponseEditor({ diary, onSubmit, onLogout, defaultTime = 300, h
             }}
           >
             <div className="prose prose-gray max-w-none">
-              <p className="whitespace-pre-wrap leading-relaxed text-gray-900">{diary.content}</p>
+              <p
+                className="whitespace-pre-wrap leading-relaxed text-gray-900"
+                data-testid="response-diary-content"
+              >
+                {diary.content}
+              </p>
             </div>
           </div>
         </div>
@@ -118,6 +131,7 @@ export function ResponseEditor({ diary, onSubmit, onLogout, defaultTime = 300, h
           {/* Scrollable text area */}
           <div className="flex-1 overflow-y-auto bg-white min-h-[300px]">
             <Textarea
+              data-testid="response-textarea"
               value={content}
               onChange={handleChange}
               placeholder=""
@@ -131,6 +145,7 @@ export function ResponseEditor({ diary, onSubmit, onLogout, defaultTime = 300, h
           {/* Fixed footer at bottom */}
           <div className="pt-4 pb-4 md:pb-8 flex justify-end border-t border-gray-100">
             <Button
+              data-testid="response-submit-button"
               onClick={handleSubmit}
               disabled={loading || isSubmitted}
               className="bg-black hover:bg-gray-800 text-white px-8 disabled:bg-gray-300"

@@ -53,14 +53,22 @@ export function WaitingRoom({ participants, currentUserId, onViewCalendar, onLog
   const otherParticipants = participants.filter((p) => p.userId !== currentUserId)
 
   return (
-    <div className="min-h-[100dvh] bg-[#fafafa] flex flex-col items-center justify-between p-8">
+    <div
+      className="min-h-[100dvh] bg-[#fafafa] flex flex-col items-center justify-between p-8"
+      data-testid="waiting-room"
+    >
       <div className="flex-1 flex items-center justify-center w-full">
         <div className="text-center space-y-6 max-w-md w-full">
           <div className="space-y-4">
             <h1 className="text-3xl font-normal tracking-tight text-gray-900">대기실</h1>
             <div className="flex items-center justify-center gap-2 text-gray-500">
               <Users className="w-5 h-5" />
-              <span className="text-lg">{participants.length}명 대기 중</span>
+              <span
+                className="text-lg"
+                data-testid="waiting-participant-count"
+              >
+                {participants.length}명 대기 중
+              </span>
             </div>
           </div>
 
@@ -75,6 +83,7 @@ export function WaitingRoom({ participants, currentUserId, onViewCalendar, onLog
                   >
                     <span className="text-sm text-gray-700">{p.name}</span>
                     <button
+                      data-testid={`waiting-poke-${p.userId}`}
                       onClick={() => handlePoke(p.userId)}
                       disabled={pokedUsers.has(p.userId)}
                       className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full transition-colors ${
@@ -96,6 +105,7 @@ export function WaitingRoom({ participants, currentUserId, onViewCalendar, onLog
 
           <div className="space-y-3 pt-2">
             <Button
+              data-testid="waiting-calendar-button"
               onClick={onViewCalendar}
               variant="outline"
               className="w-full py-6 text-base border-gray-300 text-gray-700 hover:bg-gray-100 flex items-center justify-center gap-2"
@@ -105,6 +115,7 @@ export function WaitingRoom({ participants, currentUserId, onViewCalendar, onLog
             </Button>
 
             <a
+              data-testid="waiting-about-link"
               href="/about"
               target="_blank"
               rel="noopener noreferrer"
@@ -125,6 +136,7 @@ export function WaitingRoom({ participants, currentUserId, onViewCalendar, onLog
 
       <div className="w-full flex justify-center pb-4">
         <Button
+          data-testid="waiting-logout-button"
           onClick={onLogout}
           variant="outline"
           className="px-12 py-6 text-lg border-gray-300 text-gray-600 hover:bg-gray-100"

@@ -154,12 +154,16 @@ export function CalendarView({ history, loading = false, onClose, onLogout }: Ca
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div
+      className="min-h-screen bg-white flex flex-col"
+      data-testid="calendar-view"
+    >
       {/* Header */}
       <div className="border-b border-gray-200 bg-white">
         <div className="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
+              data-testid="calendar-back-button"
               onClick={selectedEntry ? () => setSelectedEntry(null) : onClose}
               variant="ghost"
               size="icon"
@@ -170,6 +174,7 @@ export function CalendarView({ history, loading = false, onClose, onLogout }: Ca
             <h1 className="text-2xl font-normal tracking-tight text-gray-900">지난 일기</h1>
           </div>
           <Button
+            data-testid="calendar-logout-button"
             onClick={onLogout}
             variant="ghost"
             size="icon"
@@ -236,16 +241,21 @@ export function CalendarView({ history, loading = false, onClose, onLogout }: Ca
             {/* Month navigation */}
             <div className="flex items-center justify-between mb-8">
               <button
+                data-testid="calendar-prev-month"
                 onClick={prevMonth}
                 disabled={!canGoPrev}
                 className={`p-2 transition-colors ${canGoPrev ? 'text-gray-400 hover:text-gray-900' : 'text-gray-200 cursor-not-allowed'}`}
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2
+                className="text-xl font-semibold text-gray-900"
+                data-testid="calendar-month-display"
+              >
                 {year}년 {month + 1}월
               </h2>
               <button
+                data-testid="calendar-next-month"
                 onClick={nextMonth}
                 disabled={!canGoNext}
                 className={`p-2 transition-colors ${canGoNext ? 'text-gray-400 hover:text-gray-900' : 'text-gray-200 cursor-not-allowed'}`}

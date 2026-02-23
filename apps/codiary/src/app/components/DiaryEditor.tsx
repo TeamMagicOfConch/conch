@@ -71,16 +71,23 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
   const seconds = time % 60
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div
+      className="min-h-screen bg-white flex flex-col"
+      data-testid="diary-editor"
+    >
       {/* Header with timer */}
       <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-8 py-4 flex justify-center relative">
           <div className="flex items-center gap-3">
-            <div className="text-2xl font-light tracking-wider text-gray-900 font-mono">
+            <div
+              className="text-2xl font-light tracking-wider text-gray-900 font-mono"
+              data-testid="diary-timer"
+            >
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
             {time === 0 && !hasRequestedTime && (
               <button
+                data-testid="diary-request-time-button"
                 onClick={onRequestTime}
                 className="text-sm px-3 py-1 bg-amber-400 hover:bg-amber-500 text-amber-900 rounded-full animate-pulse transition-colors flex items-center gap-1"
               >
@@ -91,6 +98,7 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
             {time === 0 && hasRequestedTime && <span className="text-sm px-3 py-1 bg-gray-200 text-gray-500 rounded-full">요청 완료</span>}
           </div>
           <button
+            data-testid="diary-logout-button"
             onClick={onLogout}
             className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-2 text-sm"
           >
@@ -120,6 +128,7 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
             }}
           >
             <Textarea
+              data-testid="diary-textarea"
               ref={textareaRef}
               value={content}
               onChange={handleChange}
@@ -132,7 +141,12 @@ export function DiaryEditor({ onSubmit, onLogout, defaultTime = 600, showMatchin
           </div>
 
           {/* Character count */}
-          <div className="mt-4 text-sm text-gray-500">{content.length}자</div>
+          <div
+            className="mt-4 text-sm text-gray-500"
+            data-testid="diary-character-count"
+          >
+            {content.length}자
+          </div>
 
           {/* Spacer for fixed bottom sora */}
           <div className="h-28" />

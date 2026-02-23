@@ -34,7 +34,10 @@ export function AuthForm({ onSignIn }: AuthFormProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fafafa] p-4">
+    <div
+      className="min-h-screen flex items-center justify-center bg-[#fafafa] p-4"
+      data-testid="auth-form"
+    >
       <Card className="w-full max-w-md shadow-sm border-gray-200">
         <CardHeader className="space-y-1 text-center pb-8">
           <div className="flex justify-center mb-6">
@@ -57,6 +60,7 @@ export function AuthForm({ onSignIn }: AuthFormProps) {
             <div className="space-y-2">
               <label className="text-sm text-gray-600">이메일</label>
               <Input
+                data-testid="auth-email-input"
                 type="email"
                 placeholder=""
                 value={email}
@@ -67,6 +71,7 @@ export function AuthForm({ onSignIn }: AuthFormProps) {
             </div>
 
             <Button
+              data-testid="auth-submit-button"
               type="submit"
               className="w-full bg-black hover:bg-gray-800 text-white h-12"
               disabled={loading}
@@ -76,6 +81,7 @@ export function AuthForm({ onSignIn }: AuthFormProps) {
           </form>
           <div className="text-center pt-4">
             <a
+              data-testid="auth-about-link"
               href="/about"
               className="text-sm text-gray-400 hover:text-gray-600 underline underline-offset-2"
             >

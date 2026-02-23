@@ -24,9 +24,12 @@ export function SoraSubmit({ onSubmit, disabled, isSubmitted }: SoraSubmitProps)
   // Keep ref in sync for animation callbacks
   pullRef.current = pull
 
-  useEffect(() => () => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-  }, [])
+  useEffect(
+    () => () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    },
+    [],
+  )
 
   const animateRetract = useCallback((from: number, duration: number, onComplete: () => void) => {
     const start = performance.now()
@@ -77,7 +80,7 @@ export function SoraSubmit({ onSubmit, disabled, isSubmitted }: SoraSubmitProps)
   const handlePointerUp = useCallback(() => {
     if (phase !== 'pulling') return
 
-    const {current} = pullRef
+    const { current } = pullRef
 
     if (current >= THRESHOLD) {
       setPhase('retracting')
@@ -116,6 +119,7 @@ export function SoraSubmit({ onSubmit, disabled, isSubmitted }: SoraSubmitProps)
         {/* Ring (drag handle) */}
         <div
           ref={ringRef}
+          data-testid="diary-submit-ring"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -132,7 +136,10 @@ export function SoraSubmit({ onSubmit, disabled, isSubmitted }: SoraSubmitProps)
       </div>
 
       {/* Hint text */}
-      <p className="text-xs text-gray-400 h-4">
+      <p
+        className="text-xs text-gray-400 h-4"
+        data-testid="diary-submit-hint"
+      >
         {isSubmitted
           ? '제출 완료'
           : phase === 'pulling' && progress >= 1
