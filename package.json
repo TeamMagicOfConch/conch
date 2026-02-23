@@ -14,7 +14,8 @@
     "build:conch": "turbo run build --filter=\"...{./apps/conch}\"",
     "build:conch:simulator": "turbo run build:simulator --filter=\"...{./apps/conch}\"",
     "build:admin": "turbo run build --filter=\"...{./apps/admin}\"",
-    "build:codiary": "turbo run build --filter=\"...{./apps/codiary}\""
+    "build:codiary": "turbo run build --filter=\"...{./apps/codiary}\"",
+    "e2e:codiary": "pnpm --filter @conch/codiary-e2e test"
   },
   "keywords": [],
   "author": "",
